@@ -1,0 +1,55 @@
+:host ::ng-deep {
+    .p-fileupload-content {
+        border: 0 none;
+    }
+
+    .p-fileupload-row {
+        display: none;
+    }
+
+    .p-progressbar{
+        display: none;
+    }
+
+    .p-fileupload {
+        padding: 0;
+    }
+
+    .p-fileupload-buttonbar {
+        display: none;
+    }
+    .action-btn .p-button{
+        width: 100%;
+        margin: auto;
+    } 
+    .p-dropdown{
+        width: 100%;
+
+        .p-overlay{
+            max-width: 300px!important;
+        }
+    }
+        .word-icon{
+           color: #365B9E;
+       }
+       
+        .excel-icon{
+           color: #088408;
+       }
+       
+        .powerpoint-icon{
+           color: #D14A2A;
+       }
+       
+        .pdf-icon{
+           color: #E62C31!important;
+       }
+       
+        .folder-icon{
+           color: #FFCC2F;
+       }
+       
+        .image-icon{
+           color: #12A6E8;
+       }
+}

@@ -1,0 +1,67 @@
+<div class="field" *ngIf="publie === true">
+    <div class="flex align-items-center mb-4 font-bold">
+        <span class="text-xl text-900 mr-4">Nombre de notes sur le document </span>
+        <span
+            class="inline-flex align-items-center justify-content-center w-2rem h-2rem border-1 surface-border border-round">{{comments.length
+            }} </span>
+    </div>
+    <div class="inline-flex align-items-center">
+        <li *ngIf="publie === true && valide === false">
+            Le <strong>dernier délai</strong> pour l'expression des notes est <strong>fixé au</strong>
+            <span class="text-red-400 font-bold mr-1"> {{ sharedDataEvService.getCalculatedDateDelais(datePublished,
+                delai! , true) | date : 'EEEE, dd MMM yyyy' }} </span>.
+        </li>
+        <li *ngIf="valide === true">
+            Le <strong>dernier délai</strong> pour l'expression des notes est <strong>épuisé le : </strong>
+            <span class="text-red-400 font-bold mr-1"> {{ sharedDataEvService.getCalculatedDateDelais(datePublished,
+                delai! , true) | date : 'EEEE, dd MMM yyyy' }} </span>
+        </li>
+    </div>
+    <div class="field"></div>
+    <ul class="list-none p-0 m-0">
+        <li *ngFor="let comment of comments ; let i = index">
+            <div class="flex p-3 mb-3 border-1 surface-border border-round" [elemPrivilege]="['note.list']" accessControl>
+                <img src="assets/layout/images/avatar/avatar.jpg" class="w-3rem h-3rem mr-3 flex-shrink-0" />
+                <div>
+                    <span class="font-semibold text-900">{{comment.owner}}</span>
+                    <p class="font-semibold text-600 m-0 text-sm">{{comment.createdAt | date : 'shortDate'}}</p>
+                    <p *ngIf="clickedIndex !== i" class="line-height-3 mb-0 my-3"> {{comment.contenu}}</p>
+                       <textarea *ngIf="clickedIndex === i" id="t" type="text" pInputTextarea [(ngModel)]="text" [autoResize]="true" 
+                         required="true" rows="3" cols=""></textarea>
+                </div>
+            </div>
+            <div *ngIf="publie === true && valide === false" class="align-items-right justify-content-right gap-2">
+                <button *ngIf="clickedIndex !== i" pButton pRipple type="button" icon="pi pi-pencil" label="Modifier"
+                    (click)="onRowEditInit(comment.contenu!, i)" [elemPrivilege]="['note.edit']" accessControl
+                    class="p-button-rounded p-button-text"></button>
+
+                   
+
+                <button *ngIf="clickedIndex === i" pButton pRipple type="button" icon="pi pi-check"
+                    (click)="onRowEditSave(comment,i)" label="Confirmer"
+                    class="p-button-rounded p-button-text p-button-success mr-2">
+                </button>
+
+                <button *ngIf="clickedIndex === i" pButton pRipple type="button" icon="pi pi-times"
+                    (click)="onRowEditCancel(comment,i)" class="p-button-rounded p-button-text p-button-danger"
+                    label="Annuler">
+                </button>
+
+                <button *ngIf="clickedIndex !== i" pButton pRipple type="button" icon="pi pi-fw pi-times"
+                    class="p-button-rounded p-button-text ml-auto p-button-danger" (click)="deleteComment(comment,i)"
+                    label="Supprimer" [elemPrivilege]="['note.delete']" accessControl></button>
+            </div>
+        </li>
+
+    </ul>
+
+    <div class="mb-3 p-fluid" *ngIf="publie === true && valide === false" [elemPrivilege]="['note.add']" accessControl>
+        <textarea rows="3" pInputTextarea placeholder="Ajouter une note sur le document"
+            [(ngModel)]="textContent"></textarea>
+    </div>
+
+    <div class="flex justify-content-end" *ngIf="publie === true && valide === false" [elemPrivilege]="['note.add']" accessControl>
+        <button pButton pRipple label="Ajouter une note" (click)="sendMessage()"></button>
+    </div>
+
+</div>

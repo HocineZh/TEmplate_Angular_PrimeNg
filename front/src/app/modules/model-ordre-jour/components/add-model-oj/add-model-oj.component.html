@@ -1,0 +1,37 @@
+<div class="card">
+  <span class="text-900 text-xl font-bold mb-4 block">Ajouter un Modèle d'ordre de jour</span>
+  <div class="grid">
+    <p-toast></p-toast>
+    <div class="col-12 lg:col-12">
+      <div class="grid formgrid p-fluid">
+        <div class="field mb-4 col-12">
+          <label for="titre" class="font-medium text-900">Titre</label>
+          <input type="text" pInputText id="name" [(ngModel)]="modelOJ.titre" required="true"
+            [ngClass]="{'ng-invalid ng-dirty' : submitted && !modelOJ.titre}" />
+          <small class="ng-dirty ng-invalid"></small>
+        </div>
+        <div class="field mb-4 col-12">
+          <label for="description" class="font-medium text-900">Description</label>
+          <textarea id="description" pInputTextarea [(ngModel)]="modelOJ.description" rows="3" [autoResize]="true"
+            cols="20"></textarea>
+        </div>
+      </div>
+      <div class="col-12">
+
+        <div class="col-12 formgroup-inline">
+          <button pButton pRipple label="Ajouter" class="field w-auto mt-3 p-button-success" (click)="saveModelOJ()"
+            *ngIf="!submitted"></button>
+          <button pButton pRipple label="Retour" class="field w-auto mt-3 p-button-plain" (click)="onBack()"
+            *ngIf="!submitted"></button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div *ngIf="submitted">
+
+    <span class="text-900 text-xl font-bold mb-4 block">Attacher des points à l'ordre du jour</span>
+    <p-toast></p-toast>
+
+    <app-set-model-poj [model]="idModel"></app-set-model-poj>
+
+  </div>

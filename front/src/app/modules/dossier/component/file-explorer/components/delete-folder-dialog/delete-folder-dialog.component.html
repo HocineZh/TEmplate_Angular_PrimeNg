@@ -1,0 +1,12 @@
+<div [style]="{ width: '400px' }">
+    <div class="row my-2">
+        Êtes-vous sûr de vouloir supprimer lrs element selectionnee ?
+    </div >
+        <div style="display: flex;" class="justify-content-center my-2">
+            <button (click)="removeItem()" pButton pRipple class="w-full p-button-danger" label="Remove" icon="pi pi-fw pi-trash"></button>
+        </div>
+        <!-- <div class="mx-2">
+            <p-checkbox  [(ngModel)]="allVersions" [binary]="true" inputId="allVersions"></p-checkbox>
+            <label  class="ml-1" for="allVersions"><b>Supprimer toutes les versions de fichiers</b></label>
+        </div> -->
+</div>

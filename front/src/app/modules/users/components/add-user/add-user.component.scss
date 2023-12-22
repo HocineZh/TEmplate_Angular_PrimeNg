@@ -1,0 +1,18 @@
+::ng-deep .p-datepicker-trigger {
+  .p-icon-wrapper {
+    color: black;
+  }
+}
+
+
+.radio-button-inline {
+  display: flex;
+}
+
+.add-user {
+  ::ng-deep {
+    .p-disabled, .p-component:disabled {
+      opacity: 2;
+    }
+  }
+}

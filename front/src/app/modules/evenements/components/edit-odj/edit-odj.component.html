@@ -1,0 +1,509 @@
+<p-confirmDialog [style]="{ width: '50vw' }" key="confirmRetirer" acceptLabel="OUI" rejectLabel="NON" [position]="'bottom'" rejectButtonStyleClass="p-button-outlined"></p-confirmDialog>
+<p-toast key="tstODJ"></p-toast>
+<div class="grid  formgrid p-fluid " style="min-height: 60vh">
+    <div *ngIf=" (!selectedEvenement.listePointsOrdre || selectedEvenement.listePointsOrdre === null || selectedEvenement.listePointsOrdre.length === 0) && (!createOJFromZero) "  class="card col-12 min-h-full flex align-items-center justify-content-center">
+              <!--  -->
+        <div *ngIf="hasAccesCreateODJ()"  class="flex flex-wrap align-items-center justify-content-center col-12">
+            <div [elemPrivilege]="['evenement.odj.creer_from_model']" accessEvmControl class="flex flex-wrap align-items-center justify-content-center card-container col-12" >
+                <div class="border-round bg-blue-100 w-30rem h-6rem p-3 m-3" >
+                    <div class="min-h-full border-round  text-white font-bold p-3 flex align-items-center justify-content-center">
+                        <button pButton pRipple type="button"  label="Créer a partir d'un modèle " class="p-button-raised p-button-primary" (click)="OnShowModelOjDialog()" [disabled]="selectedEvenement.etat ==='CLOTURER' || (selectedEvenement.previsionnel && selectedEvenement.etat ==='TRANSFORMER' )"></button>
+                    </div>
+                </div>
+            </div>
+           <!--  // -->
+            <div [elemPrivilege]="['evenement.odj.creer_a_zero']"  accessEvmControl class="flex flex-wrap align-items-center justify-content-center card-container col-12" >
+                <div class="border-round bg-red-100 w-30rem h-6rem p-3 m-3" >
+                    <div class="min-h-full border-round text-white font-bold p-3 flex align-items-center justify-content-center">
+                        <button pButton pRipple type="button"  label="Créer a partir du zéro" class="p-button-raised p-button-danger" (click)="OnCreateOJFromZero()" [disabled]="selectedEvenement.etat ==='CLOTURER' || (selectedEvenement.previsionnel && selectedEvenement.etat ==='TRANSFORMER' )"></button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div *ngIf="!hasAccesCreateODJ()" class="col-12 min-h-full flex align-items-center surface-100">
+            <h5 class="py-4 pl-2 flex  align-items-center justify-content-center min-w-full">
+                <i class="pi pi-align-left" style="font-size: 1.1rem"></i><span class="ml-2">Ordre du jour vide.</span>
+            </h5>
+
+        </div>
+
+
+    </div>
+
+   <div *ngIf=" (selectedEvenement.listePointsOrdre && selectedEvenement.listePointsOrdre !== null && selectedEvenement.listePointsOrdre.length > 0) || (createOJFromZero) "  class="grid col-12 pl-5">
+
+    <div *ngIf="!selectedEvenement.odjValide && selectedEvenement.odjPublier && !selectedEvenement.previsionnel" class="card col-12 mt-3" style="background-color: #f5d4d4; border-color: #f0bebe; color: #283e59; margin-bottom: 1rem ;">
+        <div  class="grid col-12 pt-5 pb-5 px-0" >
+            <div class="col-12 md:col-9 mb-0" >
+            <p style="line-height: 2.5;">
+                <span>• </span>L'ordre du jour n'est pas encore validé.
+            </p>
+            <p *ngIf="selectedEvenement.odjPublier && !selectedEvenement.odjValide">
+
+                <span>• </span> Validation de l'ordre du jour par les membres. Dernier délais <span class="text-red-400 font-bold mr-1"> {{ sharedDataEvService.getCalculatedDateDelais(selectedEvenement.publierLe!, getDelaisValidationODJ(), true)  | date : 'EEEE, dd MMM yyyy' }} </span>
+
+            </p>
+
+            </div>
+            <div class="col-12 md:col-3 mb-0" [elemPrivilege]="['evenement.odj.valider']" accessEvmControl >
+              <ng-container *ngIf="selectedEvenement.etat!=='CLOTURER'">
+                <button pButton pRipple type="button" icon="pi pi-check" (click)="confirmationValiderODJ($event)" label="Valider l'ordre du jour" class="p-button-raised p-button-danger"></button>
+            </ng-container>
+            </div>
+        </div>
+    </div>
+    <div *ngIf="selectedEvenement.odjValide  && !selectedEvenement.previsionnel"  class="card p-fluid col-12 mt-3" style="background-color: rgb(90, 175, 76, 0.5); border-color: #5aaf4c; color: #283e59; box-shadow: 0 2px 1px -1px rgba(0, 0, 0, 0.2), 0 1px 1px 0 rgba(0, 0, 0, 0.14), 0 1px 3px 0 rgba(0, 0, 0, 0.12); margin-bottom: 1rem ;">
+        <div  class="grid col-12 pt-5 pb-3 px-0"  >
+            <div class="col-12 md:col-9" style="margin-bottom: 0px;">
+            <p style="line-height: 2.5;" class="ml-1">
+                L'ordre du jour est validé.
+            </p>
+            </div>
+            <div class="col-12 md:col-3 flex flex-row-reverse" style="margin-bottom: 0px;">
+                <span class="po-badge-status po-status-valide py-3 px-4 text-white font-semibold" style="background-color:rgb(90, 175, 76) ;"><span  class="pi pi-check mr-3 "></span><span>Ordre du jour validé</span></span>
+            </div>
+
+        </div>
+    </div>
+
+    <div class="col-12  flex flex-column lg:flex-row gap-3" style="min-height: 60vh">
+
+     <div class="col-12 lg:col-7 card mt-3">
+
+        <div class="flex flex-column h-full">
+
+        <div class="col-12 flex align-items-center border-bottom-1 surface-border p-1 lg:p-1" style="max-height: 15vh;width: 100%;" >
+
+
+                    <div class="col-12 py-2 gap-2 flex flex-row-reverse">
+                        <p-menu #menuActionsOdj appendTo="body" [model]="itemsActionsOdj" [popup]="true"></p-menu>
+                        <button pButton type="button" (click)="menuActionsOdj.toggle($event)" icon="pi pi-bars"  [elemPrivilege]="['evenement.odj.menu_actions']" [displayType]="'inline-flex'" accessEvmControl></button>
+
+                        <p-button *ngIf="!selectedEvenement.previsionnel" [label]="labelButtonPropositions" [icon]="IconButtonProposition" styleClass="p-button-warning" [badge]="nbrPropositionsMembre" badgeClass="p-badge-danger" (click)="OnShowPropositionsMembresDialog()"  [elemPrivilege]="['evenement.odj.gerer_propositions_po','evenement.odj.proposer_po']" [displayType]="'inline-flex'" accessEvmControl></p-button>
+
+                        <p-button *ngIf="!selectedEvenement.previsionnel" label="Points ajournés" icon="pi pi-replay" styleClass="p-button-danger" [badge]="nbrPointsAjournes" (click)="OnShowPoAjournesDialog()" [elemPrivilege]="['evenement.odj.gerer_po_ajournes']" [displayType]="'inline-flex'" accessEvmControl></p-button>
+
+                      </div>
+                    </div>
+
+
+            <div class="p-1 md:px-2 lg:px-4 lg:py-3 mt-2 overflow-y-auto" >
+                <p-orderList [value]="selectedEvenement.listePointsOrdre || []" filterBy="designation" [dragdrop]=" selectedEvenement.etat !=='CLOTURER' && !(selectedEvenement.previsionnel && selectedEvenement.etat ==='TRANSFORMER' ) " header="Liste points ordre du jour"
+                [(selection)]="selectedPointOrdre" [metaKeySelection]="true"  (onSelectionChange)="onSelectionPoChange($event)" (onReorder)="onReorderListPo($event)">
+
+                    <ng-template let-po  pTemplate="item">
+                        <div class="grid py-3">
+
+                        <div class="col-10">
+                        <span class="text-600 text-gray" style="font-style: italic;">{{ po.ordre }} - </span> <span class="text-900 font-semibold">{{po.designation}}</span>
+                        </div>
+                        <div class="col-2">
+                            <div class="flex flex-row-reverse gap-2">
+
+                                <span>
+                                   <!--  <img *ngIf="po.isvalid" alt="Valider" pTooltip="Valider" src="assets/layout/images/evenements/icons8-approval-30.png" width="30px" height="30px" /> -->
+                                    <div [elemPrivilege]="['evenement.odj.supprimer_po']"  accessEvmControl>
+                                       <button [disabled]="selectedEvenement.etat=='TERMINER' || selectedEvenement.etat=='CLOTURER' || (selectedEvenement.previsionnel && selectedEvenement.etat ==='TRANSFORMER' )"  pButton pRipple  type="button" icon="pi pi-trash" style="width: 30px; height: 30px;" pTooltip="Retirer de la liste" class="p-button-rounded p-button-danger z-5" (click)="confirmationRetirerPo($event,po)"></button>
+                                    </div>
+                                </span>
+
+                                <span class="mr-2" *ngIf="!this.selectedEvenement.previsionnel">
+                                   <!--   <button  *ngIf="!selectedEvenement.previsionnel" pButton pRipple  type="button" icon="pi pi-comments" style="width: 30px; height: 30px;" pTooltip="Commentaires" class="p-button-rounded " (click)="showCommentairesPoDialog($event,po)"></button>      -->
+                                  <!--  <span class="font-semibold">{{po.commentaires.lenght}}</span> -->
+
+                                 <!--  <p-button  type="button" icon="pi pi-comment" class="p-button-rounded p-button-text" ></p-button> -->
+                                 <span class="flex align-items-center text-900 relative">
+                                 <button pButton pRipple type="button" icon="pi pi-comments" class="p-button-sm p-button-rounded p-button-info p-button-outlined z-5" style="width:30px; height:30px" pTooltip="Commentaires" (click)="showCommentairesPoDialog($event,po)" ></button>
+                                  <span class="font-semibold absolute" style="border-radius : 100%; padding: 4px; top :-8px; right : -6px; z-index : 10; background-color: orange; font-size: 9px;">{{po.commentaires.length || 0}}</span>
+                                </span>
+                                 <!--  <i class="pi pi-comment mr-2 p-text-secondary" pBadge style="font-size: 22px" [value]="po.commentaires.lenght || 0"></i> -->
+                                </span>
+                              <!--   <span class="flex align-items-center text-900">
+                                    <i class="pi pi-comment mr-2"></i>
+                                    <span class="font-semibold">{{blog.comment}}</span>
+                                </span>  -->
+                            </div>
+                            </div>
+
+                        </div>
+                    </ng-template>
+                </p-orderList>
+            </div>
+
+            <div [elemPrivilege]="['evenement.odj.ajouter_po']"  accessEvmControl>
+               <app-add-point-oj *ngIf="selectedEvenement && selectedEvenement.etat !=='TERMINER'  && selectedEvenement.etat !=='CLOTURER' && !(selectedEvenement.previsionnel && selectedEvenement.etat ==='TRANSFORMER' )" [idEvenement]="selectedEvenement.id" (isPointOrdreSavedEvent)="isNewPoSaved($event)"  class="p-1 md:p-2 lg:p-4 flex flex-column sm:flex-row align-items-center mt-auto border-top-1 surface-border gap-2"></app-add-point-oj>
+            </div>
+
+
+            <p-toolbar styleClass="tbValidationOdj" *ngIf="hasValidationOdjMembre()" >
+                <div class="p-toolbar-group-left">
+                    Validation ordre du jour <span class="text-sm mx-2">( Dernier délais  <span class="text-red-400">{{sharedDataEvService.getCalculatedDateDelais(selectedEvenement.publierLe!, selectedEvenement.delaisEvenement?.reponseValidationDate, true)  | date : 'EEEE, dd MMM yyyy' }}</span> )</span>
+                </div>
+
+                <div class="p-toolbar-group-right">
+                    <span  *ngIf="validationOdjMembre ; else elseVODJMBlock" class="po-badge-status po-status-valide py-3 px-6 text-white font-semibold"><span  class="pi pi-check mr-3 "></span><span>Validé</span></span>
+
+                    <ng-template #elseVODJMBlock>
+                    <p-toggleButton styleClass="ptOdj" [disabled]="selectedEvenement.etat==='CLOTURER'" [(ngModel)]="validationOdjMembre" onLabel="Valider" offLabel="Je confirme"  (onChange)="confirmationValidationOdjMembre($event)" onIcon="pi pi-check" offIcon="pi pi-times" [style]="{ width: '10em' }" pTooltip="Cliquer pour confirmer votre validation " [disabled]="selectedEvenement.odjValide"></p-toggleButton>
+                    </ng-template>
+                </div>
+            </p-toolbar>
+
+        </div>
+
+
+
+    </div>
+    <div class="col-12 lg:col-5 card mt-3"  >
+
+        <div *ngIf=" selectedPointOrdre === null || selectedPointOrdre.length === 0"  class="flex justify-content-around col-12 min-h-full surface-ground">
+            <p class="flex align-items-center justify-content-center">Aucun élément séléctionné</p>
+
+        </div>
+        <div  *ngIf=" selectedPointOrdre !== null && selectedPointOrdre.length > 0 " class="col-12 min-h-full">
+          <p-accordion>
+            <p-accordionTab header="Détails" [selected]="true" class="line-height-3 m-0">
+
+                <div class="grid formgrid">
+                    <div class="col-12 field mt-1">
+                        <label for="titrePo" class="text-600 font-semibold">{{evenementvValidation.titre.label}}</label>
+                        <span class="p-input-icon-left">
+                            <i class="pi pi-pencil"></i>
+                            <input id="titrePo" type="text" pInputText placeholder="Titre"
+                                [(ngModel)]="selectedPointOrdre[0].designation"
+                                [readOnly]="selectedEvenement.etat==='CLOTURER' || (selectedEvenement.previsionnel && selectedEvenement.etat ==='TRANSFORMER' )" />
+                        </span>
+                    </div>
+                    <div class="col-12 field mt-1">
+                        <label for="descriptionPo" class="text-600 font-semibold">{{evenementvValidation.description.label}}</label>
+                        <p-editor id="descriptionPo" placeholder="Déscription" [(ngModel)]="selectedPointOrdre[0].description"
+                            [readonly]=" selectedEvenement.etat==='CLOTURER' || (selectedEvenement.previsionnel && selectedEvenement.etat ==='TRANSFORMER' )"
+                            [style]="{'height':'150px'}"></p-editor>
+                        <!--  <textarea id="descriptionPo" type="text" placeholder="Déscription" pInputTextarea [rows]="4" [(ngModel)]="selectedPointOrdre[0].description" [disabled]="selectedPointOrdre[0].isvalid" style="resize: none"></textarea> -->
+                    </div>
+                    <div class="col-12 field mt-1" [elemPrivilege]="['evenement.odj.valider_po']" accessEvmControl>
+                        <label for="etatPo" class="text-600 font-semibold">Etat validation</label>
+
+                        <span *ngIf="selectedPointOrdre[0].isvalid ; else elseBlock"
+                            class="po-badge-status po-status-valide py-3 px-4 text-white font-semibold"><span
+                                class="pi pi-check mr-3 "></span><span>Validé</span></span>
+                        <ng-template #elseBlock>
+                            <div>
+                                <p-toggleButton
+                                    [disabled]="selectedEvenement.etat==='CLOTURER' || (selectedEvenement.previsionnel && selectedEvenement.etat ==='TRANSFORMER' )"
+                                    [(ngModel)]="selectedPointOrdre[0].isvalid" onLabel="Valider" offLabel="Non validé"
+                                    (onChange)="confirmationValidationPo($event)" onIcon="pi pi-check" offIcon="pi pi-times"
+                                    [style]="{ width: '10em' }" pTooltip="Cliquer pour valider le point d'ordre "></p-toggleButton>
+                            </div>
+                        </ng-template>
+                    </div>
+
+                    <p class="col-12" [elemPrivilege]="['evenement.odj.modifier_po']" accessEvmControl>
+                        <p-divider></p-divider>
+                    </p>
+                    <div class="col-12 field mt-1" [elemPrivilege]="['evenement.odj.modifier_po']" accessEvmControl>
+                        <p-toolbar>
+                            <div class="p-toolbar-group-left flex flex-wrap">
+
+                                <button *ngIf="!saveButtonClicked" pButton pRipple type="button"
+                                    label="Annuler" class="p-button-text" (click)="AnnulerPoChangement()"
+                                    [disabled]="selectedEvenement.etat==='CLOTURER' || (selectedEvenement.previsionnel && selectedEvenement.etat ==='TRANSFORMER' )"></button>
+
+                            </div>
+
+                            <div class="p-toolbar-group-right">
+                                <button  pButton
+                                    label="{{ evenementvValidation.bouttonEnregistrer.label }}" icon="pi pi-check"
+                                    (click)="EnregistrerPoChangement()"
+                                    [disabled]="selectedEvenement.etat==='CLOTURER' || (selectedEvenement.previsionnel && selectedEvenement.etat ==='TRANSFORMER' )"></button>
+                            </div>
+                        </p-toolbar>
+
+                    </div>
+
+                </div>
+            </p-accordionTab>
+            <!--  (onUpload)="onUploadPoSelected($event)" -->
+            <p-accordionTab header="Documents" class="line-height-3 m-0">
+                <div class="grid formgrid">
+                    <div [elemPrivilege]="['evenement.odj.charger_documents_valide']" accessEvmControl class="col-12 field mt-1">
+                        <label for="documentsPo" class="text-600 font-semibold">Documents</label>
+                        <p-fileUpload #fileUpload id="documentsPo" name="demo[]" chooseLabel="Choisir" uploadLabel="Charger"
+                            cancelLabel="Annuler" [customUpload]="true" (uploadHandler)="onUploadPoSelected($event)"
+                            [multiple]="true"
+                            accept="image/*, application/pdf, application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+                            [maxFileSize]="10000000"
+                            [disabled]="selectedEvenement.etat==='CLOTURER' || (selectedEvenement.previsionnel && selectedEvenement.etat ==='TRANSFORMER' )">
+                            <ng-template pTemplate="content">
+                            </ng-template>
+                        </p-fileUpload>
+                    </div>
+                    <div class="col-12 field mt-2">
+                        <ng-container *ngIf=" documentsPoValides && documentsPoValides.length>0">
+
+                            <div class="grid col-12 min-w-full px-0 mt-3" *ngFor="let document of documentsPoValides ">
+
+                                <div class="col-1">
+                                    <span class="docPoIcon"
+                                        [style]="'background-image : url(assets/layout/images/evenements/icons_docs/' + getExtDoc(document.nom)+ '.png)'"></span>
+                                </div>
+                                <div class="col-8">
+                                    <h4 [pTooltip]="document.nom" class="docPoNom">{{document.nom}}</h4>
+                                    <h4 class="docPoTaille">Taille: 8M</h4>
+                                </div>
+
+                                <div class="col-3 gap-1 px-0 flex align-items-center justify-content-end  ">
+                                    <button pButton pRipple icon="pi pi-download"
+                                        class="btn-action-doc p-button-primary p-1 h-2rem w-2rem"
+                                        (click)="downloadSelectedDoc(document, $event)" pTooltip="Télécharger" tooltipPosition="top"
+                                        [elemPrivilege]="['evenement.odj.telecharger_documents_valide']" accessEvmControl></button>
+                                    <!--  </div>
+                                      <div class="col-1 px-0 flex align-items-center justify-content-center ">   -->
+                                    <button pButton pRipple icon="pi pi-trash"
+                                        class="btn-action-doc p-button-danger p-1 h-2rem w-2rem "
+                                        (click)="supprimerSelectedDoc(document, $event)" pTooltip="Supprimer" tooltipPosition="top"
+                                        [elemPrivilege]="['evenement.odj.supprimer_documents_valide']" accessEvmControl></button>
+                                </div>
+                            </div>
+
+                        </ng-container>
+                    </div>
+                </div>
+
+            </p-accordionTab>
+
+            <p-accordionTab header="Intervenants" class="line-height-3 m-0">
+
+                <div class="grid formgrid">
+                    <div class="col-12 field mt-1">
+                        <label for="intervenetsPo" class="text-600 font-semibold">Responsable</label>
+                        <span class="p-fluid">
+                            <p-autoComplete #autocIntervenants id="intervenetsPo" [forceSelection]="true" [showClear]="true"
+                                emptyMessage="Liste des utilisateurs vide." [(ngModel)]="selectedIntervenantPo"
+                                [suggestions]="filtredIntervenentsPo" (completeMethod)="filterIntervenets($event)" field="login"
+                                [multiple]="false"
+                                [disabled]="selectedEvenement.etat==='CLOTURER' || (selectedEvenement.previsionnel && selectedEvenement.etat ==='TRANSFORMER' )">
+
+                                <ng-template let-user pTemplate="item">
+                                    <div class="flex align-items-center gap-2">
+                                        <div class="font-bold">{{ user.nom + ' ' + user.prenom }}</div>
+                                        <div>--</div>
+                                        <div>{{ user.fonction }}</div>
+                                        <div>--</div>
+                                        <div>{{ user.societe_code }}</div>
+                                    </div>
+                                </ng-template>
+
+                            </p-autoComplete>
+                        </span>
+                    </div>
+
+                    <div class="col-12 field mt-1">
+                        <label for="docsIntervenetsPo" class="text-600 font-semibold">Documents déposés</label>
+                        <span *ngIf="!documentsIntervenantsPo || (documentsIntervenantsPo && documentsIntervenantsPo.length ===0) "
+                            class="p-fluid">
+                            <ul style="padding-left: 2rem;">
+                                <li>Liste vide.</li>
+                            </ul>
+                        </span>
+
+                        <div *ngIf="documentsIntervenantsPo && documentsIntervenantsPo.length > 0 " class="col-12 field mt-2">
+                            <ng-container *ngIf=" documentsIntervenantsPo && documentsIntervenantsPo.length>0">
+
+                                <div class="grid col-12 min-w-full px-0 mt-3" *ngFor="let document of documentsIntervenantsPo ">
+
+                                    <div class="col-1">
+                                        <span class="docPoIcon"
+                                            [style]="'background-image : url(assets/layout/images/evenements/icons_docs/' + getExtDoc(document.nom)+ '.png)'"></span>
+                                    </div>
+                                    <div class="col-8">
+                                        <h4 [pTooltip]="document.nom" class="docPoNom">{{document.nom}}</h4>
+                                        <h4 class="docPoTaille">Taille: 8 MB</h4>
+                                    </div>
+
+                                    <div class="col-3 gap-1 px-0 flex align-items-center justify-content-end  ">
+                                        <button pButton pRipple icon="pi pi-download"
+                                            class="btn-action-doc p-button-primary p-1 h-2rem w-2rem"
+                                            (click)="downloadSelectedDoc(document, $event)" pTooltip="Télécharger"
+                                            tooltipPosition="top" [elemPrivilege]="['evenement.odj.telecharger_documents_valide']"
+                                            accessEvmControl></button>
+                                    </div>
+                                </div>
+
+                            </ng-container>
+                        </div>
+
+                    </div>
+
+                    <div class="col-12 field mt-1">
+                        <label for="accesIntervenantPo" class="text-600 font-semibold">Accès</label>
+
+                        <span class="p-fluid pl-3" style="display: block;">
+                            <span class="text-red-400" *ngIf="access_depot_documents === false ; else elseAIBlock"> Non
+                                autorisé</span>
+                            <ng-template #elseAIBlock>
+                                <span class="text-green-400">Autorisé </span>
+                            </ng-template>
+                        </span>
+                    </div>
+
+                    <div class="col-12 field mt-1">
+                        <label for="delaisIntervenantPo" class="text-600 font-semibold">Délais</label>
+                        <span class="p-fluid" style="display: block;">
+
+                            <span class="pl-3" *ngIf="access_depot_documents === false ; else elseAIDBlock">-</span>
+                            <ng-template #elseAIDBlock>
+
+                                <span>{{ getCalculatedDateDelaisDD() | date : 'EEEE, dd MMM yyyy' }}</span>
+                                <span class="ml-2" [innerHTML]="getNombreJoursRestants()"> </span>
+
+                            </ng-template>
+                        </span>
+                    </div>
+
+                    <p class="col-12" [elemPrivilege]="['evenement.odj.attacher_intervenant_po']" accessEvmControl>
+                        <p-divider></p-divider>
+                    </p>
+                    <div class="col-12 field mt-1" [elemPrivilege]="['evenement.odj.attacher_intervenant_po']" accessEvmControl>
+                        <p-toolbar>
+                            <div class="p-toolbar-group-left flex flex-wrap">
+
+                                <button pButton pRipple type="button" label="Annuler" class="p-button-text"
+                                    (click)="AnnulerAffectPoIntervenant($event)"
+                                    [disabled]="selectedEvenement.etat==='CLOTURER' || (selectedEvenement.previsionnel && selectedEvenement.etat ==='TRANSFORMER' )"></button>
+
+                            </div>
+
+                            <div class="p-toolbar-group-right">
+                                <button pButton label="{{ evenementvValidation.bouttonEnregistrer.label }}" icon="pi pi-check"
+                                    (click)="enregistrerAffectPoIntervenant($event)"
+                                    [disabled]="selectedEvenement.etat==='CLOTURER' || (selectedEvenement.previsionnel && selectedEvenement.etat ==='TRANSFORMER' )"></button>
+                            </div>
+                        </p-toolbar>
+
+                    </div>
+
+                </div>
+
+            </p-accordionTab>
+
+            <p-accordionTab *ngIf="!selectedEvenement.previsionnel" header="Traitement" class="line-height-3 m-0">
+
+                <ng-container *ngIf="selectedPointOrdre[0].traitementPointsById?.length >1 ; else elseOTBlock">
+                    <div class="mb-2" *ngFor="let etatTPO of selectedPointOrdre[0].traitementPointsById ; let index = index;">
+
+                        <p-panel [toggleable]="true" styleClass="panelTPO">
+                            <ng-template pTemplate="header">
+                                Séance N:° <span style="color:red">{{ index +1 }}</span>
+                            </ng-template>
+                            <div class="grid formgrid">
+                                <div class="col-12 field mt-1">
+                                    <label for="etatTraitementPo" class="text-600 font-semibold">Etat traitement</label>
+                                    <span class="p-fluid mt-2" style="display: block;">
+                                        <span
+                                            [class]="'po-badge-status py-2 px-3 font-semibold  po-status-' + sharedDataEvService.getClassEtatEvenement(etatTPO.etatsByEtatsid.etat)">
+                                            {{sharedDataEvService.getformattedEtatPo(etatTPO.etatsByEtatsid.etat)}}</span>
+                                    </span>
+                                </div>
+                                <div class="col-12 field mt-1">
+                                    <label for="dateTraitementPo" class="text-600 font-semibold">Date traitement</label>
+                                    <span class="p-fluid ml-1" style="display: block;">
+                                        <span *ngIf="etatTPO.etatsByEtatsid.etat !== 'NON TRAITER' ; else elseNTBlock"> {{
+                                            etatTPO.date | date : 'dd MMMM yyyy'}}</span>
+                                        <ng-template #elseNTBlock>
+                                            <span> - </span>
+                                        </ng-template>
+                                    </span>
+                                </div>
+                            </div>
+
+                        </p-panel>
+                    </div>
+
+                </ng-container>
+                <ng-template #elseOTBlock>
+                    <div class="grid formgrid">
+                        <div class="col-12 field mt-1">
+                            <label for="etatTraitementPo" class="text-600 font-semibold">Etat traitement</label>
+                            <span class="p-fluid mt-2" style="display: block;">
+                                <span
+                                    [class]="'po-badge-status py-2 px-3 font-semibold po-status-' + sharedDataEvService.getClassEtatEvenement(selectedPointOrdre[0].traitementPointsById[0].etatsByEtatsid.etat)">
+                                    {{  sharedDataEvService.getformattedEtatPo(selectedPointOrdre[0].traitementPointsById[0].etatsByEtatsid.etat)}}
+
+
+                                </span>
+                            </span>
+
+                        </div>
+                        <div class="col-12 field mt-1">
+                            <label for="dateTraitementPo" class="text-600 font-semibold">Date traitement</label>
+                            <span class="p-fluid ml-1" style="display: block;">
+                                <span
+                                    *ngIf="selectedPointOrdre[0].traitementPointsById[0].etatsByEtatsid.etat !== 'NON TRAITER' ; else elseNTBlock">
+                                    {{ selectedPointOrdre[0].traitementPointsById[0].date | date : 'dd MMMM yyyy'}}</span>
+                                <ng-template #elseNTBlock>
+                                    <span> - </span>
+                                </ng-template>
+                            </span>
+                        </div>
+                    </div>
+                </ng-template>
+
+
+            </p-accordionTab>
+
+        </p-accordion>
+        </div>
+
+    </div>
+
+  </div>
+
+   </div>
+</div>
+
+<p-dialog [(visible)]="showParametresODJDialog" [style]="{width: '55rem'}" [contentStyle]="{minHeight: '300px'}" [modal]="true" [closable]="true" (onHide)="onCloseParamsDialog()">
+    <ng-template pTemplate="header">
+        <span class="text-900 font-semibold text-xl">Paramètres Ordre du jour</span>
+    </ng-template>
+<p-panel   styleClass="panelTPO">
+    <ng-template pTemplate="header">
+        <i class="pi pi-cloud-upload" style="font-size: 1.2rem"></i>
+        <span class="text-900  text-xl pl-2">Documents intervenants</span>
+    </ng-template>
+
+    <div class="py-5">
+        <div class="field-checkbox">
+            <p-checkbox id="validationDD" [(ngModel)]="access_depot_documents" [binary]="true" inputId="validationDate"></p-checkbox>
+            <label for="validationDD" class="text-900">Donner l'accés aux intervenants pour le dépot des documents.</label>
+        </div>
+
+        <div class="field-input mt-5">
+         <span class="block mb-1">Delais de dépot <span class="text-xs">( A compter a partir de la date de début de l'évènement - avant)</span></span>
+         <p-inputNumber  inputId="delaisValidationDate" placeholder="Nombre de jours"   mode="decimal" [(ngModel)]="delaisValidationDD"  [showButtons]="true" [step]="1" [min]="1" > </p-inputNumber>
+         <span *ngIf="delaisValidationDD && delaisValidationDD>0 " class="ml-2">(Dernier délais : <span class="text-red-400">{{ sharedDataEvService.getCalculatedDateDelais(selectedEvenement.dateDebut,delaisValidationDD,false) | date : 'EEEE, dd MMM yyyy' }}</span>)</span>
+        </div>
+   </div>
+
+</p-panel>
+
+
+<ng-template pTemplate="footer">
+    <p>
+        <p-divider></p-divider>
+    </p>
+    <div>
+
+      <button pButton label="Enregistrer" class="p-button-primary" icon="pi pi-check" (click)="enregistrerParametresODJ()" [disabled]="selectedEvenement.etat==='CLOTURER' || (selectedEvenement.previsionnel && selectedEvenement.etat ==='TRANSFORMER' )"></button>
+
+
+   </div>
+</ng-template>
+</p-dialog>
+
+
+
+<app-importer-model-odj *ngIf="showDialogModelOJ === true" [selectedEvenement]="selectedEvenement" [typeOrgane]="selectedEvenement.typeOrgane" (selectedModelEvent)="getSelectedModelOdj($event)"></app-importer-model-odj>
+<app-propositions-membres-odj *ngIf="showDialogPropMembres === true"  [selectedEvenement]="selectedEvenement" [listAll]="listAllPropositionsMembre" (closeDialogEvent)="closeDialogPPOMembres($event)" (validatedPPOEvent)="getValidatedPPOMembres($event)"></app-propositions-membres-odj>
+<app-list-points-ajournes-og  *ngIf="showDialogPointsAjournes === true" [selectedEvenement]="selectedEvenement" (closeDialogEvent)="closeDialogPoAjournes($event)" (importerPoAjournerEvent)="getImporterPoAjourner($event)" ></app-list-points-ajournes-og>
+<app-commentaires-po *ngIf="sidebarCommentsVisible && selectedPoCommentaires" [selectedPo]="selectedPoCommentaires" [selectedEvenement]="selectedEvenement" (closeDialogEvent)="closeDialogPoCommentaires($event)" ></app-commentaires-po>

@@ -1,0 +1,38 @@
+<div class="card">
+    <span class="text-900 text-xl font-bold mb-4 block">Créer une étape</span>
+    <div class="grid">
+        <div class="col-12 lg:col-2">
+            <div class="text-900 font-medium text-xl mb-3">Process:</div>
+            <p class="m-0 p-0 text-600 line-height-3 mr-3">Nom du process</p>
+        </div>
+        <div class="col-12 lg:col-10">
+            <div class="grid formgrid p-fluid">
+                <div class="field mb-4 col-12">
+                    <label for="nickname" class="font-medium text-900">Nom étape</label>
+                    <input id="nickname" type="text" pInputText [(ngModel)]="modelFct.nomFonction" required="true">
+                </div>
+                <div class="field mb-4 col-12 md:col-6">
+                    <label for="city" class="font-medium text-900">Abréviation étape</label>
+                    <input id="city" type="text" pInputText [(ngModel)]="modelFct.codeFonction" required="true">
+                </div>
+                <div class="field mb-4 col-12 md:col-6">
+                    <label for="state" class="font-medium text-900">Ordre étape</label>
+                    <input id="state" type="text" pInputText [(ngModel)]="modelFct.ordreFonction" required="true">
+                </div>
+                <div class="field mb-4 col-12">
+                    <label for="bio" class="font-medium text-900">Description de la étape</label>
+                    <textarea id="bio" type="text" pInputTextarea [(ngModel)]="modelFct.descriptionFonction"
+                        required="true" rows="5" [autoResize]="true"></textarea>
+                </div>
+                <div class="col-12">
+
+                    <button pButton pRipple label="Retour" icon="pi pi-times" class="w-auto mt-3"
+                        (click)="onBack()"></button>
+
+                    <button pButton pRipple label="Ajouter" icon="pi pi-check" class="w-auto mt-3"
+                        (click)="updateModelFct()"></button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

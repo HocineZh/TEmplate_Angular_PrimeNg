@@ -1,0 +1,25 @@
+<div [style]="{width: '400px' }">
+    <div class="row my-2">
+        tapez un nouveau nom pour :  <b>{{ item?.label }}</b>
+    </div >
+    <div class="row my-2" >
+        <span class="p-input-icon-left w-full">
+            <i class="pi pi-pencil"></i>
+            <input  class="w-full"
+                    type="text"
+                    placeholder="Entrez un nom"
+                    pInputText 
+                    [(ngModel)]="folderName"
+                    #folderNameRef="ngModel"
+                    required
+                    minlength="2"
+                    [ngClass] ="{'ng-invalid ng-dirty': folderNameRef.invalid && (folderNameRef.dirty || folderNameRef.touched)}"
+            />
+        </span>
+        <small *ngIf="folderNameRef.errors?.['required']" class="text-red-700">Name is required.</small>
+        <small *ngIf="folderNameRef.errors?.['minlength']" class="text-red-700">Name must be at least 2 characters long.</small>
+    </div>
+        <div class="w-full my-2">
+            <p-button [disabled]="folderNameRef?.invalid ?? false && (folderNameRef?.dirty ?? false || folderNameRef?.touched ?? false)" class="w-full" (click)="renameItem()" [loading]="loading" icon="pi pi-pencil" label="Renommer" severity="info"></p-button>
+        </div>
+</div>

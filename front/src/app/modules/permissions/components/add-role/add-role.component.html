@@ -1,0 +1,39 @@
+<div class="card">
+  <p-toast></p-toast>
+  <span class="text-900 text-xl font-bold mb-4 block">Ajouter un role</span>
+  <div class="grid">
+
+      <div class="col-12 lg:col-12">
+          <div class="grid formgrid p-fluid">
+              <div class="field mb-4 col-12">
+                  <label for="code_role" class="font-medium text-900">Nom du  Role</label>
+                  <input id="code_role" type="text" pInputText  [(ngModel)]="role.nom" required autofocus [ngClass]="{'ng-invalid ng-dirty' : submitted && !role.nom}">
+                  <small style="color: red;" *ngIf="submitted && !role.nom">Champ Obligatoire</small>
+              </div>
+
+              <div class="field mb-4 col-12">
+                  <label for="bio" class="font-medium text-900">Description</label>
+                  <textarea id="bio" type="text" pInputTextarea rows="5" [autoResize]="true"  [(ngModel)]="role.description"  autofocus ></textarea>
+              </div>
+
+              <div class="col-12 xl:col-12">
+                <div class="card">
+                  <h5>Liste des privlèges</h5>
+                  <p-pickList [source]="privileges" [target]="targetPrivileges" sourceHeader="Liste des prévilèges" targetHeader="Liste des prévilèges sélectionnées" [dragdrop]="true"
+                        [responsive]="true" [sourceStyle]="{'height':'250px'}"  [targetStyle]="{'height':'250px','border-color' : submitted &&  targetPrivileges.length==0  ? 'red' : 'rgba(0, 0, 0, 0.10)' }"
+                        filterBy="codePrivilege" sourceFilterPlaceholder="Chercher par code .." targetFilterPlaceholder="Chercher par code" breakpoint="1400px"
+                        >
+                    <ng-template let-privilege pTemplate="item">
+                      <div>{{privilege.description}} ==> {{privilege.type =='all' ? 'Tous' : 'Par Société'}}</div>
+                    </ng-template>
+                  </p-pickList>
+                  <small style="color: red;" *ngIf="submitted && targetPrivileges.length==0">Champ Obligatoire</small>
+                </div>
+              </div>
+              <div class="col-12">
+                  <button pButton pRipple label="{{buttonText}}" (click)="addRole()" class="w-auto mt-3 p-button-success"></button>
+              </div>
+          </div>
+      </div>
+  </div>
+</div>

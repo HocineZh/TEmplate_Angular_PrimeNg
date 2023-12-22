@@ -1,0 +1,145 @@
+<div class="grid">
+  <div class="col-12">
+      <div class="card px-6 py-6">
+          <p-toast></p-toast>
+          <p-toolbar styleClass="mb-4">
+              <ng-template pTemplate="left">
+                  <div class="my-2">
+
+                      <button pButton pRipple label="Nouveau" icon="pi pi-plus" class="p-button-success mr-2"
+                          [routerLink]="['/modelOrdreJour/addModel']" routerLinkActive="active">
+                      </button>
+
+                      <!--<button pButton pRipple label="Supprimer" icon="pi pi-trash" class="p-button-danger"
+                          (click)="deleteSelectedmodelOJs()"
+                          [disabled]="!selectedmodelOJs || !selectedmodelOJs.length">
+                      </button>
+
+                      <button pButton pRipple label="Joindre" icon="pi pi-paperclip" class="p-button-defaut"
+                          (click)="joinSelectedmodelOJ()"
+                          [disabled]="selectedmodelOJs.length !=1">
+                      </button>-->
+                  </div>
+
+              </ng-template>
+          </p-toolbar>
+
+          <p-table #dt [value]="modelOJs" [columns]="cols" responsiveLayout="scroll" [rows]="10"
+              [globalFilterFields]="['titre','description']" [rows]="10"
+              [paginator]="true" [rowsPerPageOptions]="[10,20,30]" [showCurrentPageReport]="true"
+              currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
+              [(selection)]="selectedmodelOJs" selectionMode="multiple" [rowHover]="true" dataKey="id">
+              <ng-template pTemplate="caption">
+                  <div class="flex flex-column md:flex-row md:justify-content-between md:align-items-center">
+                      <h5 class="m-0">Gestion des modèle d'Ordre de jour</h5>
+                      <span class="block mt-2 md:mt-0 p-input-icon-left">
+                          <i class="pi pi-search"></i>
+                          <input pInputText type="text" (input)="onGlobalFilter(dt, $event)" placeholder="Recherche..."
+                              class="w-full sm:w-auto" />
+                      </span>
+                  </div>
+              </ng-template>
+              <ng-template pTemplate="header">
+                  <tr>
+                      <th style="width: 3rem">
+                          <p-tableHeaderCheckbox></p-tableHeaderCheckbox>
+                      </th>
+
+                      <th pSortableColumn="titre">Titre<p-sortIcon field="titre"></p-sortIcon></th>
+                      <th pSortableColumn="description">Description<p-sortIcon field="description"></p-sortIcon></th>
+                      <th ></th>
+
+                      <th ></th>
+
+
+                  </tr>
+              </ng-template>
+              <ng-template pTemplate="body" let-modelOJ>
+                  <tr>
+                      <td>
+                          <p-tableCheckbox [value]="modelOJ"></p-tableCheckbox>
+                      </td>
+                      <td style="width:50%; min-width:10rem;">
+                          <span class="p-column-title">Titre</span>
+                          {{modelOJ.titre }}
+                      </td>
+                      <td style="width:50%; min-width:10rem;">
+                          <span class="p-column-title">Description</span>
+                          {{modelOJ.description}}
+                      </td>
+                      <td>
+                          <div class="flex">
+                              <button pButton pRipple icon="pi pi-pencil" class="p-button-rounded p-button-info p-button-edit mr-2"
+                              [routerLink]="['/modelOrdreJour/updateModel', modelOJ.id]" >
+                              </button>
+                              <button pButton pRipple icon="pi pi-trash" class="p-button-rounded p-button-danger"
+                                  (click)="deleteModelOJ(modelOJ)">
+                              </button>
+                              <td></td> <td></td><td></td>
+                              <button style = "color : white ;"pButton pRipple icon="pi pi-search" class="p-button-rounded p-button-warning mr-2"
+                              [routerLink]="['/modelOrdreJour/viewModel', modelOJ.id]" >
+                              </button>
+
+
+                          </div>
+                      </td>
+                  </tr>
+              </ng-template>
+          </p-table>
+      </div>
+      <p-dialog [(visible)]="modelOJDialog" [style]="{width: '450px'}" header="modelOJ Details" [modal]="true"
+          class="p-fluid">
+          <ng-template pTemplate="content" visible="true">
+              <img [src]="'assets/demo/images/modelOJ/' + modelOJ.description" [alt]="modelOJ.description" width="150"
+                  class="mt-0 mx-auto mb-5 block shadow-2" *ngIf="modelOJ.description">
+
+              <div class="field">
+                  <label for="name">Titre</label>
+                  <input type="text" pInputText id="name" [(ngModel)]="modelOJ.titre" required autofocus
+                      [ngClass]="{'ng-invalid ng-dirty' : submitted && !modelOJ.titre}" />
+                  <small class="ng-dirty ng-invalid" *ngIf="submitted && !modelOJ.titre">Titre is required.</small>
+              </div>
+              <div class="field">
+                  <label for="description">Description</label>
+                  <textarea id="description" pInputTextarea [(ngModel)]="modelOJ.description" required rows="3"
+                      cols="20"></textarea>
+              </div>
+
+          </ng-template>
+
+          <ng-template pTemplate="footer">
+              <button pButton pRipple label="Retour" icon="pi pi-times" class="p-button-text"
+                  (click)="hideDialog()"></button>
+              <button pButton pRipple label="Create" icon="pi pi-check" class="p-button-text"
+                  (click)="saveModelOJ()"></button>
+          </ng-template>
+      </p-dialog>
+
+      <p-dialog [(visible)]="deleteModelOJDialog" header="Confirm" [style]="{width:'450px'}">
+          <div class="flex align-items-center justify-content-center">
+              <i class="pi pi-exclamation-triangle mr-3" style="font-size: 2rem"></i>
+              <span *ngIf="modelOJ">Etes-vous sure de vouloir supprimer <b>{{modelOJ.titre}}</b>?</span>
+          </div>
+          <ng-template pTemplate="footer">
+              <button pButton pRipple icon="pi pi-times" class="p-button-text" label="Non"
+                  (click)="deleteModelOJDialog = false"></button>
+              <button pButton pRipple icon="pi pi-check" class="p-button-text" label="Oui"
+                  (click)="confirmDelete()"></button>
+          </ng-template>
+      </p-dialog>
+
+      <p-dialog [(visible)]="deleteModelOJsDialog" header="Confirm" [style]="{width:'450px'}">
+          <div class="flex align-items-center justify-content-center">
+              <i class="pi pi-exclamation-triangle mr-3" style="font-size: 2rem"></i>
+              <span>Etes-vous sure de vouloir supprimer les modèles sélectionnés ?</span>
+          </div>
+          <ng-template pTemplate="footer">
+              <button pButton pRipple icon="pi pi-times" class="p-button-text" label="Non"
+                  (click)="deleteModelOJsDialog = false"></button>
+              <button pButton pRipple icon="pi pi-check" class="p-button-text" label="Oui"
+                  (click)="confirmDeleteSelected()"></button>
+          </ng-template>
+      </p-dialog>
+
+  </div>
+</div>

@@ -1,0 +1,48 @@
+<p-toast></p-toast>
+<p-dialog #editSeance [(visible)]="visible" [breakpoints]="{'960px': '75vw', '640px': '90vw'}" [style]="{width: '450px'}" [contentStyle]="{minHeight: '320px'}" [modal]="true" [closable]="true" header="Modifier une séance" >
+    <div class="grid">
+      <div class="col-12 lg:col-12">
+        <form class="grid formgrid p-fluid" [formGroup]="seanceForm">
+
+          <div class="field mb-4 col-12 md:col-12">
+            <label for="dateDebut" class="font-medium text-900">Date de début</label>
+            <p-calendar  [appendTo]="editSeance"  dateFormat="dd-mm-yy" [showIcon]="true" inputId="icon" formControlName="dateDebut"  [maxDate]="seanceForm.value.dateFin" [showTime]="true"  [ngClass]="{'ng-invalid ng-dirty' : this.isAddFailed && f['dateDebut'].errors}"></p-calendar>
+            <small style="color: red;" id="email-help" *ngIf="submitted && f['dateDebut'].errors && f['dateDebut'].errors?.['required']" class="p-error block">Champ Obligatoire </small>
+          </div>
+
+          <div class="field mb-4 col-12 md:col-12">
+            <label for="dateFin" class="font-medium text-900">Date de fin</label>
+            <p-calendar  [appendTo]="editSeance"  dateFormat="dd-mm-yy" [showIcon]="true" inputId="icon" formControlName="dateFin"  [minDate]="seanceForm.value.dateDebut"  [showTime]="true"  [ngClass]="{'ng-invalid ng-dirty' : this.isAddFailed && f['dateFin'].errors}"></p-calendar>
+
+          </div>
+
+          <div class="field mb-4 col-12 md:col-12">
+            <label for="lieu" class="font-medium text-900">Lieu</label>
+            <div class="p-inputgroup">
+              <input type="text" pInputText placeholder="lieu" formControlName="lieu"  [ngClass]="{'ng-invalid ng-dirty' : this.isAddFailed && f['lieu'].errors}"/>
+            </div>
+            <small style="color: red;" id="lieu-help" *ngIf="submitted && f['lieu'].errors && f['lieu'].errors?.['required']" class="p-error block">Champ Obligatoire </small>
+          </div>
+
+          <!-- <div class="field mb-4 col-12 md:col-12">
+            <label for="etatsByEtatsid" class="font-medium text-900">Etat</label>
+            <p-dropdown [appendTo]="editSeance"  [options]="etats" formControlName="etatsByEtatsid" [ngClass]="{'ng-invalid ng-dirty' : this.isAddFailed && f['etatsByEtatsid'].errors}" optionLabel="etat" [filter]="true" filterBy="etat" [showClear]="true" display="chip" placeholder="Selectionner l'état">
+
+              <ng-template let-etat pTemplate="item">
+                <div class="structure-item">
+                  <div>{{etat.etat}}</div>
+                </div>
+              </ng-template>
+            </p-dropdown>
+            <small style="color: red;" id="roles-help" *ngIf="submitted && f['etatsByEtatsid'].errors && f['etatsByEtatsid'].errors?.['required']" class="p-error block">Champ Obligatoire </small>
+          </div> -->
+
+        </form>
+      </div>
+    </div>
+    <ng-template pTemplate="footer">
+      <button pButton pRipple label="Fermer" icon="pi pi-times" class="p-button-text"(click)="hideDialog()"></button>
+      <button pButton pRipple label="Modifier" icon="pi pi-check" class="p-button-text" (click)="saveSeance()"></button>
+    </ng-template>
+</p-dialog>
+

@@ -1,0 +1,143 @@
+<div class="grid">
+  <div class="col-12">
+
+      <div class="card px-6 py-6">
+
+          <p-toast></p-toast>
+          <p-toolbar styleClass="mb-4">
+              <ng-template pTemplate="left">
+                  <div class="my-2">
+                      <button pButton pRipple label="Ajouter" icon="pi pi-plus" class="p-button-success mr-2" (click)="openNew()" [disabled]="!etatLastseance" displayType="inline-flex" [elemPrivilege]="['seance.add']" accessEvmControl></button>
+                      <button pButton pRipple label="Supprimer" icon="pi pi-trash" class="p-button-danger" (click)="deleteSelectedSeances()" [disabled]="!selectedSeances || !selectedSeances.length" [elemPrivilege]="['seance.delete']" accessEvmControl  displayType="inline-flex"></button>
+                  </div>
+              </ng-template>
+
+          </p-toolbar>
+
+          <p-table #dt [value]="seances" [columns]="cols"  [(selection)]="selectedSeances">
+              <ng-template pTemplate="caption">
+                  <div class="flex flex-column md:flex-row md:justify-content-between md:align-items-center">
+                      <h5 class="m-0">Liste des séances</h5>
+                      <span class="block mt-2 md:mt-0 p-input-icon-left">
+                          <i class="pi pi-search"></i>
+                          <input pInputText type="text" (input)="onGlobalFilter(dt, $event)" placeholder="Rechercher..."  class="w-full sm:w-auto"/>
+                      </span>
+                  </div>
+              </ng-template>
+              <ng-template pTemplate="header">
+                  <tr>
+                      <th style="width: 3rem">
+                          <p-tableHeaderCheckbox></p-tableHeaderCheckbox>
+                      </th>
+                      <th pSortableColumn="dateDebut">Date début<p-sortIcon field="dateDebut"></p-sortIcon></th>
+                      <th pSortableColumn="dateFin">Date fin <p-sortIcon field="dateFin"></p-sortIcon></th>
+                      <th pSortableColumn="lieu">Lieu <p-sortIcon field="lieu"></p-sortIcon></th>
+                      <th pSortableColumn="Etat">Etat <p-sortIcon field="état"></p-sortIcon></th>
+                      <th></th>
+                  </tr>
+              </ng-template>
+
+              <ng-template pTemplate="body" let-seance let-rowIndex="rowIndex">
+                  <tr>
+                      <td>
+                          <p-tableCheckbox [value]="seance"></p-tableCheckbox>
+                      </td>
+                      <td style="width:25%; min-width:10rem;"><span class="p-column-title">Date début</span>
+                          {{seance.dateDebut}}
+                      </td>
+                      <td style="width:25%; min-width:10rem;">
+                          <span class="p-column-title">Date fin</span>
+                          {{seance.dateFin}}
+                      </td>
+                      <td style="width:15%; min-width:8rem;">
+                          <span class="p-column-title">Lieu</span>
+                            {{seance.lieu}}
+                      </td>
+                      <td style="width:15%; min-width:8rem;">
+                          <span class="p-column-title">Etat</span>
+                            {{seance.etatsByEtatsid.etat}}
+                      </td>
+                      <td>
+                            <div class="flex align-items-center sm:justify-content-end">
+                              <button pButton pRipple icon="pi pi-pencil" class="p-button-rounded p-button-rounded mr-2" (click)="editSeance(seance)"  [elemPrivilege]="['seance.edit']" accessEvmControl displayType="inline-flex" pTooltip="Modifier"></button>
+                              <button *ngIf="seance.etatsByEtatsid.etat !==  'Cloturée' " pButton pRipple icon="pi pi-trash" class="p-button-rounded p-button-danger mr-2" (click)="deleteSeance(seance)" [elemPrivilege]="['seance.delete']" accessEvmControl displayType="inline-flex" pTooltip="Supprimer"></button>
+                              <button *ngIf="seance.etatsByEtatsid.etat !==  'Ouverte' && seance.etatsByEtatsid.etat !==  'Cloturée'" pButton pRipple icon="pi pi-lock-open" class="p-button-rounded p-button-warning mr-2" (click)="openSeance(seance)" [elemPrivilege]="['seance.open']" accessEvmControl displayType="inline-flex" pTooltip="Ouvrir"></button>
+                              <button *ngIf="seance.etatsByEtatsid.etat !==  'Créée' && seance.etatsByEtatsid.etat !==  'Cloturée' " pButton pRipple icon="pi pi-lock" class="p-button-rounded p-button-info mr-2" (click)="closeSeance(seance)" [elemPrivilege]="['seance.close']" accessEvmControl displayType="inline-flex" pTooltip="Fermer"></button>
+                              <button pButton pRipple icon="pi pi-users" class="p-button-rounded p-button-help " (click)="openMembre(seance)" [elemPrivilege]="['seance.editPresence']" accessEvmControl displayType="inline-flex"  pTooltip="Editer la présence"></button>
+                              <button  pButton pRipple icon="pi pi-align-left" class="ml-2 p-button-rounded p-button-help" (click)="poSeanceDialog(seance)" pTooltip="Traitement des points ordres"></button>
+                            </div>
+                      </td>
+                  </tr>
+              </ng-template>
+
+          </p-table>
+
+      </div>
+
+      <p-dialog [(visible)]="deleteSeanceDialog" header="Confirm" [modal]="true" [style]="{width:'450px'}">
+          <div class="flex align-items-center justify-content-center">
+              <i class="pi pi-exclamation-triangle mr-3" style="font-size: 2rem"></i>
+              <span *ngIf="seance">Êtes-vous sur de supprimer la séance?</span>
+          </div>
+          <ng-template pTemplate="footer">
+              <button pButton pRipple icon="pi pi-times" class="p-button-text" label="Non" (click)="deleteSeanceDialog = false"></button>
+              <button pButton pRipple icon="pi pi-check" class="p-button-text" label="Oui" (click)="confirmDelete()"></button>
+          </ng-template>
+      </p-dialog>
+
+      <p-dialog [(visible)]="openSeanceDialog" header="Confirm" [modal]="true" [style]="{width:'450px'}">
+          <div class="flex align-items-center justify-content-center">
+              <i class="pi pi-exclamation-triangle mr-3" style="font-size: 2rem"></i>
+              <span *ngIf="seance">Êtes-vous sur d'ouvrir la séance?</span>
+          </div>
+          <ng-template pTemplate="footer">
+              <button pButton pRipple icon="pi pi-times" class="p-button-text" label="Non" (click)="openSeanceDialog = false"></button>
+              <button pButton pRipple icon="pi pi-check" class="p-button-text" label="Oui" (click)="confirmOpen()"></button>
+          </ng-template>
+      </p-dialog>
+
+      <p-dialog [(visible)]="closeSeanceDialog" header="Confirm" [modal]="true" [style]="{width:'450px'}">
+          <div class="flex align-items-center justify-content-center">
+              <i class="pi pi-exclamation-triangle mr-3" style="font-size: 2rem"></i>
+              <span *ngIf="seance">Êtes-vous sur de fermer la séance?</span>
+          </div>
+          <ng-template pTemplate="footer">
+              <button pButton pRipple icon="pi pi-times" class="p-button-text" label="Non" (click)="closeSeanceDialog = false"></button>
+              <button pButton pRipple icon="pi pi-check" class="p-button-text" label="Oui" (click)="confirmClose()"></button>
+          </ng-template>
+      </p-dialog>
+
+      <p-dialog [(visible)]="deleteSeancesDialog" header="Confirm" [modal]="true" [style]="{width:'450px'}">
+          <div class="flex align-items-center justify-content-center">
+              <i class="pi pi-exclamation-triangle mr-3" style="font-size: 2rem"></i>
+              <span>Êtes-vous sur de supprimer les séances</span>
+          </div>
+          <ng-template pTemplate="footer">
+              <button pButton pRipple icon="pi pi-times" class="p-button-text" label="Non" (click)="deleteSeancesDialog = false"></button>
+              <button pButton pRipple icon="pi pi-check" class="p-button-text" label="Oui" (click)="confirmDeleteSelected()"></button>
+          </ng-template>
+      </p-dialog>
+
+
+
+
+  </div>
+
+</div>
+
+<div *ngIf="displaydGridAddSeance">
+
+  <app-add-seance [evenement]="idEvenement" (reloadDataSeance)="getSeance()"  #componentAdd ></app-add-seance>
+
+</div>
+
+<div *ngIf="displaydGridEditSeance">
+    <app-edit-seance [evenement]="idEvenement" [seance]="idSeance" (reloadDataSeance)="getSeance()" #componentEdit></app-edit-seance>
+</div>
+
+<div *ngIf="displaydGridEditPresence">
+    <app-edit-presence [evenement]="idEvenement" [seance]="idSeanceListPresence"  #componentEditPresence ></app-edit-presence>
+</div>
+
+<app-traitement-po-seance *ngIf="showDialogTpo" [idSeance]="idSeance" (closeDialogTpo)="closeDialogTPo($event)"></app-traitement-po-seance>
+

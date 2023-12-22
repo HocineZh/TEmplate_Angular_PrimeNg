@@ -1,0 +1,24 @@
+<div class="card">
+    <span class="text-900 text-xl font-bold mb-4 block">Ajouter les utilisations ultérieures</span>
+    <div class="grid">
+      <p-toast></p-toast>
+      <div class="col-12 lg:col-10">
+        <div class="grid formgrid p-fluid">
+          <div class="field mb-4 col-12">
+            <label for="Nom" class="font-medium text-900">Titre</label>
+            <input type="text" pInputText id="name" [(ngModel)]="utilisation.titre" required="true"
+              [ngClass]="{'ng-invalid ng-dirty' : submitted && !utilisation.titre}" />
+            <small class="ng-dirty ng-invalid"></small>
+          </div>
+          
+        </div>
+        <div class="col-12">
+          <div class="col-12 formgroup-inline">
+            <button pButton pRipple label="Ajouter" class="field w-auto mt-3 p-button-success"
+              (click)="saveModelUtilisation()"></button>
+            <button pButton pRipple label="Retour" class="field w-auto mt-3 p-button-plain" (click)="onBack()"></button>
+          </div>
+  
+        </div>
+      </div>
+    </div>

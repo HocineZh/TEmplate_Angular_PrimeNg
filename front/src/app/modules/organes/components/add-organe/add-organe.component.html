@@ -1,0 +1,86 @@
+<div class="card">
+  <span class="text-900 text-xl font-bold mb-4 block">Ajouter Organe</span>
+  <p-toast></p-toast>
+  <div class="grid">
+    <div class="col-12 lg:col-12">
+      <form class="grid formgrid p-fluid" [formGroup]="organeForm">
+
+        <div class="field mb-4 col-12 ">
+          <label for="titre" class="font-medium text-900 label-required">Titre</label>
+          <div class="p-inputgroup">
+            <input pInputText  type="text"  placeholder="titre" formControlName="titre"  [ngClass]="{'ng-invalid ng-dirty' : this.submitted && f['titre'].errors}"/>
+          </div>
+          <small style="color: red;" id="titre-help" *ngIf="submitted && f['titre'].errors && f['titre'].errors?.['required']" class="p-error block">Champ Obligatoire </small>
+        </div>
+
+        <div class="field mb-4 col-12">
+          <label for="description" class="font-medium text-900 ">Description</label>
+          <textarea pInputTextarea  rows="5" cols="30"   placeholder="Description" formControlName="description"></textarea>
+        </div>
+
+        <div class="field mb-4 col-12 md:col-6">
+          <label for="type" class="font-medium text-900 label-required">Type Organe</label>
+          <p-dropdown  [options]="types" formControlName="typeOrgane" [ngClass]="{'ng-invalid ng-dirty' : this.submitted && f['typeOrgane'].errors}" optionLabel="designation" [filter]="true" filterBy="designation" [showClear]="true" display="chip" placeholder="Selectionner le type d'organe">
+
+            <ng-template let-type pTemplate="item">
+              <div class="structure-item">
+                <div>{{type.designation}}</div>
+              </div>
+            </ng-template>
+          </p-dropdown>
+          <small style="color: red;" id="roles-help" *ngIf="submitted && f['typeOrgane'].errors && f['typeOrgane'].errors?.['required']" class="p-error block">Champ Obligatoire</small>
+        </div>
+        <div class="field mb-4 col-12 md:col-6">
+          <label for="societe" class="font-medium text-900 label-required">Société</label>
+          <p-dropdown  [options]="societes" formControlName="societe" [ngClass]="{'ng-invalid ng-dirty' : this.submitted && f['societe'].errors}" optionLabel="code" [filter]="true" filterBy="code" [showClear]="true" display="chip" placeholder="Selectionner la société">
+
+            <ng-template let-societe pTemplate="item">
+              <div class="structure-item">
+                <div>{{societe.code}}</div>
+              </div>
+            </ng-template>
+          </p-dropdown>
+          <small style="color: red;" id="roles-help" *ngIf="submitted && f['societe'].errors && f['societe'].errors?.['required']" class="p-error block">Champ Obligatoire</small>
+        </div>
+        <div class="field mb-4 col-12 md:col-12 ">
+          <label for="nom" class="font-medium text-900 label-required">Mandat </label>
+          <div class="radio-button-inline">
+            <div class="col-12 md:col-4">
+              <div class="field-radiobutton">
+                <p-radioButton name="mandate" [value]="true"  formControlName="mandate"  id="mandate1"></p-radioButton>
+                <label for="city1">Oui</label>
+              </div>
+            </div>
+            <div class="col-12 md:col-4">
+              <div class="field-radiobutton">
+                <p-radioButton name="mandate" [value]="false" formControlName="mandate"  id="mandate2"></p-radioButton>
+                <label for="city2">Non</label>
+              </div>
+            </div>
+          </div>
+          <small style="color: red;" *ngIf="submitted &&  f['mandate'].errors">Champ Obligatoire</small>
+        </div>
+        <div class="col-12">
+            <button [disabled]="displaydGridMembre" pButton pRipple label="Ajouter" class="w-auto mt-3 p-button-success" (click)="saveOrgane()"></button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<div>
+<p-progressSpinner class="progress-spinner" *ngIf="displaySpinner" [style]="{width: '50px', height: '50px'}"  strokeWidth="8" fill="var(--surface-ground)" animationDuration=".5s"></p-progressSpinner>
+</div>
+
+<div class="card" *ngIf="displaydGridMembre">
+
+<span class="text-900 text-xl font-bold mb-4 block">Ajouter Des membres</span>
+<p-toast></p-toast>
+<div class="grid">
+  <div class="col-12 lg:col-12">
+    <app-add-membre [organe]="idOrgane" *ngIf="isMandate" type="add"></app-add-membre>
+    <app-add-membre-without-mandat [organe]="idOrgane" *ngIf="!isMandate" type="add"></app-add-membre-without-mandat>
+  </div>
+</div>
+</div>
+

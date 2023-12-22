@@ -1,0 +1,77 @@
+<form [formGroup]="membreForm" class="membre-form-without">
+  <p-table #dt styleClass="p-datatable-gridlines" [value]="membres().controls" formArrayName="membres"  responsiveLayout="scroll" [rowHover]="true">
+      <ng-template pTemplate="caption">
+          <div class="flex flex-column md:flex-row md:justify-content-between md:align-items-center">
+              <h5 class="m-0">Liste des Membres</h5>
+              <span class="block mt-2 md:mt-0 p-input-icon-left">
+
+                <button pButton pRipple label="Ajouter un membre" icon="pi pi-plus" class="p-button-primary mr-2" (click)="addNew()"></button>
+            </span>
+          </div>
+      </ng-template>
+      <ng-template pTemplate="header">
+          <tr>
+            <th style="width: 78%;"> </th>
+            <th style="width: 22%;"> </th>
+          </tr>
+      </ng-template>
+      <ng-template pTemplate="body" let-membre let-i="rowIndex" >
+          <tr [formGroupName]="i">
+
+            <td style="width:85%">
+              <div class="membre-detail">
+                <div class="fields">
+                  <div class="field col-5">
+                    <span class="p-column-title">Utilisateur *</span>
+                    <p-dropdown (onChange)="activeModif(i)" [options]="users" appendTo="body" formControlName="idUser" optionLabel="login" [filter]="true" filterBy="login"
+                    [showClear]="true" display="chip" optionValue="id" placeholder="Selectionner l'utilisateur"
+                    [ngClass]="{'ng-invalid ng-dirty' : submitted && membre.get('idUser').errors?.required }">
+                      <ng-template let-user pTemplate="item">
+                        <div class="flex align-items-center">
+                          <span class="ml-2">{{user.login}}</span>
+                        </div>
+                      </ng-template>
+                    </p-dropdown>
+                    <small style="color: red;"  *ngIf="submitted && membre.get('idUser').errors?.required" class="p-error block">Champ Obligatoire </small>
+                    <small style="color: red;"  *ngIf="type==='edit' && !membre.get('idUser')?.value" class="p-error block">Champ Obligatoire </small>
+                  </div>
+
+                  <div class="field col-4">
+                    <span class="p-column-title">Profil *</span>
+                    <p-dropdown (onChange)="activeModif(i)" [options]="profils" appendTo="body" formControlName="profil" optionLabel="nom"
+                    [filter]="true" filterBy="nom" [showClear]="true" display="chip" optionValue="id" placeholder="Selectionner le profil"
+                    [ngClass]="{'ng-invalid ng-dirty' : submitted && membre.get('profil').errors?.required}">
+                      <ng-template let-profil pTemplate="item">
+                        <div class="flex align-items-center">
+                          <span class="ml-2">{{profil.nom}}</span>
+                        </div>
+                      </ng-template>
+                    </p-dropdown>
+
+                    <small style="color: red;"  *ngIf="submitted && membre.get('profil').errors?.required" class="p-error block">Champ Obligatoire </small>
+                    <small style="color: red;"  *ngIf="type==='edit' && !membre.get('profil')?.value" class="p-error block">Champ Obligatoire </small>
+                  </div>
+                  <div class="field col-2" *ngIf="type=='edit'">
+                    <span class="p-column-title">Statut Mandat *</span>
+                    <p-toggleButton (onChange)="activeModif(i)" formControlName="actif"  onLabel="Activé" offLabel="Desactivé"  offIcon="pi pi-times" onIcon="pi pi-check"></p-toggleButton>
+                  </div>
+
+                </div>
+              </div>
+            </td>
+            <td  style="width:15%">
+              <button  pButton pRipple label="Ajouter un autre" icon="pi pi-plus" class="p-button-primary add-button td-button mr-2" (click)="addNew()"></button>
+              <button pButton pRipple label="Supprimer" icon="pi pi-trash" class="p-button-danger delete-button td-button"  (click)="removeMembre(i)"></button>
+              <button  *ngIf="type=='edit'" [disabled]= "membre.get('disableModif').value" pButton pRipple label="Valider" icon="pi pi-check" class="p-button-success td-button"  (click)="editMembre(i)"></button>
+            </td>
+          </tr>
+      </ng-template>
+      <ng-template pTemplate="summary" *ngIf="type==='add'">
+        <tr>
+          <button pButton (click)="onSubmit()" type="submit" pRipple label="Enregistrer" icon="pi pi-check" class="p-button-success mr-2" ></button>
+        </tr>
+      </ng-template>
+  </p-table>
+</form>
+
+<p-confirmDialog [style]="{width: '50vw'}"></p-confirmDialog>

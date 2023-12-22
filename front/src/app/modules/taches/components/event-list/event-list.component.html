@@ -1,0 +1,89 @@
+<div class="col-12">
+    <div class="card">
+        <h5>Liste des tâches en cours</h5>
+        <p>
+            <p-divider></p-divider>
+         </p>
+        <div class="grid formgrid p-fluid">
+            <div class="field mb-4 col-3 ">
+                <p-dropdown [options]="events" [(ngModel)]="selectedEvent" optionLabel="titre" [filter]="true" filterBy="titre" [required]="true" placeholder="Evenements" styleClass="w-full md:w-15rem" (onChange)="toEvent()"></p-dropdown>
+                <!-- <small style="color: red;" id="roles-help" *ngIf="submitted " class="p-error block">Champ
+                    Obligatoire</small> -->
+            </div>    
+        </div>
+        <p-table [value]="taches" #dt1 dataKey="id" [rows]="10" [rowHover]="true" styleClass="p-datatable-gridlines" [paginator]="true" [globalFilterFields]="['nom','echeance','titreEvenement', 'date_debut', 'date_fin']">
+            <ng-template pTemplate="caption">
+                <div class="flex justify-content-between flex-column sm:flex-row">
+                    <button pButton label="Effacer" class="p-button-outlined mb-2" icon="pi pi-filter-slash" (click)="clear(dt1)"></button>
+                    <span class="p-input-icon-left mb-2">
+                        <i class="pi pi-search"></i>
+                        <input pInputText type="text" #filter (input)="onGlobalFilter(dt1, $event)" placeholder="Recherche..." class="w-full"/>
+                    </span>
+                </div>
+            </ng-template>
+            <ng-template pTemplate="header">
+                <tr>
+                    <th>
+                        <div class="flex justify-content-between align-items-center">
+                            Nom de la tâche
+                            <p-columnFilter type="text" pSortableColumn="nom" field="nom" display="menu" placeholder="Recherche par nom"><p-sortIcon field="nom"></p-sortIcon></p-columnFilter>
+                        </div>
+                    </th>
+                    <th>
+                        <div class="flex justify-content-between align-items-center">
+                            Echeance
+                            <p-columnFilter type="text" pSortableColumn="echeance" field="echeance" display="menu" placeholder="Recherche par écheance"><p-sortIcon field="echeance"></p-sortIcon></p-columnFilter>
+                        </div>
+                    </th>
+                    <th>
+                        <div class="flex justify-content-between align-items-center">
+                            Taux d'avancement
+                            <p-columnFilter type="text" pSortableColumn="taux" field="taux" display="menu" placeholder="Recherche par taux d'avancement"><p-sortIcon field="taux"></p-sortIcon></p-columnFilter>
+                        </div>
+                    </th>
+                    <th>
+                        <div class="flex justify-content-between align-items-center">
+                            Titre de l'événement
+                            <p-columnFilter type="text" pSortableColumn="titreEvenement" field="titreEvenement" display="menu" placeholder="Recherche par titre d'événement"><p-sortIcon field="description"></p-sortIcon></p-columnFilter>
+                        </div>
+                    </th>
+                    <th>
+                        <div class="flex justify-content-between align-items-center">
+                            Date debut de l'événement
+                            <p-columnFilter type="text" pSortableColumn="date_debut" field="date_debut" display="menu" placeholder="Recherche par date debut de l'événement"><p-sortIcon field="description"></p-sortIcon></p-columnFilter>
+                        </div>
+                    </th>
+                    <th>
+                        <div class="flex justify-content-between align-items-center">
+                            Date fin l'évenement
+                            <p-columnFilter type="text" pSortableColumn="date_fin" field="date_fin" display="menu" placeholder="Recherche par date fin de l'événement"><p-sortIcon field="description"></p-sortIcon></p-columnFilter>
+                        </div>
+                    </th>
+                </tr>
+            </ng-template>
+            <ng-template pTemplate="body" let-tache>
+                <tr>
+                    <td>
+                        {{tache.nom}}
+                    </td>
+                    <td>
+                        {{tache.echeance}}
+                    </td>
+                    <td>
+                        {{tache.suiviTache[0].taux}}%
+                    </td>
+                    <td>
+                        {{tache.titreEvenement}}
+                    </td>
+                    <td>
+                        {{tache.date_debut}}
+                    </td>
+                    <td>
+                        {{tache.date_fin}}
+                    </td>
+                </tr>
+            </ng-template>
+        </p-table>
+    </div>
+
+</div>

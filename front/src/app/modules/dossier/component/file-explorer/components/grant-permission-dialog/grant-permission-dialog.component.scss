@@ -1,0 +1,11 @@
+.select-user-menu .selected{
+    background-color: var(--primary-100);
+}
+
+.select-user-menu .error{
+    background-color: var(--red-400);
+}
+
+.select-user-menu .selected.error{
+    border: 2px solid var(--primary-500)
+}

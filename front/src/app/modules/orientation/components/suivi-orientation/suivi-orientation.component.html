@@ -1,0 +1,151 @@
+<div class="card">
+	<span class="text-900 text-xl font-bold mb-4 block">Suivi orientation</span>
+	<div class="grid">
+		<p-toast></p-toast>
+		<div class="col-12 lg:col-12">
+			<div class="grid formgrid p-fluid">
+
+				<div class="field col-12 md:col-6">
+					<label for="intitule" class="font-medium text-900">Intitulé</label>
+					<input id="intitule" type="text" readonly="true" pInputText [(ngModel)]="orientation!.intitule">
+				</div>
+				<div class="field col-12 md:col-6">
+					<label for="dateEcheance" class="font-medium text-900">Date écheance</label>
+					<input id="intitule" [ngStyle]="{'background-color': compareDates() ? 'green' : 'red'}" type="text"
+						readonly="true" pInputText [(ngModel)]="orientation!.dateEcheance">
+				</div>
+
+				<div class="field col-12 md:col-6">
+					<label for="contenu" class="font-medium text-900">Contenu</label>
+					<textarea id="contenu" type="text" pInputTextarea [(ngModel)]="orientation!.contenu" required="true"
+						rows="3" readonly="true" [autoResize]="true"></textarea>
+				</div>
+
+				<div class="field col-12 md:col-6">
+					<label for="motif" class="font-medium text-900">Observation</label>
+					<textarea id="motif" type="text" pInputTextarea [(ngModel)]="suiviOrientation.motif" required="true"
+						rows="3" [autoResize]="true"></textarea>
+				</div>
+
+
+				<div class="field mb-4 col-12 md:col-3">
+					<label for="etat" class="font-medium text-900">Etat d'avancement</label>
+					<p-dropdown [options]="etats" [(ngModel)]="suiviOrientation.etatsByEtatsid"
+						placeholder="Selectionner l'etat'" optionLabel="etat" [showClear]="true"
+						[required]="true"></p-dropdown>
+				</div>
+
+				<div class="field col-12 md:col-3">
+					<label for="taux" class="font-medium text-900">Taux d'avancement</label>
+					<p-inputNumber mode="decimal" [showButtons]="true" [min]="taux_min" [max]="100"
+						[(ngModel)]="suiviOrientation.taux">
+					</p-inputNumber>
+				</div>
+
+				<div *ngIf="suiviOrientation.etatsByEtatsid!.etat === 'En cours' || suiviOrientation.etatsByEtatsid!.etat === 'Non réalisée' "
+					class="field col-12 md:col-3">
+					<label for="delaip" class="font-medium text-900 ">Délai précédant</label>
+					<input id="delaip" type="text" class="text-red-500" readonly="true" pInputText
+						[(ngModel)]="delai_p">
+				</div>
+
+				<div *ngIf="suiviOrientation.etatsByEtatsid!.etat === 'En cours' || suiviOrientation.etatsByEtatsid!.etat === 'Non réalisée' "
+					class="field col-12 md:col-3">
+					<label for="delai" class="font-medium text-900">Délai de réalisation</label>
+					<p-calendar appendTo="body" [showIcon]="true" inputId="icon" [minDate]="minDate"
+						dateFormat="dd-mm-yy" [(ngModel)]="delai" [readonlyInput]="true" [required]="true"></p-calendar>
+				</div>
+
+				<div class="field mb-4 col-6">
+					<label for="observation" class="font-medium text-900">Document Justificatif du suivi </label>
+					<p-fileUpload #fileUpload id="documentMandatR" name="demo[]" chooseLabel="Importer" [fileLimit]="2"
+						uploadLabel="Charger" cancelLabel="Annuler" (onSelect)="onUploadFile($event)"
+						(onRemove)="onRemovedFile($event)" [multiple]="true" accept="image/*,.doc,.docx,application/pdf"
+						[maxFileSize]="10000000">
+					</p-fileUpload>
+				</div>
+
+			</div>
+
+			<div class="field mb-4 col-12" *ngIf="documentsOrientation.length">
+				<div class="field">
+					<span class="p-column-title font-medium text-900">Extrait du PV ou Résolution </span>
+
+					<div class="col-12 field mt-1">
+						<ng-container *ngIf=" documentsOrientation && documentsOrientation.length>0">
+
+							<div style="position: relative; height: 75px; width: 100%;"
+								*ngFor="let document of documentsOrientation ">
+								<div class="col-12 xl:col-9 lg:col-9 md:col-9 p-0 mb-0">
+									<p class="pt-3 ml-2 mb-5" style="line-height: 2;">
+
+									</p>
+								</div>
+								<span
+									[style]="'background-image : url(assets/layout/images/evenements/icons_docs/' + getExtDoc(document.nom)+ '.png)'"
+									style="display: inline-block; float: left; width: 48px;height: 48px; margin-left: 10px;"></span>
+
+								<h4 [pTooltip]="document.nom!" style="font-family: Arial;
+								font-size: 1.1em;
+								display: inline-block;
+								float: left;
+								width: 60%;
+								margin: 0 0 0 20px;
+								  margin-top: 0px;
+								height: 25px;
+								-ms-text-overflow: ellipsis;
+								-o-text-overflow: ellipsis;
+								text-overflow: ellipsis;
+								overflow: hidden;
+								white-space: nowrap;
+							  ">{{document.nom}}</h4>
+								<h4 style="font-weight: normal;
+								font-style: italic;
+								font-family: Arial;
+								font-size: 1.1em;
+								display: inline-block;
+								float: left;
+								width: 60%;
+								margin: 0 0 0 20px;
+								  margin-top: 0px;
+								height: 25px;
+								-ms-text-overflow: ellipsis;
+								-o-text-overflow: ellipsis;
+								text-overflow: ellipsis;
+								overflow: hidden;
+								white-space: nowrap;">Taille : {{50 * 0.000125}} Ko</h4>
+								<div>
+									<button pButton pRipple icon="pi pi-download"
+										class="p-button-primary h-2rem w-2rem mr-2" (click)="downloadFile(document)"
+										pTooltip="Télécharger" tooltipPosition="top" type="button"></button>
+								</div>
+							</div>
+
+						</ng-container>
+					</div>
+				</div>
+			</div>
+			<div>
+				<p-progressBar class="customProgress" [value]="suiviOrientation.taux"
+					[style]="{ height: '20px' }"></p-progressBar>
+			</div>
+			<div class="col-12">
+				<p-toolbar>
+					<div class="p-toolbar-group-left flex flex-wrap">
+
+						<button pButton pRipple label="Retour" icon="pi pi-times" class="w-auto mt-3"
+							(click)="onBack()"></button>
+
+					</div>
+
+					<div class="p-toolbar-group-right">
+						<button pButton pRipple label="Mettre à jour" icon="pi pi-check" class="w-auto mt-3"
+							(click)="checkSuiviOrientation()"></button>
+					</div>
+				</p-toolbar>
+			</div>
+
+		</div>
+
+	</div>
+</div>

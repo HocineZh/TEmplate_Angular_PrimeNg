@@ -1,0 +1,13 @@
+<div class="layout-breadcrumb-container">
+    <nav class="layout-breadcrumb">
+        <ol>
+            <li><i class="pi pi-home"  routerLink="/dashboard/all"></i></li>
+            <ng-template ngFor let-item let-last="last" [ngForOf]="breadcrumbs$ | async">
+                <li><i class="pi pi-angle-right"></i></li>
+                <li><span [routerLink]="item.url">{{item.label}}</span></li>
+            </ng-template>
+        </ol>
+    </nav>
+    <div class="layout-breadcrumb-buttons">
+    </div>
+</div>

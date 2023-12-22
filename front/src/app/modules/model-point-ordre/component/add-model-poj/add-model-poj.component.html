@@ -1,0 +1,54 @@
+<div class="card">
+  <span class="text-900 text-xl font-bold mb-4 block">Ajouter un modèl de point d'ordre du jour</span>
+  <div class="grid">
+    <p-toast></p-toast>
+    <div class="col-12 lg:col-12">
+      <div class="grid formgrid p-fluid">
+        <div class="field mb-4 col-12">
+          <label for="titre" class="font-medium text-900">Titre</label>
+          <input type="text" pInputText id="name" [(ngModel)]="modelPOJ.titre" required="true"
+            [ngClass]="{'ng-invalid ng-dirty' : submitted && !modelPOJ.titre}" />
+          <small class="ng-dirty ng-invalid"></small>
+        </div>
+        <div class="field mb-4 col-12">
+          <label for="description" class="font-medium text-900">Description</label>
+          <textarea id="description" pInputTextarea [(ngModel)]="modelPOJ.description" rows="3" [autoResize]="true"
+            cols="20"  [ngClass]="{'ng-invalid ng-dirty' : submitted && !modelPOJ.titre}"></textarea>
+            <small class="ng-dirty ng-invalid"></small>
+        </div>
+        <div class="field mb-4 col-12 md:col-6">
+          <div class="field">
+            <label class="font-medium text-900">Type orientation</label>
+            <small class="ng-dirty ng-invalid"></small>
+          </div>
+          <div class="flex flex-wrap gap-3">
+
+            <div class="flex align-items-center">
+              <p-radioButton id="type1" name="type" value="Commun" [(ngModel)]="modelPOJ.type"></p-radioButton>
+              <label for="type1" class="font-medium text-900">Commun</label>
+            </div>
+            <div class="flex align-items-center">
+              <p-radioButton id="type2" name="type" value="ParSociete" [(ngModel)]="modelPOJ.type"></p-radioButton>
+              <label for="type2" class="font-medium text-900">ParSociete</label>
+            </div>
+          </div>
+        </div>
+<!---->
+        <div *ngIf="modelPOJ.type === 'ParSociete'" class="field mb-4 col-12 md:col-6" >
+          <label for="societe" class="font-medium text-900">Société</label>
+          <p-dropdown [options]="societes" dataKey="raisonSocial" [(ngModel)]="societe"
+            placeholder="Selectionner la sociéte" optionLabel="raisonSocial"
+            [ngClass]="{'ng-invalid ng-dirty' : submitted}" [filter]="true" filterBy="raisonSocial"
+            [showClear]="true"></p-dropdown>
+
+        </div>
+
+      </div>
+      <div class="col-12">
+        <div class="col-12 formgroup-inline">
+          <button pButton pRipple label="Ajouter" class="field w-auto mt-3 p-button-success" (click)="saveModelPOJ()" ></button>
+          <button pButton pRipple label="Retour" class="field w-auto mt-3 p-button-plain" (click)="onBack()" ></button>
+        </div>
+      </div>
+    </div>
+  </div>

@@ -1,0 +1,49 @@
+:host ::ng-deep {
+
+.panelDPI {
+    min-height:50vh;
+    padding-top :0px;
+
+}
+.panelDPI .p-panel-header{
+
+    background-color: #f8f9fa;
+    padding-top: 0.75rem;
+    padding-bottom: 0.75rem;
+
+}
+
+.p-orderlist-header{
+    display: none;
+}
+
+.p-orderlist-list{
+
+    z-index: 0;
+}
+.p-orderlist-item{
+    z-index: 0;
+}
+.p-orderlist .p-orderlist-list .p-orderlist-item{
+    cursor: default;
+}
+
+//p-data-table documents
+.p-datatable-table{
+    position: relative;
+    z-index: 9999;
+}
+
+//file upload docs
+.p-fileUpload-Intrv{
+    position:relative; 
+    z-index: 9999;
+}
+
+
+
+
+
+
+
+}

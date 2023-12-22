@@ -1,0 +1,49 @@
+<p-toast></p-toast>
+<p-dialog #dd [(visible)]="visible" [breakpoints]="{'960px': '75vw', '640px': '90vw'}" [style]="{width: '450px'}" [contentStyle]="{minHeight: '320px'}" [modal]="true" [closable]="true" header="Ajouter une séance" >
+    <div class="grid">
+      <div class="col-12 lg:col-12">
+        <form class="grid formgrid p-fluid" [formGroup]="seanceForm">
+          <div class="field mb-4 col-12 md:col-12">
+            <label for="date_debut" class="font-medium text-900">Date de début</label>
+            <p-calendar [appendTo]="dd" [showIcon]="true" inputId="icon" formControlName="date_debut" [showTime]="true" [maxDate]="seanceForm.value.date_fin" [ngClass]="{'ng-invalid ng-dirty' : this.isAddFailed && f['date_debut'].errors}"></p-calendar>
+            <small style="color: red;" id="email-help" *ngIf="submitted && f['date_debut'].errors && f['date_debut'].errors?.['required']" class="p-error block">Champ Obligatoire </small>
+          </div>
+
+          <div class="field mb-4 col-12 md:col-12">
+            <label for="date_fin" class="font-medium text-900">Date de fin</label>
+            <p-calendar [appendTo]="dd" [showIcon]="true" inputId="icon" formControlName="date_fin"  [showTime]="true" [minDate]="seanceForm.value.date_debut" [ngClass]="{'ng-invalid ng-dirty' : this.isAddFailed && f['date_fin'].errors}"></p-calendar>
+          </div>
+
+
+          <div class="field mb-4 col-12 md:col-12">
+            <label for="lieu" class="font-medium text-900">Lieu</label>
+            <div class="p-inputgroup">
+              <input type="text" pInputText placeholder="lieu" formControlName="lieu"  [ngClass]="{'ng-invalid ng-dirty' : this.isAddFailed && f['lieu'].errors}"/>
+            </div>
+            <small style="color: red;" id="lieu-help" *ngIf="submitted && f['lieu'].errors && f['lieu'].errors?.['required']" class="p-error block">Champ Obligatoire </small>
+          </div>
+
+          <!-- <div class="field mb-4 col-12 md:col-12">
+            <label for="etat" class="font-medium text-900">Etat</label>
+            <p-dropdown [appendTo]="dd" [options]="etats" formControlName="etat" [ngClass]="{'ng-invalid ng-dirty' : this.isAddFailed && f['etat'].errors}" optionLabel="etat" [filter]="true" filterBy="etat" [showClear]="true" display="chip" placeholder="Selectionner l'état">
+
+              <ng-template let-etat pTemplate="item">
+                <div class="structure-item">
+                  <div>{{etat.etat}}</div>
+                </div>
+              </ng-template>
+            </p-dropdown>
+            <small style="color: red;" id="roles-help" *ngIf="submitted && f['etat'].errors && f['etat'].errors?.['required']" class="p-error block">Champ Obligatoire </small>
+          </div> -->
+
+        </form>
+      </div>
+    </div>
+
+    <ng-template pTemplate="footer">
+      <button pButton pRipple label="Fermer" icon="pi pi-times" class="p-button-text"(click)="hideDialog()"></button>
+      <button pButton pRipple label="Ajouter" icon="pi pi-check" class="p-button-text" (click)="saveSeance()"></button>
+  </ng-template>
+</p-dialog>
+
+

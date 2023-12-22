@@ -1,0 +1,11 @@
+<div id="kanban-wrapper" class="grid grid-nogutter w-full flex-column md:flex-row flex-nowrap gap-5 lg:overflow-y-hidden overflow-x-auto fill-space">
+    <p-toast></p-toast>
+    <app-tache-list *ngFor="let list of lists; let i = index;" [list]="list" [listIds]="listIds" 
+    
+     class="p-kanban-list" 
+     (refreshParent)="onChildRefresh($event)"></app-tache-list>
+    <!-- <div class="px-3 py-1 mb-3 md:w-25rem flex-shrink-0">
+        <button pButton pRipple label="New List" icon="pi pi-plus font-semibold" class="py-3 justify-content-center font-semibold w-full border-round" (click)="addList()"></button>
+    </div> -->
+    <app-tache-sidebar [eventEnCoursId]="eventEnCoursId" (refreshParent)="onChildRefresh($event)"></app-tache-sidebar>
+</div>

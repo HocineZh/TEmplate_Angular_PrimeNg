@@ -1,0 +1,78 @@
+<p-confirmDialog [style]="{ width: '50vw' }" key="confirmPoIntrv" acceptLabel="OUI" rejectLabel="NON" [position]="'bottom'" rejectButtonStyleClass="p-button-outlined"></p-confirmDialog>
+<p-toast key="tstIntrv"></p-toast>
+
+<div class="pt-1" style="min-height: 50vh">
+<p-panel class="col-12" styleClass="panelDPI" class="panelDPI" >
+    <ng-template pTemplate="header" >
+        <span class="text-lg font-semibold">Points ordres affectés</span> <span class="text-sm mx-2">( Dernier délais pour le dépot des documents :  <span class="text-red-400"> {{sharedDataEvService.getCalculatedDateDelais(selectedEvenement.dateDebut!, selectedEvenement.delaisEvenement?.deposDocumentsPoints, false)  | date : 'EEEE, dd MMM yyyy' }}</span> )</span>
+    </ng-template>
+    <div class="grid p-fluid formgrid py-3">        
+
+        <p-orderList class="col-12" [value]="listPoIntervenant || []" filterBy="poDesignation, poDescription" [dragdrop]="false"
+            [metaKeySelection]="true">
+        
+            <ng-template let-po pTemplate="item">
+                <div class="grid py-3">
+        
+                    <div class="col-12">
+                        <span class="text-900 text-gray mr-1"> ● </span> 
+                        <span class="text-900 font-semibold">{{po.poDesignation}}</span>
+                        <div class="text-600 ml-3 pt-1" [innerHTML]="po.poDescription"></div> 
+
+                        <div class="mx-5 mt-5">
+
+                            <p-table responsiveLayout="scroll" #dt [value]="po.poDocuments">
+                                <ng-template pTemplate="header">
+                                    <tr>
+                                        <th pSortableColumn="name" style="min-width:12rem" class="white-space-nowrap">Nom du document<p-sortIcon field="nom"></p-sortIcon></th>
+                                        <th pSortableColumn="date" style="min-width:12rem" class="white-space-nowrap">Date ajout <p-sortIcon field="nom"></p-sortIcon></th>
+                                        <th pSortableColumn="fileSize" style="min-width:12rem" class="white-space-nowrap">Taille <p-sortIcon field="nom"></p-sortIcon></th>
+                                        <th style="width:10rem">
+                                           <!--  <div class="text-right pr-3">
+                                                <button pButton pRipple icon="pi pi-plus" class="p-button-primary p-button-text p-button-rounded mr-2" pTooltip="Nouveau document"></button>
+                                            </div> -->
+                                        </th>
+                                    </tr>
+                                </ng-template>
+                                <ng-template pTemplate="body" let-document>
+                                    <tr>
+                                        <td>
+                                            <div class="flex align-items-center">
+                                                <i [class]="'text-xl text-primary mr-2 ' + document.nom"></i>
+                                                <span>{{document.nom}}</span>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <span>{{ document.dateCreation | date : 'dd/MM/yyyy' }}</span>
+                                        </td>
+                                        <td>
+                                            <span>8 MB</span>
+                                        </td>
+                                        <td class="text-center">
+                                            <button pButton pRipple icon="pi pi-download" class="p-button-primary p-button-text p-button-rounded mr-2" (click)="downloadSelectedDoc(document, $event)" pTooltip="Télécharger" tooltipPosition="top"></button>
+                                            <button pButton pRipple icon="pi pi-trash" class="p-button-danger p-button-text p-button-rounded" (click)="supprimerSelectedDoc(po, document, $event)" pTooltip="Supprimer" tooltipPosition="top"></button>
+                                        </td>
+                                    </tr>
+                                </ng-template>
+                            </p-table>
+                            <p-fileUpload #fileUpload id="documentsPo" styleClass="p-fileUpload-Intrv" name="demo[]" chooseLabel="Choisir" uploadLabel="Charger" cancelLabel="Annuler" [customUpload]="true"  (uploadHandler)="onUploadPoSelected($event, po)"
+                            [multiple]="true" accept="image/*, application/pdf, application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+                            [maxFileSize]="10000000" [disabled]="selectedEvenement.etat==='CLOTURER' || (selectedEvenement.previsionnel && selectedEvenement.etat ==='TRANSFORMER' )">
+                            <ng-template  pTemplate="content">
+                           </ng-template>
+                          </p-fileUpload>
+
+                        </div>
+
+
+                    </div>
+                    
+        
+                </div>
+            </ng-template>
+        </p-orderList>
+
+
+    </div>
+</p-panel> 
+</div>

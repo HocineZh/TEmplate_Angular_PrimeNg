@@ -1,0 +1,69 @@
+.membre-detail .fields {
+  display: flex;
+  width: 100%;
+  .field {
+    display: grid ;
+    padding-right: 5px;
+  }
+  .p-column-title {
+    padding: 10px;
+  }
+
+  ::ng-deep {
+    .p-datepicker-trigger {
+      color: black;
+    }
+    .p-inputswitch {
+      margin: 0px 15px;
+    }
+    .p-togglebutton.p-button {
+      background-color: rgba(211, 47, 47, 0.92);
+      color: white;
+      width: 100%;
+    }
+    .p-togglebutton.p-button.p-highlight {
+      background-color: #689F38;
+      color: white;
+    }
+    .p-button-icon-left {
+      color: white;
+    }
+  }
+}
+
+.file-content {
+  .field {
+    display: grid ;
+  }
+  .p-column-title {
+    padding: 10px;
+  }
+}
+
+.add-button,.delete-button {
+  margin-bottom: 10px;
+}
+
+.td-button {
+  min-width: 80%;
+}
+
+::ng-deep .upload-button {
+  display: none;
+}
+
+.membre-form-without {
+  ::ng-deep {
+    .p-datatable-tfoot {
+      display: block;
+      padding-top: 10px;
+    }
+    .p-dropdown-clearable{
+      width: 75%;
+    }
+  }
+}
+
+.file-text {
+  margin: auto 10px;
+}

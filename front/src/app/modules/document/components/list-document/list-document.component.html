@@ -1,0 +1,370 @@
+<div class="card">
+  <h5> Gestion des procès-verbaux, des comptes rendus et des résolutions
+  </h5>
+  <p-toast></p-toast>
+  <p-toolbar>
+
+      <div class="p-toolbar-group-left">
+          <p-button *ngIf="uploadedFiles.length" label="Charger" icon="pi pi-upload" styleClass="p-button-success"
+              (onClick)="ChargerDoc()" [elemPrivilege]="['document.charger']" accessControl></p-button>
+      </div>
+      <div class="p-toolbar-group-right">
+          <p-button icon="pi pi-search" class="mr-2"></p-button>
+          <p-button icon="pi pi-check" styleClass="p-button-success mr-2" (onClick)="validerDoc()"
+              *ngIf="(publie === true) && (valide===false) "  [elemPrivilege]="['document.valider']" accessControl></p-button>
+          <p-button icon="pi pi-times" styleClass="p-button-danger"></p-button>
+          <p-menu #menu [model]="items" [popup]="true" class="mr-2" [elemPrivilege]="['document.diffuser']" accessControl></p-menu>
+          <button pButton type="button" (click)="menu.toggle($event)" icon="pi pi-bars" class="mr-2"  ></button>
+      </div>
+  </p-toolbar>
+  <p-splitter [panelSizes]="[60,40]" class="formgrid">
+
+      <ng-template pTemplate class="card">
+
+
+
+          <!-- <div class="content-area">
+              <h3>Doc Viewer</h3>
+              <app-view-document></app-view-document>
+          </div>-->
+          <p-confirmDialog [style]="{ width: '70vw' }" key="confirmRetirer" acceptLabel="OUI" rejectLabel="NON" [position]="'bottom'" rejectButtonStyleClass="p-button-outlined"></p-confirmDialog>
+
+
+          <div class="col-12 lg:col-12">
+              <p-fileUpload #fileUploader name="demo[]" url="./upload.php" (onUpload)="onUploadFile($event)" [elemPrivilege]="['document.charger']" accessControl
+                  [customUpload]="true" [multiple]="false" (onSelect)="onUploadFile($event)" [showUploadButton]="true" *ngIf="documentsPVs ===null"
+                  [fileLimit]="1" accept="image/*,.doc,.docx,application/pdf" [maxFileSize]="100000000000"
+                   [showCancelButton]="false" [auto]="true" class="w-full">
+                  <ng-template pTemplate="content">
+                      <div class="w-full py-3" style="cursor: copy"
+                          (click)="fileUploader.advancedFileInput.nativeElement.click()">
+                          <div *ngIf="!uploadedFiles.length"
+                              class="h-full flex flex-column justify-content-center align-items-center">
+                              <i class="pi pi-upload text-900 text-2xl mb-3"></i>
+                              <span class="font-bold text-900 text-xl mb-3">Importer le PV/Résolution/Compte
+                                  rendu</span>
+                              <span class="font-medium text-600 text-md text-center">
+
+                                  Déposer ou sélectionner des fichiers</span>
+                          </div>
+                          <div class="flex flex-wrap gap-10" *ngIf="uploadedFiles.length">
+                              <div *ngFor="let file of uploadedFiles; let i = index;"
+                                  class="h-full relative w-7rem h-7rem border-3 border-transparent border-round hover:bg-primary transition-duration-100 cursor-auto"
+                                  (mouseenter)="onImageMouseOver(file)" (mouseleave)="onImageMouseLeave(file)"
+                                  style="padding: 1px;">
+                                  <img [src]="file.objectURL" [alt]="file.name"
+                                      class="w-full h-full border-round shadow-2">
+                                  <button [id]="file.name" #buttonEl pButton pRipple type="button" icon="pi pi-times"
+                                      class="p-button-rounded p-button-primary text-sm absolute justify-content-center align-items-center cursor-pointer"
+                                      style="top: -10px; right: -10px; display: none;"
+                                      (click)="removeImage($event, file)"></button>
+                              </div>
+                          </div>
+                      </div>
+                  </ng-template>
+              </p-fileUpload>
+
+              <!--<div class="list-group">
+  <a *ngFor="let fileData of fileList" href="#" class="list-group-item list-group-item-action" (click)="downloadFile(fileData)">{{fileData.filename}}</a>
+</div>-->
+              <div class="col-12 lg:col-12" *ngIf="documentsPVs !==null && documentsPVs.length >0" [elemPrivilege]="['document.list']" accessControl>
+                  <div class="card">
+                      <div class="col-12 field mt-1">
+                          <ng-container *ngIf=" documentsPVs && documentsPVs.length>0">
+
+                              <div style="position: relative; height: 75px; width: 100%;"
+                                  *ngFor="let document of documentsPVs ">
+                                  <div class="col-12 xl:col-9 lg:col-9 md:col-9 p-0 mb-0">
+                                      <p class="pt-3 ml-2 mb-5" style="line-height: 2;">
+
+                                      </p>
+                                  </div>
+                                  <span
+                                      [style]="'background-image : url(assets/layout/images/evenements/icons_docs/' + getExtDoc(document.nom)+ '.png)'"
+                                      style="display: inline-block; float: left; width: 48px;height: 48px; margin-left: 10px;"></span>
+
+                                  <h4 [pTooltip]="document.nom!" style="font-family: Arial;
+                                  font-size: 1.1em;
+                                  display: inline-block;
+                                  float: left;
+                                  width: 60%;
+                                  margin: 0 0 0 20px;
+                                    margin-top: 0px;
+                                  height: 25px;
+                                  -ms-text-overflow: ellipsis;
+                                  -o-text-overflow: ellipsis;
+                                  text-overflow: ellipsis;
+                                  overflow: hidden;
+                                  white-space: nowrap;
+                                ">{{document.nom}}</h4>
+                                  <h4 style="font-weight: normal;
+                                  font-style: italic;
+                                  font-family: Arial;
+                                  font-size: 1.1em;
+                                  display: inline-block;
+                                  float: left;
+                                  width: 60%;
+                                  margin: 0 0 0 20px;
+                                    margin-top: 0px;
+                                  height: 25px;
+                                  -ms-text-overflow: ellipsis;
+                                  -o-text-overflow: ellipsis;
+                                  text-overflow: ellipsis;
+                                  overflow: hidden;
+                                  white-space: nowrap;">Taille : {{document.size}} Ko</h4>
+                                  <div>
+                                      <button pButton pRipple icon="pi pi-download" [elemPrivilege]="['document.telecharger']" accessControl
+                                          class="p-button-primary h-2rem w-2rem mr-2" (click)="downloadFile(document)"
+                                          pTooltip="Télécharger" tooltipPosition="top" type="button"></button>
+                                      <button *ngIf="!publie" pButton pRipple icon="pi pi-trash" class="p-button-danger h-2rem w-2rem"
+                                          (click)="deleteFile(document,$event)" pTooltip="Supprimer" [elemPrivilege]="['document.delete']" accessControl
+                                          tooltipPosition="top" type="button" ></button>
+
+                                  </div>
+                              </div>
+
+                          </ng-container>
+                      </div>
+                  </div>
+
+
+                  <p-panel [toggleable]="true">
+
+                      <ng-template pTemplate="header">
+                          Information sur le document
+                      </ng-template>
+
+                      <ng-template pTemplate="body">
+                          <div class="field text-center" *ngIf="!publie" style="font-weight: normal; font-family: Arial;
+                      font-size: 1.8em;  color: #f34a07;">
+                              Ce document n'est pas encore diffuser aux membres !!
+                          </div>
+                          <div class="field text-center" *ngIf="!valide && publie" style="font-weight: normal; font-family: Arial;
+                      font-size:1.8em; color: #0746f3;">
+                              Ce document n'est pas encore valider !!
+                          </div>
+                          <div class="field text-center" *ngIf="publie" style="font-weight: normal; font-family: Arial;
+                      font-size: 1.8em;  color: #f3bc07;">
+                              Ce document est diffusé aux membres le <span>{{datePublished}}</span>
+                          </div>
+                          <div class="field text-center" *ngIf="valide && publie" style="font-weight: normal; font-family: Arial;
+                      font-size:1.8em; color: #06a120;">
+                              Ce document est validé le <span>{{dateValidate}}</span>
+                          </div>
+                      </ng-template>
+                      <ng-template pTemplate="footer">
+                          <div *ngIf="publie && !valide" class="field-checkbox">
+                              <p-checkbox name="group1" value="published" [(ngModel)]="sendMail" inputId="ny"
+                                  (onChange)="sendMailPublicationDoc()"> [elemPrivilege]="['document.sendMail']" accessControl</p-checkbox>
+                              <label for="ny">Informer les membres sur la disponibilité du document</label>
+                          </div>
+                          <div *ngIf="valide" class="field-checkbox">
+                              <p-checkbox name="group1" value="validate" [(ngModel)]="sendMail" inputId="ny"
+                                  (onclick)="sendMailValidationDoc()" [elemPrivilege]="['document.sendMail']" accessControl></p-checkbox>
+                              <label for="ny">Informer les membres par email sur la validation du document</label>
+                          </div>
+                      </ng-template>
+                  </p-panel>
+              </div>
+
+          </div>
+      </ng-template>
+
+      <ng-template pTemplate>
+          <div class="col flex align-items-center justify-content-center">
+
+              <p-accordion [activeIndex]="0">
+                  <p-accordionTab [disabled]="false">
+                      <ng-template pTemplate="header">
+                          Sélectionner l'évenement
+                      </ng-template>
+                      <div class="grid formgrid p-fluid">
+                          <div class="field mb-4 col-6 ">
+                              <label for="societe" class="font-medium text-900">Organe</label>
+                              <p-dropdown [options]="organes" dataKey="id" [(ngModel)]="organe" [required]="true"
+                                  placeholder="Selectionner l'organe de gestion" optionLabel="titre" [filter]="true"
+                                  filterBy="titre" [showClear]="true" (ngModelChange)="getEventByOrgane()"></p-dropdown>
+                          </div>
+
+                          <!-- <div class="field mb-4 col-6 ">
+                              <label for="dateFrom" class="font-medium text-900">Debut de l'évenement</label>
+                              <p-calendar appendTo="body" [showIcon]="true" inputId="icon" [maxDate]="minDate"
+                                  dateFormat="dd-mm-yy" [(ngModel)]="dateFrom" [readonlyInput]="true"
+                                  placeholder="Selectionner une date de début" [required]="true"
+                                  (ngModelChange)="getEventByOrgane()"></p-calendar>
+                          </div> -->
+
+                          <div class="field mb-4 col-12 ">
+                              <label for="famille" class="font-medium text-900">Liste des évenements</label>
+                              <p-dropdown [options]="evenements" dataKey="id" [(ngModel)]="evenement"
+                                  [required]="true" placeholder="Selectionner un évenement" optionLabel="titre"
+                                  [showClear]="true" [filter]="true" filterBy="titre" (ngModelChange)="getPVs()">
+                              </p-dropdown>
+                          </div>
+
+                          <!--<p-toolbar styleClass="tbfilters">
+                              <div class="p-toolbar-group-left">
+                                  <ng-container *ngFor="let itemFilter of values;">
+                                      <p-chip [label]="itemFilter.label" styleClass="m-1" [removable]="true"></p-chip>
+                                  </ng-container>
+                              </div>
+
+
+                          </p-toolbar>-->
+
+                      </div>
+                  </p-accordionTab>
+                  <p-accordionTab [disabled]="false" class="formgrid">
+                      <ng-template pTemplate="header">
+                          Liste des membres convoqués à l'évenement <span class="text-sm mx-2"></span>
+                          <!--<span class="text-red-400">{{sharedDataEvService.getCalculatedDateDelais(selectedEvenement.publierLe!, selectedEvenement.delaisEvenement?.reponseValidationDate, true)  | date : 'EEEE, dd MMM yyyy' }}</span> )</span>-->
+                      </ng-template>
+                      <div class="grid p-fluid formgrid ">
+                          <div class="field mb-4 col-12">
+                              <div class="flex flex-column mt-3">
+
+
+                                  <ng-container *ngFor="let membre of membrePs;">
+                                      <li style="font-family: Geneva; font-size: 1.1em">
+                                          {{membre.login + " "+ membre.profil_nom + " ("+ membre.date_reponse+")"}}
+                                      </li>
+                                  </ng-container>
+                                  <ng-container *ngIf="!evenement.listeMembres">
+                                      <span>Veuillez seléctionner l'evenment</span>
+                                  </ng-container>
+
+
+                              </div>
+                          </div>
+                      </div>
+                  </p-accordionTab>
+                  <p-accordionTab [disabled]="!valide" class="formgrid" >
+                      <ng-template pTemplate="header">
+                          Cocher les utilisations ultérieures du document <span class="text-sm mx-2"></span>
+                          <!--<span class="text-red-400">{{sharedDataEvService.getCalculatedDateDelais(selectedEvenement.publierLe!, selectedEvenement.delaisEvenement?.reponseValidationDate, true)  | date : 'EEEE, dd MMM yyyy' }}</span> )</span>-->
+                      </ng-template>
+                      <div class="grid p-fluid formgrid ">
+                          <!--<div class="field mb-4 col-12">
+                              <label for="observation" class="font-medium text-900">Utilisations ultérieures *</label>
+                              <p-multiSelect [options]="listUtilations" [(ngModel)]="selectedutil"
+                                  placeholder="Cocher les différentes utilisations ultérieurs" optionLabel="name">
+                                  <ng-template let-value pTemplate="selectedItems">
+                                      <div *ngFor="let option of selectedutil">
+                                          <li>
+                                              {{ option.titre }},
+                                          </li>
+                                      </div>
+                                      <div *ngIf="!selectedutil || selectedutil.length === 0">Cocher</div>
+                                  </ng-template>
+                                  <ng-template let-country pTemplate="item">
+                                      <div class="flex align-items-center gap-2">
+                                          <div>{{ country.titre }}</div>
+                                      </div>
+                                  </ng-template>
+                              </p-multiSelect>
+                          </div>-->
+                          <div class="field mb-4 col-12" [elemPrivilege]="['utilisation.selectedList']" accessControl>
+                              <label for="observation" class="font-medium text-900 ">Déjà sélectionnées *</label>
+                              <div *ngFor="let option of selectedutil">
+
+                                  <li>
+                                      {{ option.titre }},
+                                  </li>
+                              </div>
+
+                          </div>
+                          <p-divider class="field-checkbox  mb-4 col-12"></p-divider>
+
+                          <div *ngFor="let category of listUtilations" class="field-checkbox  mb-4 col-12" [elemPrivilege]="['utilisation.list']" accessControl>
+                              <p-checkbox name="group" [value]="category" [(ngModel)]="selectedutil"
+                                  [inputId]="category.titre!"></p-checkbox>
+                              <label [for]="category.id">{{ category.titre }}</label>
+                          </div>
+
+                          <div class="field mb-4 col-12">
+                              <button pButton pRipple label="Enregistrer" class="field w-auto mt-3 p-button-success"
+                                  styleClass="p-button-success" icon="pi pi-check"
+                                  (click)="saveUtilisation()" [elemPrivilege]="['utilisation.add']" accessControl></button>
+                          </div>
+                      </div>
+
+
+
+                  </p-accordionTab>
+
+                  <p-accordionTab [disabled]="documentsPVs.length===0" class="formgrid" [elemPrivilege]="['document.newVersion']" accessControl>
+                      <ng-template pTemplate="header">
+                          Importer une nouvelle version
+                          <!--<span class="text-red-400">{{sharedDataEvService.getCalculatedDateDelais(selectedEvenement.publierLe!, selectedEvenement.delaisEvenement?.reponseValidationDate, true)  | date : 'EEEE, dd MMM yyyy' }}</span> )</span>-->
+                      </ng-template>
+                      <div class="grid p-fluid formgrid">
+                          <div class="col-12 field mb-5">
+
+                              <p-fileUpload #fileUploader name="demo[]" url="./upload.php"
+                                  (onUpload)="onUploadFile($event)" [customUpload]="true" [multiple]="false"
+                                  (onSelect)="onUploadFile($event)" [showUploadButton]="true" [fileLimit]="1"
+                                  accept="image/*,.doc,.docx,application/pdf" [maxFileSize]="60000000">
+                                  [showCancelButton]="false" [auto]="true" class="w-full">
+                                  <ng-template pTemplate="content">
+                                      <div class="w-full py-3" style="cursor: copy"
+                                          (click)="fileUploader.advancedFileInput.nativeElement.click()">
+                                          <div *ngIf="!uploadedFiles.length"
+                                              class="h-full flex flex-column justify-content-center align-items-center">
+                                              <i class="pi pi-upload text-900 text-2xl mb-3"></i>
+                                              <span class="font-bold text-900 text-xl mb-3">Importer le
+                                                  PV/Résolution/Compte
+                                                  rendu</span>
+                                              <span class="font-medium text-600 text-md text-center">
+
+                                                  Déposer ou sélectionner des fichiers</span>
+                                          </div>
+                                          <div class="flex flex-wrap gap-10" *ngIf="uploadedFiles.length">
+                                              <div *ngFor="let file of uploadedFiles; let i = index;"
+                                                  class="h-full relative w-7rem h-7rem border-3 border-transparent border-round hover:bg-primary transition-duration-100 cursor-auto"
+                                                  (mouseenter)="onImageMouseOver(file)"
+                                                  (mouseleave)="onImageMouseLeave(file)" style="padding: 1px;">
+                                                  <img [src]="file.objectURL" [alt]="file.name"
+                                                      class="w-full h-full border-round shadow-2">
+                                                  <button [id]="file.name" #buttonEl pButton pRipple type="button"
+                                                      icon="pi pi-times"
+                                                      class="p-button-rounded p-button-primary text-sm absolute justify-content-center align-items-center cursor-pointer"
+                                                      style="top: -10px; right: -10px; display: none;"
+                                                      (click)="removeImage($event, file)"></button>
+                                              </div>
+                                          </div>
+                                      </div>
+                                  </ng-template>
+                              </p-fileUpload>
+
+                          </div>
+
+                          <div class="col-12 field mb-5">
+                              <label for="Nom" class="font-medium text-900">Voulez vous écraser la
+                                  version précédante</label>
+                              <p-inputSwitch [(ngModel)]="ecrasable"></p-inputSwitch>
+                          </div>
+                      </div>
+                      <div class="field mb-4 col-12">
+                          <p-button *ngIf="uploadedFiles.length" label="Charger" icon="pi pi-upload"
+                              styleClass="p-button-success" (onClick)="ChargerVersion()"></p-button>
+                      </div>
+                  </p-accordionTab>
+                  <p-accordionTab [disabled]="false" class="formgrid">
+                      <ng-template pTemplate="header">
+                          Historique des versions </ng-template>
+                      <div class="grid p-fluid formgrid ">
+                      </div>
+                  </p-accordionTab>
+
+              </p-accordion>
+          </div>
+      </ng-template>
+  </p-splitter>
+  <p-divider></p-divider>
+  <div class="formgrid" [elemPrivilege]="['note.list']" accessControl>
+      <app-note-document [documentId]="document.id!" [evenementId]="evenement.id!" [publie]="publie" [valide]="valide"
+          [delai]="delai!" [datePublished]="datePublished" [dateValidate]="dateValidate"
+          [comments]="comments"></app-note-document>
+
+  </div>
+</div>

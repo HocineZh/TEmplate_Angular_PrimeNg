@@ -1,0 +1,95 @@
+<div class="grid">
+  <div class="col-12">
+      <div class="card px-6 py-6">
+          <p-toast></p-toast>
+          <p-toolbar styleClass="mb-4">
+              <ng-template pTemplate="left">
+                  <div class="my-2">
+                      <button pButton pRipple label="Ajouter" icon="pi pi-plus" class="p-button-success mr-2" (click)="addNewPrivilege()" [elemPrivilege]="['privilege.membre.add']" accessControl displayType="inline-flex"></button>
+                      <button pButton pRipple label="Supprimer" icon="pi pi-trash" class="p-button-danger" (click)="deleteSelectedPrivilege()" [disabled]="!selectedPrivileges || !selectedPrivileges.length" [elemPrivilege]="['privilege.membre.delete']" accessControl displayType="inline-flex"></button>
+                  </div>
+              </ng-template>
+          </p-toolbar>
+
+          <h5 class="m-0 table-title">Liste des privilèges</h5>
+          <p-table #dt [value]="privileges" responsiveLayout="scroll" [rows]="10" styleClass="p-datatable-gridlines" [globalFilterFields]="['codePriv','description']" [rows]="10" [paginator]="true" [rowsPerPageOptions]="[10,20,30]" [showCurrentPageReport]="true" currentPageReportTemplate="Afficher {first} jusqu'à {last} des {totalRecords} privilèges" [(selection)]="selectedPrivileges" selectionMode="multiple" [rowHover]="true" dataKey="codePriv">
+              <ng-template pTemplate="caption">
+                  <div class="flex flex-column md:flex-row md:justify-content-between md:align-items-center">
+                    <button pButton label="Effacer" class="p-button-outlined mb-2" icon="pi pi-filter-slash" (click)="clear(dt)"></button>
+                    <span class="block mt-2 md:mt-0 p-input-icon-left">
+                        <i class="pi pi-search"></i>
+                        <input pInputText type="text" #filter (input)="onGlobalFilter(dt, $event)" placeholder="Recherche..."  class="w-full sm:w-auto"/>
+                    </span>
+
+                  </div>
+              </ng-template>
+              <ng-template pTemplate="header">
+                  <tr>
+                      <th style="width: 3rem">
+                          <p-tableHeaderCheckbox></p-tableHeaderCheckbox>
+                      </th>
+                      <th >
+                        <div class="flex justify-content-between align-items-center">
+                          Code
+                          <p-columnFilter type="text" pSortableColumn="codePriv" field="codePriv" display="menu" placeholder="Search by name"><p-sortIcon field="codePrivilege"></p-sortIcon></p-columnFilter>
+                        </div>
+                      </th>
+
+                      <th >
+                        <div class="flex justify-content-between align-items-center">
+                          Description
+                          <p-columnFilter type="text" pSortableColumn="description" field="description" display="menu" placeholder="Search by description"><p-sortIcon field="description"></p-sortIcon></p-columnFilter>
+                        </div>
+                      </th>
+
+                      <th></th>
+                  </tr>
+              </ng-template>
+              <ng-template pTemplate="body" let-privilege>
+                  <tr>
+                    <td>
+                      <p-tableCheckbox [value]="privilege"></p-tableCheckbox>
+                    </td>
+                    <td style="width:40%; min-width:10rem;">
+                        <span class="p-column-title">Code privilège</span>
+                        {{privilege.codePriv}}
+                    </td>
+
+                    <td style="width:40%; min-width:8rem;">
+                        <span class="p-column-title">description</span>
+                        {{privilege.description}}
+                    </td>
+
+                    <td>
+                        <div class="flex">
+                            <button pButton pRipple icon="pi pi-pencil" class="p-button-rounded p-button-info mr-2" (click)="editPrivilege(privilege)" [elemPrivilege]="['privilege.membre.update']" accessControl displayType="inline-flex"></button>
+                            <button pButton pRipple icon="pi pi-trash" class="p-button-rounded p-button-danger" (click)="deletePrivilege(privilege)" [elemPrivilege]="['privilege.membre.delete']" accessControl displayType="inline-flex"></button>
+
+                        </div>
+                    </td>
+                  </tr>
+              </ng-template>
+          </p-table>
+      </div>
+
+      <p-dialog [(visible)]="popupAddVisible" [style]="{width: '450px'}" header="Détails du privilège" [modal]="true" class="p-fluid">
+          <ng-template pTemplate="content">
+              <div class="field">
+                  <label for="name">Code Privilège</label>
+                  <input type="text" pInputText id="name" [(ngModel)]="privilege.codePriv" required autofocus [ngClass]="{'ng-invalid ng-dirty' : submitted && !privilege.codePriv}"/>
+                  <small style="color: red;" *ngIf="submitted && !privilege.codePriv">Champ Obligatoire .</small>
+              </div>
+              <div class="field">
+                  <label for="description">Description</label>
+                  <textarea id="description" pInputTextarea [(ngModel)]="privilege.description" required rows="3" cols="20"></textarea>
+              </div>
+          </ng-template>
+
+          <ng-template pTemplate="footer">
+              <button pButton pRipple label="Annuler" icon="pi pi-times" class="p-button-text" (click)="hideDialog()"></button>
+              <button pButton pRipple label="Sauvegarder" icon="pi pi-check" class="p-button-text" (click)="savePrevilege()" [elemPrivilege]="['privilege.membre.add']" accessControl displayType="inline-flex"></button>
+          </ng-template>
+      </p-dialog>
+  </div>
+  <p-confirmDialog [style]="{width: '50vw'}"></p-confirmDialog>
+</div>

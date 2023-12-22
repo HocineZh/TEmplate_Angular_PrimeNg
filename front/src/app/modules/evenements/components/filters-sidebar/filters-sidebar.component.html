@@ -1,0 +1,102 @@
+<p-sidebar  #sidebar [(visible)]="parent.sidebarVisible" position="right" [baseZIndex]="10000"   styleClass="w-full md:w-3 lg:w-3 xl:w-3" [blockScroll]="true"  [showCloseIcon]="true" [transitionOptions]="'.3s cubic-bezier(0, 0, 0.2, 1)'">
+  <ng-template pTemplate="content">
+      <div class="p-0">
+          <div class="flex flex-column mb-1">
+              <h6 class="pb-2 mb-2 border-bottom-1 surface-border">Filtres évènements</h6>
+          </div>
+
+          <p-accordion>
+            <p-accordionTab header="Organes de gestion" [selected]="false" class="line-height-3 m-0 p-0">
+               <div class="grid grid-nogutter gap-2 pt-1 flex-wrap flex-1 flex flex-column">
+
+              <div class="col-12 field p-fluid">
+                  <label for="start" class="block text-900 font-semibold">Societés</label>
+                  <p-dropdown [options]="parent.societes" [(ngModel)]="parent.selected_societe" optionLabel="raisonSocial" placeholder="Societés" [showClear]="true"></p-dropdown>
+              </div>
+              <div class="col-12 field p-fluid">
+                  <label for="start" class="block text-900 font-semibold">Type organe</label>
+                  <p-dropdown  inputId="type-organe" placeholder="Type organe"  [options]="parent.type_organes" [(ngModel)]="parent.selected_typeorgane" [showClear]="true" >
+                      <ng-template pTemplate="selectedItem">
+                           <div *ngIf="parent.selected_typeorgane" class="flex align-items-center">
+                               <div class="flex-shrink-0 w-1rem h-1rem mr-2 border-circle" [style.backgroundColor]="parent.selected_typeorgane.backgroundColor"></div>
+                               <div>{{parent.selected_typeorgane.designation}}</div>
+                           </div>
+                       </ng-template>
+
+                       <ng-template let-typeOrgane pTemplate="item">
+                           <div class="flex align-items-center">
+                              <div class="flex-shrink-0 w-1rem h-1rem mr-2 border-circle" [style.backgroundColor]="typeOrgane.backgroundColor"></div>
+                               <div>{{typeOrgane.designation}}</div>
+                           </div>
+                       </ng-template>
+                   </p-dropdown>
+              </div>
+              <div class="col-12 field p-fluid">
+                  <label for="start" class="block text-900 font-semibold">Organe de gestion</label>
+                  <p-dropdown  inputId="organe" placeholder="Organe de gestion"  [options]="parent.selected_typeorgane?.organes" [(ngModel)]="parent.selected_organe" [showClear]="true" >
+                      <ng-template pTemplate="selectedItem">
+                           <div *ngIf="parent.selected_organe" class="flex align-items-center">
+                               <div class="flex-shrink-0 w-1rem h-1rem mr-2 border-circle" [style.backgroundColor]="parent.selected_typeorgane.backgroundColor"></div>
+                               <div>{{parent.selected_organe.titre}}</div>
+                           </div>
+                       </ng-template>
+
+                       <ng-template let-organe pTemplate="item">
+                           <div class="flex align-items-center">
+                              <div class="flex-shrink-0 w-1rem h-1rem mr-2 border-circle" [style.backgroundColor]="parent.selected_typeorgane.backgroundColor"></div>
+                               <div>{{organe.titre}}</div>
+                           </div>
+                       </ng-template>
+                   </p-dropdown>
+              </div>
+             <div class="col-12 field  p-fluid">
+                  <label for="typeEvenement" class="block text-900 font-semibold">Type évènement</label>
+                  <p-dropdown inputId="typeEvenement" placeholder="Type évènement" [options]="parent.type_evenements" [(ngModel)]="parent.selected_typeEvenement" [showClear]="true"></p-dropdown>
+              </div>
+
+               <div class="col-12 field  p-fluid">
+                  <label for="remuneration" class="block text-900 font-semibold">Rémunération</label>
+                  <p-dropdown inputId="remuneration" placeholder="Rémunération?" optionLabel="label" [options]="parent.remuneration" [(ngModel)]="parent.selected_remuneration" [showClear]="true"></p-dropdown>
+              </div>
+          </div>
+          </p-accordionTab>
+          <p-accordionTab header="Détails évènements" [selected]="true" class="line-height-3 m-0 p-0">
+          <div class="grid grid-nogutter gap-2 pt-2 flex-wrap flex-1 flex flex-column">
+              <div class="col-12 field  p-fluid">
+                  <label for="periodiciteEvenement" class="block text-900 font-semibold">Periodicité</label>
+                  <p-dropdown inputId="periodiciteEvenement" placeholder="Periodicité" [options]="['Single','Hébdomadaire', 'Mensuel','trimestriel','semestriel','Annuel']" [(ngModel)]="parent.selected_periodicite" [showClear]="true">
+                  </p-dropdown>                </div>
+              <div class="col-12 field  p-fluid">
+                  <label for="start" class="block text-900 font-semibold">Date du</label>
+                  <p-calendar dateFormat="dd/mm/yy" placeholder="Séléctionner la date" [maxDate]="parent.selectedDateTo"   [showIcon]="true" inputId="start" [(ngModel)]="parent.selectedDateFrom"></p-calendar>
+              </div>
+              <div class="col-12 field  p-fluid">
+                  <label for="end" class="block text-900 font-semibold">Date au</label>
+                  <p-calendar dateFormat="dd/mm/yy" placeholder="Séléctionner la date" [minDate]="parent.selectedDateFrom"   [showIcon]="true" inputId="end" [(ngModel)]="parent.selectedDateTo"></p-calendar>
+              </div>
+              <div class="col-12 field  p-fluid">
+              <label for="end" class="block text-900 font-semibold">Mots clés</label>
+              <span class="p-input-icon-left p-input-icon-right">
+                  <input type="text" pInputText placeholder="rechercher..." [(ngModel)]="parent.selectedSearch" />
+                  <i class="pi pi-search"></i>
+              </span>
+             </div>
+           <!--
+              <div class="col-12 field px-5">
+                  <label for="start" class="block text-900 font-semibold">Description</label>
+                  <textarea id="description" name="description" type="text" pInputTextarea [rows]="5" [(ngModel)]="formValue.description" style="resize: none" class="w-full"></textarea>
+              </div>
+              <div class="col-12 field px-5">
+                  <label for="start" class="block text-900 font-semibold">Description</label>
+                  <textarea id="description" name="description" type="text" pInputTextarea [rows]="5" [(ngModel)]="formValue.description" style="resize: none" class="w-full"></textarea>
+              </div> -->
+          </div>
+         </p-accordionTab>
+        </p-accordion>
+        <div class="flex w-full justify-content-end border-top-1 surface-border py-5 px-5 gap-3">
+          <button pButton pRipple type="button" icon='pi pi-trash' class="p-button-outlined p-button-secondary surface-border text-900  h-3rem" [label]="'Vider' | translate" (click)="onClearFilter()" ></button>
+          <button pButton pRipple type="button" icon="pi pi-check" label="Filtrer" class="p-button-primary h-3rem" (click)="onFilter()"></button>
+     </div>
+      </div>
+  </ng-template>
+</p-sidebar>

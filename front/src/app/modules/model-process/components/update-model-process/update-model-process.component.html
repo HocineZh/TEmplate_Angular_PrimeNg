@@ -1,0 +1,40 @@
+
+<div class="card">
+    <span class="text-900 text-xl font-bold mb-4 block">Modifier un modèle de process</span>
+    <div class="grid">
+
+      <div class="col-12 lg:col-10">
+        <div class="grid formgrid p-fluid">
+          <div class="field mb-4 col-12">
+            <label for="titre" class="font-medium text-900">Titre</label>
+            <input type="text" pInputText id="name" [(ngModel)]="modelProcess.nomModele" required autofocus
+              [ngClass]="{'ng-invalid ng-dirty' : submitted && !modelProcess.nomModele}" />
+            <small class="ng-dirty ng-invalid" *ngIf=" submitted &&!modelProcess.nomModele">Titre is required.</small>
+          </div>
+          <div class="field mb-4 col-12">
+            <label for="description" class="font-medium text-900">Description</label>
+            <textarea id="description" pInputTextarea [(ngModel)]="modelProcess.descriptionModele" required rows="3"
+              [autoResize]="true" cols="20"></textarea>
+          </div>
+
+          <div class="col-12">
+              <!-- <p-toolbar>
+                <div class="p-toolbar-group-left flex flex-wrap">
+
+                  <button pButton pRipple label="Retour" icon="pi pi-times" class="w-auto mt-3" (click)="onBack()"></button>
+                </div>
+
+                <div class="p-toolbar-group-right">
+                  <button pButton pRipple label="Ajouter" icon="pi pi-check" class="w-auto mt-3"
+                  (click)="updateProcess()"></button>
+
+                </div>
+            </p-toolbar> -->
+            <div class="col-12 formgroup-inline">
+              <button pButton pRipple label="Modifier" class="field w-auto mt-3 p-button-success"  (click)="updateProcess()"></button>
+              <button pButton pRipple label="Annuler" class="field w-auto mt-3 p-button-plain" (click)="onBack()" ></button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>

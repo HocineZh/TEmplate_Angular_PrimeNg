@@ -1,0 +1,25 @@
+<div [style]="{width: '400px' }">
+    <div class="row my-2">
+        <p-dropdown [required]="true" class="block w-full" [options]="documentsTypes" [(ngModel)]="selectedDocumentType" optionLabel="titre" [showClear]="true" placeholder="Sélectionnez un type de document"></p-dropdown>
+    </div>
+    <div class="row my-2">
+        <p-dropdown [required]="true" class="block w-full" [options]="documents" [(ngModel)]="selectedDocument" optionLabel="nom" [showClear]="true" placeholder="Sélectionnez un document"></p-dropdown>
+    </div>
+    <div class="row flex my-3">
+            <div class="mx-2">
+                <p-checkbox  [(ngModel)]="ecrasable" [binary]="true" inputId="ecrasable"></p-checkbox>
+                <label class="ml-1" for="ecrasable">Supprimer si le fichier existe</label>
+            </div>
+            <div class="mx-2">
+                <p-checkbox  [(ngModel)]="notable" [binary]="true" inputId="notable"></p-checkbox>
+                <label class="ml-1" for="notable">Notable</label>
+            </div>
+    </div>
+    <div class="row my-2" >
+
+        <app-file-uploader (fileUploadedEvent) = "uploadedFile($event)"></app-file-uploader>
+    </div>
+        <div class="w-full my-2 action-btn">
+            <p-button [disabled]="selectedDocumentType == undefined || files.length == 0" class="w-full " (click)="uploadFile()" [loading]="loading" icon="pi pi-upload" label="Charger" severity="info"></p-button>
+        </div>
+</div>

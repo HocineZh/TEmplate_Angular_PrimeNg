@@ -1,0 +1,16 @@
+:host ::ng-deep 
+    .p-inputswitch.p-inputswitch-checked 
+    .p-inputswitch-slider, 
+:host ::ng-deep 
+    .p-inputswitch.p-inputswitch-checked:hover 
+    .p-inputswitch-slider {
+    background: #689F38;
+}
+ 
+
+ 
+:host ::ng-deep 
+    .p-inputswitch-checked
+    .p-inputswitch-slider::before {
+        background: #689F38;;
+}

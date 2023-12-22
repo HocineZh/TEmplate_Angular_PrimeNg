@@ -1,0 +1,143 @@
+
+<p-dialog [visible]="showDlg" [breakpoints]="{'960px': '75vw', '640px': '90vw'}" [style]="{width: '80rem'}"  [contentStyle]="{minHeight: '400px'}" [modal]="true" [closable]="true" (visibleChange)="handleExitDialogPropositionsMemebres()" >
+    <ng-template pTemplate="header">            
+        <span>
+        <i class="pi pi-user-edit" style="font-size: 1.2rem"></i>     
+        <span class="text-900 font-semibold text-xl ml-2">{{titreDialog}}</span>
+       </span>
+    </ng-template>
+    <ng-template pTemplate="content">
+    
+        <div class="grid">
+            <div class="col-12">
+              
+          
+                    <p-toast></p-toast>
+                    <p-toolbar  styleClass="mb-4">
+                        <ng-template pTemplate="left" *ngIf="!listAll">
+                            <div class="my-2 pl-4">
+                                <button pButton pRipple label="Ajouter" icon="pi pi-plus" class="p-button-success mr-2" (click)="addNewProposition()" [disabled]="selectedEvenement.etat==='CLOTURER' || selectedEvenement.etat==='TERMINER'"></button>
+                                <button pButton pRipple label="Supprimer" icon="pi pi-trash" class="p-button-danger" (click)="deleteSelectedProposition()" [disabled]="!deleteSelectedProposition || !selected_propositions.length || selectedEvenement.etat==='CLOTURER' || selectedEvenement.etat==='TERMINER'"></button>
+                            </div>
+                        </ng-template>
+                    </p-toolbar>
+                    <h6 class="my-3 text-900 " >List des propositions points ordres</h6>
+                    <p-table #dt [value]="propositions_membres" responsiveLayout="scroll" [rows]="10" [globalFilterFields]="['titre','description','date']" [rows]="10" [paginator]="true" [rowsPerPageOptions]="[10,20,30]" [showCurrentPageReport]="true" currentPageReportTemplate="Afficher {first} jusqu'à {last} des {totalRecords} propositions" [(selection)]="selected_propositions" selectionMode="multiple" [rowHover]="true" dataKey="id">
+                        <ng-template pTemplate="caption">
+                            <div class="flex flex-column md:flex-row md:justify-content-between md:align-items-center">
+                              <button pButton label="Clear" class="p-button-outlined mb-2" icon="pi pi-filter-slash" (click)="clear(dt)"></button>
+                              <span class="block mt-2 md:mt-0 p-input-icon-left">
+                                  <i class="pi pi-search"></i>
+                                  <input pInputText type="text" #filter (input)="onGlobalFilter(dt, $event)" placeholder="Rechercher..."  class="w-full sm:w-auto"/>
+                              </span>
+                            </div>
+                        </ng-template>
+                        <ng-template pTemplate="header">
+                            <tr>
+                                <th style="width: 3rem">
+                                    <p-tableHeaderCheckbox></p-tableHeaderCheckbox>
+                                </th>
+                                <th>
+                                  <div class="flex justify-content-between align-items-center">
+                                    Titre
+                                    <p-columnFilter type="text" pSortableColumn="titre" field="titre" display="menu" placeholder="Chercher par titre"><p-sortIcon field="titre"></p-sortIcon></p-columnFilter>
+                                  </div>
+                                </th>
+                                <th>
+                                  <div class="flex justify-content-between align-items-center">
+                                    Proposé le
+                                    <p-columnFilter type="date" pSortableColumn="dateProposition" field="dateProposition" display="menu" placeholder="dd/MM/yyyy"><p-sortIcon field="dateProposition"></p-sortIcon></p-columnFilter>
+                                  </div>
+                                </th>
+                                <th>
+                                    <div class="flex justify-content-between align-items-center">
+                                      Membre
+                                      <p-columnFilter type="text" pSortableColumn="membre" field="membre" display="menu" placeholder="Chercher par membre"><p-sortIcon field="membre"></p-sortIcon></p-columnFilter>
+                                    </div>
+                                  </th>
+                                  <th>
+                                    <div class="flex justify-content-between align-items-center">
+                                      Etat
+                                      <p-columnFilter type="text" pSortableColumn="etatProposition" field="etatProposition" display="menu" placeholder="Filtrer par état"><p-sortIcon field="etatProposition"></p-sortIcon></p-columnFilter>
+                                    </div>
+                                  </th>
+                                <th></th>
+                            </tr>
+                        </ng-template>
+                        <ng-template pTemplate="body" let-proposition>
+                            <tr>
+                                <td>
+                                  <p-tableCheckbox [value]="proposition"></p-tableCheckbox>
+                                </td>
+                                <td style="width:55%; min-width:10rem;">
+                                    <span class="p-column-title">Titre</span>
+                                    <span class="text-900 font-semibold">{{proposition.titre}}</span>
+                                    <div class="text-600 ml-1 pt-1" [innerHTML]="proposition.description"></div>                                    
+
+                                </td>
+          
+                               
+                                <td style="width:15%; min-width:8rem;">
+                                    <span class="p-column-title">Proposé le</span>
+                                    {{proposition.dateProposition | date: 'dd MMMM'}}
+                                </td>
+                                <td style="width:15%; min-width:8rem;">
+                                    <span class="p-column-title">Par</span>
+                                    {{proposition.membre}}
+                                </td>
+                                <td style="width:15%; min-width:8rem;">
+                                    <span class="p-column-title">Etat</span>
+                                    <ng-container   [ngSwitch]="proposition.etatProposition">
+                                        <span *ngSwitchCase="'PROPOSER'" class="'po-badge-status po-status-proposer po-badge-dim py-2 px-3  font-semibold " >Proposé <i class="pi pi-user-edit" style="padding-left: 10px; padding-top: 3px;"  ></i> </span>
+                                        <span *ngSwitchCase="'EN COURS'" class="'po-badge-status po-status-new po-badge-dim py-2 px-3  font-semibold" >En cours <i class="pi pi-spinner" style="padding-left: 10px; padding-top: 3px;"  ></i></span>
+                                        <span *ngSwitchCase="'VALIDER'" class="'po-badge-status po-status-valide po-badge-dim py-2 px-3  font-semibold" >Validée <i class="pi  pi-check-square" style="padding-left: 10px; padding-top: 3px;" ></i></span>
+                                        <span *ngSwitchCase="'REJETER'" class="'po-badge-status po-status-annuler po-badge-dim py-2 px-3 font-semibold" >Rejetée <i class="pi  pi-times" style="padding-left: 10px; padding-top: 3px;" ></i></span>
+                                        <span *ngSwitchDefault>...</span>
+                                    </ng-container>                                   
+                                </td>
+          
+                                <td style="width:10%; min-width:8rem;" >
+                                    <div class="flex" *ngIf="selectedEvenement.etat !=='CLOTURER'">
+
+                                     <button pButton pRipple type="button" icon="pi pi-ellipsis-v" class="p-button-rounded p-button-text z-3 ml-auto sm:ml-0" (click)="toggleMenu($event, proposition)"></button>
+                                     <p-menu #menu appendTo="body" [popup]="true" [model]="menuItems" styleClass="w-8rem"></p-menu>
+                                    </div>
+                                </td>
+                            </tr>
+                        </ng-template>
+                        <ng-template pTemplate="emptymessage">
+                            <tr>
+                                <td class="py-7" [colSpan]="6">Liste des propositions vide. </td>
+                            </tr>
+                        </ng-template>
+                    </p-table>
+               
+                <p-confirmDialog [style]="{width: '50vw'}" [position]="'bottom'" appendTo="body" ></p-confirmDialog>
+              </div>
+          
+          </div>
+    </ng-template>
+    <ng-template pTemplate="footer">       
+    </ng-template>
+    </p-dialog>
+
+    <p-dialog [header]="headerEditDialog || ''" [(visible)]="editDialogVisible" [modal]="true" [style]="{width: '50rem'}" >
+        <div class="p-4">
+            <p-messages [(value)]="errorMessage" [enableService]="false"></p-messages>
+            <div class="grid p-fluid formgrid">
+                <div class="col-12 field">
+                    <label for="name" class="text-900 font-semibold">Titre</label>
+                    <input id="name" type="text" placeholder="Titre" pInputText [(ngModel)]="proposition.titre" />
+                </div>
+                <div class="col-12 field">
+                    <label for="description" class="text-900 font-semibold">Déscription</label>
+                    <p-editor [(ngModel)]="proposition.description" [style]="{'height':'200px'}"></p-editor>
+                </div>
+               
+                <div class="col-12 flex justify-content-end mt-4">
+                    <button pButton pRipple class="p-button-outlined w-8rem mr-3" icon="pi pi-times" label="Cancel" (click)="cancelEditProposition()"></button>
+                    <button pButton pRipple class="p-button-primary w-8rem" icon="pi pi-check" label="Save" (click)="saveEditProposition()"></button>
+                </div>
+            </div>
+        </div>
+    </p-dialog>

@@ -1,0 +1,39 @@
+<div class="card">
+  <span class="text-900 text-xl font-bold mb-4 block">Modifier un Modèle d'ordre de jour</span>
+  <div class="grid">
+
+    <div class="col-12 lg:col-12">
+      <div class="grid formgrid p-fluid">
+        <div class="field mb-4 col-12">
+          <label for="titre" class="font-medium text-900">Titre</label>
+          <input type="text" pInputText id="name" [(ngModel)]="modelOJ.titre" required autofocus
+            [ngClass]="{'ng-invalid ng-dirty' : !modelOJ.titre}" />
+          <small class="ng-dirty ng-invalid" *ngIf="!modelOJ.titre">Titre est obligatoire.</small>
+        </div>
+        <div class="field mb-4 col-12">
+          <label for="description" class="font-medium text-900">Description</label>
+          <textarea id="description" pInputTextarea [(ngModel)]="modelOJ.description" required rows="3"
+            [autoResize]="true" cols="20"></textarea>
+        </div>
+        <div class="col-12">
+
+          <div class="col-12 formgroup-inline">
+            <button pButton pRipple label="Modifier" class="field w-auto mt-3 p-button-success"
+              (click)="updateModelOJ()"></button>
+            <button pButton pRipple label="Retour" class="field w-auto mt-3 p-button-plain"
+              (click)="onBack()"></button>
+          </div>
+        </div>
+        <p-divider class="col-12"></p-divider>
+        <div class="field mb-4 col-12">
+
+          <span class="text-900 text-xl font-bold mb-4 block">Attacher des points à l'ordre du jour</span>
+          <p-toast></p-toast>
+
+          <app-set-model-poj [model]="model_id"></app-set-model-poj>
+
+        </div>
+
+      </div>
+    </div>
+  </div>

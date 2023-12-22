@@ -1,0 +1,255 @@
+<p-toast></p-toast>
+
+<p-dialog #editPrecense [(visible)]="visible" [breakpoints]="{'960px': '75vw', '640px': '90vw'}"
+    [style]="{width: '90%'}" [contentStyle]="{minHeight: '450px'}" [modal]="true" [closable]="true" header="">
+    <div class="grid">
+
+        <div class="col-12 md:col-12" *ngIf="setQuorumAtteint">
+            <div class="card h-full" [style]="{'background':'#2196F3', 'color':'#FFFFFF'}">
+                <div class="p-2 h-full flex flex-column justify-content-between">
+                    <div class="flex gap-3 align-items-center">
+                        <span class="text-xl font-semibold"> Le Quorum est bien validé:</span>
+                        <span class="text-xl font-semibold" *ngIf="seance.quorumAtteint">Quorum Atteint </span>
+                        <span class="text-xl font-semibold" *ngIf="!seance.quorumAtteint"> Quorum non Atteint </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-12 md:col-8">
+            <div class="card h-full">
+                <div class="p-2 h-full flex flex-column justify-content-between">
+                    <div class="flex aling-items-center justify-content-between mb-3">
+                        <div class="flex gap-3 flex-column justify-content-between w-full md:flex-row md:align-items-center">
+                            <div class="flex gap-3 align-items-center">
+                                <div class="text-4xl"><i class="pi pi-users" style="font-size: 30px;"></i></div>
+                                <div class="flex flex-column gap-1 text-600">
+                                    <span class="text-2xl font-semibold"><span class="text-color">Présence</span></span>
+                                    <span>De la séance du {{ dateSeance }} <span class="font-bold text-primary">, {{titreOrgane}}</span></span>
+                                </div>
+                            </div>
+                            <div class="flex align-items-center gap-2">
+                                <button pButton pRipple type="button" label="Primary" icon="pi pi-send"
+                                    class="p-button-outlined" label="Imprimer la feuille de présence"
+                                    (click)="exportPdfListMembres()"> </button>
+                                <button *ngIf="evenement.remuneration" pButton pRipple type="button" label="Primary"
+                                    icon="pi pi-chart-line" label="Imprimer l'état de remise des jetons"
+                                    (click)="exportPdfListRemiseJetons()"></button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="flex flex-column gap-2 text-primary mt-4 md:mt-4">
+                        <div class="grid grid-nogutter font-medium">
+                            <span class="col-6 text-6xl md:col-2 flex align-items-center">{{listPresent.length}} <span
+                                    class="text-base ml-2">Membre</span></span>
+                            <span class="col-6 text-6xl md:col-2 flex align-items-center">{{selectedPresence.length}}
+                                <span class="text-base ml-2">Présent</span></span>
+                            <span class="col-6 text-6xl md:col-2 flex align-items-center">{{listPresent.length -
+                                selectedPresence.length}} <span class="text-base ml-2">Absent</span></span>
+
+                            <div>
+                                <p-knob [showValue]="false" [size]="36" rangeColor="#EEEEEE" [readonly]="true"
+                                    [max]="listPresent.length" [(ngModel)]="selectedPresence.length"
+                                    [size]="100"></p-knob>
+                            </div>
+                            <div class="flex flex-column justify-content-between gap-1">
+                                <span class="text-color-secondary text-sm"><span
+                                        class="font-bold">{{selectedPresence.length}}</span>/{{listPresent.length}}
+                                    Membres</span>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-12 md:col-4">
+            <div class="card h-full">
+                <div class="p-2 h-full flex flex-column justify-content-between">
+                    <div class="flex aling-items-center justify-content-between mb-3">
+                        <div
+                            class="flex gap-3 flex-column justify-content-between w-full md:flex-row md:align-items-center">
+                            <div class="flex gap-3 align-items-center">
+                                <div class="text-4xl"><i class="pi pi-verified" style="font-size: 30px;"></i></div>
+                                <div class="flex flex-column gap-1 text-600">
+                                    <span class="text-2xl font-semibold"><span class="text-color">Quorum</span></span>
+                                </div>
+                            </div>
+                            <div class="flex align-items-center gap-2">
+                                <button pButton pRipple type="button" label="Primary" icon="pi pi-send"
+                                    class="p-button-outlined" label="Valider le quorum"
+                                    (click)="openConfirmQuorum()"></button>
+                                <button *ngIf="setQuorumAtteint" pButton pRipple type="button" label="Primary" icon="pi pi-chart-line"
+                                    label="Imprimer présence membre" (click)="exportPdfListMembresPresent()"></button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="flex flex-column gap-2 text-primary mt-4 md:mt-4">
+                        <div class="grid grid-nogutter font-medium">
+
+                            <div class="flex flex-wrap gap-3 col-6 md:col-4"
+                                *ngIf="evenement.organe.typeOrgane.quorum > 0">
+                                <div class="flex align-items-center text-xl ">
+                                    <span class="text-color">Valeur Quorum: <span
+                                            class="font-semibold">{{evenement.organe.typeOrgane.quorum}}</span></span>
+                                </div>
+
+                            </div>
+                            <div class="flex flex-wrap gap-3 col-6 md:col-8">
+                                <div class="flex align-items-center text-xl ">
+                                    <span class="text-color">Quorum atteint:</span>
+                                </div>
+                                <div class="flex align-items-center mr-4">
+                                    <p-radioButton name="quorumAtteint" value=1 [(ngModel)]="quorumAtteint"
+                                        inputId="true"></p-radioButton>
+                                    <label for="true" class="ml-2">Oui</label>
+                                </div>
+
+                                <div class="flex align-items-center  ">
+                                    <p-radioButton name="quorumAtteint" value=0 [(ngModel)]="quorumAtteint"
+                                        inputId="false"></p-radioButton>
+                                    <label for="false" class="ml-2">Non</label>
+                                </div>
+
+                            </div>
+
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-12 lg:col-12">
+            <p-toolbar styleClass="mb-4">
+                <ng-template pTemplate="left">
+                    <div class="my-2">
+                        <button pButton pRipple label="Valider la présence" icon="pi pi-check"
+                            class="p-button-success mr-2" (click)="openConfirmPresence()"></button>
+                    </div>
+                </ng-template>
+            </p-toolbar>
+
+            <p-table #dt [value]="listPresent" (onRowSelect)="onChangePresent($event)"
+                (onRowUnselect)="onChangePresent($event)" [columns]="cols" responsiveLayout="scroll"
+                [(selection)]="selectedPresence" selectionMode="multiple" [rowHover]="true" dataKey="convocationId">
+                <ng-template pTemplate="caption">
+                    <div class="flex flex-column md:flex-row md:justify-content-between md:align-items-center">
+                        <h5 class="m-0">Liste des membres présents</h5>
+                        <span class="block mt-2 md:mt-0 p-input-icon-left">
+                            <i class="pi pi-search"></i>
+                            <input pInputText type="text" (input)="onGlobalFilter(dt, $event)"
+                                placeholder="Rechercher..." class="w-full sm:w-auto" />
+                        </span>
+                    </div>
+                </ng-template>
+                <ng-template pTemplate="header">
+                    <tr>
+                        <th style="width:5%">
+                            <p-tableHeaderCheckbox></p-tableHeaderCheckbox>
+                        </th>
+                        <th pSortableColumn="membreNom">Membre<p-sortIcon field="membreNom"></p-sortIcon></th>
+                        <th pSortableColumn="profilNom">Profil <p-sortIcon field="profilNom"></p-sortIcon></th>
+                        <th pSortableColumn="membreFonction">Fonction <p-sortIcon field="membreFonction"></p-sortIcon>
+                        </th>
+                        <th pSortableColumn="remplacantNom">A repmlacer <p-sortIcon field="remplacantNom"></p-sortIcon>
+                        </th>
+                        <th pSortableColumn="jetonRemis" *ngIf="evenement.remuneration">Jeton remis <p-sortIcon
+                                field="jetonRemis"></p-sortIcon></th>
+                        <th pSortableColumn="somme" *ngIf="evenement.remuneration">Somme <p-sortIcon
+                                field="somme"></p-sortIcon></th>
+
+                    </tr>
+                </ng-template>
+                <ng-template pTemplate="body" let-membre>
+                    <tr>
+                        <td>
+                            <p-tableCheckbox [value]="membre"></p-tableCheckbox>
+                        </td>
+
+
+                        <td style="width:15%; min-width:8rem;">
+                            <ng-container *ngIf="membre.membrePhoto; else elseAVBlock">
+                                <img [alt]="membre.membre_id" src="assets/demo/images/avatar/{{membre.membrePhoto}}"
+                                    width="32" style="vertical-align: middle" />
+                            </ng-container>
+                            <ng-template #elseAVBlock>
+                                <p-avatar [label]="getAvatarMembreLabel(membre.membreNom, membre.membrePrenom)"
+                                    shape="circle"
+                                    [style]="{'background-color':'#2196F3', 'color': '#ffffff'}"></p-avatar>
+                            </ng-template>
+                            <span class="image-text ml-2 mr-1 font-semibold">{{membre.membreNom }} </span>
+                        </td>
+                        <td style="width:15%; min-width:10rem;">
+                            <span class="p-column-title">Profil</span>
+                            {{ membre.profilNom }}
+                        </td>
+
+                        <td style="width:15%; min-width:8rem;">
+                            <span class="p-column-title">Fonction</span>
+                            {{membre.membreFonction}}
+                        </td>
+
+                        <td style="width:15%; min-width:8rem;">
+                            <span class="p-column-title">A remplacer</span>
+                            {{membre.remplacantNom}}
+                        </td>
+
+
+                        <td style="width:15%; min-width:8rem;" *ngIf="evenement.remuneration">
+                            <p-inputSwitch inputId="isRemunerer" [(ngModel)]="membre.jetonRemis"
+                                (onChange)="editSomme($event)"></p-inputSwitch>
+                        </td>
+
+                        <td pEditableColumn *ngIf="evenement.remuneration"
+                            [pEditableColumnDisabled]="!membre.present || !membre.jetonRemis"
+                            style="width:15%; min-width:8rem;">
+                            <p-cellEditor>
+                                <ng-template pTemplate="input">
+                                    <input pInputText type="text" [(ngModel)]="membre.somme" required>
+                                </ng-template>
+                                <ng-template pTemplate="output">
+                                    <span class="font-semibold"> {{membre.somme}}</span>
+                                </ng-template>
+                            </p-cellEditor>
+                        </td>
+
+                    </tr>
+                </ng-template>
+            </p-table>
+
+            <p-dialog [(visible)]="validatePresenceDialog" header="Confirm" [modal]="true" [style]="{width:'450px'}">
+                <div class="flex align-items-center justify-content-center">
+                    <i class="pi pi-exclamation-triangle mr-3" style="font-size: 2rem"></i>
+                    <span>Êtes-vous sur de valider la présence</span>
+                </div>
+                <ng-template pTemplate="footer">
+                    <button pButton pRipple icon="pi pi-times" class="p-button-text" label="Non"
+                        (click)="validatePresenceDialog = false"></button>
+                    <button pButton pRipple icon="pi pi-check" class="p-button-text" label="Oui"
+                        (click)="validatePresence()"></button>
+                </ng-template>
+            </p-dialog>
+
+            <p-dialog [(visible)]="validateQuorumeDialog" header="Confirm" [modal]="true" [style]="{width:'450px'}">
+                <div class="flex align-items-center justify-content-center">
+                    <i class="pi pi-exclamation-triangle mr-3" style="font-size: 2rem"></i>
+                    <span>Êtes-vous sur de valider le quorum?</span>
+                </div>
+                <ng-template pTemplate="footer">
+                    <button pButton pRipple icon="pi pi-times" class="p-button-text" label="Non"
+                        (click)="validateQuorumeDialog = false"></button>
+                    <button pButton pRipple icon="pi pi-check" class="p-button-text" label="Oui"
+                        (click)="confirmQuorum()"></button>
+                </ng-template>
+            </p-dialog>
+        </div>
+
+
+    </div>
+
+    <ng-template pTemplate="footer">
+        <button pButton pRipple label="Fermer" icon="pi pi-times" class="p-button-text" (click)="hideDialog()"></button>
+    </ng-template>
+</p-dialog>

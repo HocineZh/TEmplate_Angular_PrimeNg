@@ -1,0 +1,38 @@
+<p-sidebar  #sidebar [(visible)]="parent.sidebarCommentsVisible" position="right" [baseZIndex]="10000"   styleClass="w-full md:w-5 lg:w-5 xl:w-5" [blockScroll]="true"  [showCloseIcon]="true" [transitionOptions]="'.3s cubic-bezier(0, 0, 0.2, 1)'">
+    <ng-template pTemplate="header">
+        <div class="flex align-items-center my-2 font-bold">
+            <span class="text-xl text-900 mr-4">Commentaires</span>
+            <span class="inline-flex align-items-center justify-content-center w-2rem h-2rem border-1 surface-border border-round">{{selectedPo.commentaires?.length}}</span>
+        </div>
+    </ng-template>
+    <ng-template pTemplate="content">      
+        
+        <ul class="list-none p-0 m-0">
+            <li *ngFor="let comment of selectedPo.commentaires" class="flex p-3 mb-3 border-1 surface-border border-round">
+                <!-- <img [src]="comment.image" class="w-3rem h-3rem mr-3 flex-shrink-0" /> -->
+                <p-avatar [label]="getAvatarMembreLabel(comment)"   shape="circle" [style]="{'background-color':'#2196F3', 'color': '#ffffff' }" pTooltip="{{getMembreComment(comment)}}"></p-avatar>
+                <div class="pl-2">
+                    <span class="font-semibold text-900 text-sm">{{getMembreComment(comment)}}</span>
+                    <p class="font-semibold text-600 m-0 text-sm">{{comment.date_ajout | date :'dd/MM/yyyy'}}</p>
+                    <p class="line-height-3 mb-0 my-3">{{comment.commentaire}}</p>
+                </div>
+            </li>
+        </ul>
+
+    </ng-template>
+    <ng-template pTemplate="footer" >
+        <div  [elemPrivilege]="['evenement.odj.ajouter_commentaire','evenement.odj.commentaires_gestion']" accessEvmControl class="mb-3 p-inputgroup">            
+           
+            <span class="p-input-icon-left flex-1 w-full border-round ">
+                <i class="pi pi-user-edit" (click)="clearText()" ></i>
+                <input pInputText class="p-fluid w-full" id="titre_po" type="text" pInputText placeholder="Ajouter un commentaire"  [(ngModel)]="commentaire" (keydown.enter)="addCommentairePointOrdre()" />
+            </span>
+            <div   class="flex w-full sm:w-auto gap-3 inline-flex ml-2">
+                <button pButton pRipple type="button" pTooltip="Ajouter" icon="pi pi-plus" class="p-button-rounded" (click)="addCommentairePointOrdre()" [disabled]="commentaire.trim() === ''" ></button>
+                  
+            </div>
+        </div>
+    </ng-template>
+</p-sidebar>
+
+

@@ -1,0 +1,57 @@
+<div class="card">
+  <p-toast></p-toast>
+  <span class="text-900 text-xl font-bold mb-4 block"  *ngIf="!profil.id" >Ajouter un profil</span>
+  <span class="text-900 text-xl font-bold mb-4 block" *ngIf="profil.id" >Modifier un profil</span>
+  <div class="grid">
+
+      <div class="col-12 lg:col-12">
+          <div class="grid formgrid p-fluid">
+              <div class="field mb-4 col-12">
+                  <label for="code_role" class="font-medium text-900 label-required">Nom du Profil</label>
+                  <input id="code_role" type="text" pInputText  [(ngModel)]="profil.nom" required autofocus [ngClass]="{'ng-invalid ng-dirty' : submitted && !profil.nom}">
+                  <small style="color: red;" *ngIf="submitted && !profil.nom">Champ Obligatoire</small>
+              </div>
+
+              <div class="field mb-4 col-12">
+                  <label for="bio" class="font-medium text-900">Description du Profil</label>
+                  <textarea id="bio" type="text" pInputTextarea rows="5" [autoResize]="true"  [(ngModel)]="profil.description"  autofocus ></textarea>
+              </div>
+
+              <div class="field mb-4 col-12 md:col-12 ">
+                <label for="nom" class="font-medium text-900 label-required">Fréquence </label>
+                <div class="radio-button-inline">
+                  <div class="col-12 md:col-4">
+                    <div class="field-radiobutton">
+                      <p-radioButton name="duplicated" [value]="false"  [(ngModel)]="profil.duplicated" id="etatCivil1"></p-radioButton>
+                      <label for="city1">Unique</label>
+                    </div>
+                  </div>
+                  <div class="col-12 md:col-4">
+                    <div class="field-radiobutton">
+                      <p-radioButton name="duplicated" [value]="true" [(ngModel)]="profil.duplicated" id="etatCivil2"></p-radioButton>
+                      <label for="city2">Multiple</label>
+                    </div>
+                  </div>
+                </div>
+                <small style="color: red;" *ngIf="submitted && profil.duplicated == null">Champ Obligatoire</small>
+              </div>
+              <div class="col-12 xl:col-12">
+                <div class="card">
+                  <h5>Liste des privlèges</h5>
+                  <p-pickList [source]="privileges" [target]="targetPrivileges" sourceHeader="Liste des prévilèges" targetHeader="Liste des prévilèges sélectionnées" [dragdrop]="true"
+                        [responsive]="true" [sourceStyle]="{'height':'250px'}"  [targetStyle]="{'height':'250px' }"
+                        filterBy="codePriv" sourceFilterPlaceholder="Chercher par code .." targetFilterPlaceholder="Chercher par code" breakpoint="1400px"
+                        >
+                    <ng-template let-privilege pTemplate="item">
+                      <div>{{privilege.description}}</div>
+                    </ng-template>
+                  </p-pickList>
+                </div>
+              </div>
+              <div class="col-12">
+                  <button pButton pRipple label="{{buttonText}}" (click)="addProfil()" class="w-auto mt-3 p-button-success" [elemPrivilege]="['profil.add','profil.update']" accessControl></button>
+              </div>
+          </div>
+      </div>
+  </div>
+</div>

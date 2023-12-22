@@ -1,0 +1,150 @@
+<div class="card add-user">
+  <span class="text-900 text-xl font-bold mb-4 block"   *ngIf="!userId" >Créer un utilisateur</span>
+  <span class="text-900 text-xl font-bold mb-4 block" *ngIf="userId && !readOnly">Modifier un utilisateur</span>
+  <span class="text-900 text-xl font-bold mb-4 block" *ngIf="userId && readOnly">Information de l'utilisateur</span>
+  <p-toast></p-toast>
+  <div class="grid">
+    <div class="col-12 lg:col-12">
+      <form class="grid formgrid p-fluid" [formGroup]="userForm">
+
+        <div class="field mb-4 col-12 md:col-6">
+          <label for="nom" class="font-medium text-900 label-required" *ngIf="!readOnly">Nom</label>
+          <label for="nom" class="font-medium text-900 " *ngIf="readOnly">Nom</label>
+          <span class="p-input-icon-left">
+            <i class="pi pi-id-card"></i>
+            <input type="text" pInputText placeholder="Nom" formControlName="nom" [ngClass]="{'ng-invalid ng-dirty' : this.isAddFailed && f['nom'].errors}"/>
+            <small style="color: red;" id="nom-help" *ngIf="submitted && f['nom'].errors && f['nom'].errors?.['required']" class="p-error block">Champ Obligatoire </small>
+          </span>
+        </div>
+        <div class="field mb-4 col-12 md:col-6">
+          <label for="Prenom" class="font-medium text-900 label-required"  *ngIf="!readOnly">Prenom</label>
+          <label for="Prenom" class="font-medium text-900"  *ngIf="readOnly">Prenom</label>
+          <span class="p-input-icon-left">
+            <i class="pi pi-id-card"></i>
+            <input type="text" pInputText placeholder="Prenom" formControlName="prenom"   [ngClass]="{'ng-invalid ng-dirty' : this.isAddFailed && f['prenom'].errors}"/>
+            <small style="color: red;" id="prenom-help" *ngIf="submitted && f['prenom'].errors && f['prenom'].errors?.['required']" class="p-error block">Champ Obligatoire </small>
+          </span>
+        </div>
+        <div class="field mb-4 col-12 md:col-6">
+          <label for="email" class="font-medium text-900 label-required" *ngIf="!readOnly">Nom d'utilisateur</label>
+          <label for="email" class="font-medium text-900" *ngIf="readOnly">Nom d'utilisateur</label>
+          <span class="p-input-icon-left">
+            <i class="pi pi-user"></i>
+            <input type="text" pInputText placeholder="Nom d'utilisateur" formControlName="login"  [ngClass]="{'ng-invalid ng-dirty' : this.isAddFailed && f['login'].errors}"/>
+            <small style="color: red;" id="login-help" *ngIf="submitted && f['login'].errors && f['login'].errors?.['required']" class="p-error block">Champ Obligatoire </small>
+          </span>
+        </div>
+        <div class="field mb-4 col-12 md:col-6 ">
+          <label for="nom" class="font-medium text-900 label-required">Etat Civil</label>
+          <div class="radio-button-inline">
+            <div class="col-12 md:col-4">
+              <div class="field-radiobutton">
+                <p-radioButton name="etatCivil" value="Mr" formControlName="etatCivil" id="etatCivil1"></p-radioButton>
+                <label for="city1">Mr</label>
+              </div>
+            </div>
+            <div class="col-12 md:col-4">
+              <div class="field-radiobutton">
+                <p-radioButton name="etatCivil" value="Mme" formControlName="etatCivil" id="etatCivil2"></p-radioButton>
+                <label for="city2">Mme</label>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="field mb-4 col-12 md:col-6">
+          <label for="bio" class="font-medium text-900 label-required">Fonction</label>
+          <span class="p-input-icon-left">
+            <i class="pi pi-briefcase"></i>
+            <input type="text" pInputText placeholder="Fonction ..." formControlName="fonction"  [ngClass]="{'ng-invalid ng-dirty' : this.isAddFailed && f['fonction'].errors}"/>
+            <small style="color: red;" id="email-help" *ngIf="submitted && f['fonction'].errors && f['fonction'].errors?.['required']" class="p-error block">Champ Obligatoire </small>
+          </span>
+        </div>
+        <div class="field mb-4 col-12 md:col-6">
+          <label for="role" class="font-medium text-900 label-required">Role</label>
+          <p-multiSelect [options]="roles" formControlName="roles" [ngClass]="{'ng-invalid ng-dirty' : this.isAddFailed && f['roles'].errors}" placeholder="Selectionner le role" optionLabel="nom" class="multiselect-custom" display="chip">
+            <ng-template let-role pTemplate="item">
+              <div class="flex align-items-center">
+                <span class="ml-2">{{role.nom}}</span>
+              </div>
+            </ng-template>
+          </p-multiSelect>
+          <small style="color: red;" id="roles-help" *ngIf="submitted && f['roles'].errors && f['roles'].errors?.['required']" class="p-error block">Champ Obligatoire </small>
+        </div>
+
+        <div class="field mb-4 col-12 md:col-6">
+          <label for="structure" class="font-medium text-900 label-required">Structure</label>
+          <p-dropdown [options]="structures" formControlName="structure" [ngClass]="{'ng-invalid ng-dirty' : this.isAddFailed && f['structure'].errors}" optionLabel="nom" [filter]="true" filterBy="nom" [showClear]="true" display="chip" placeholder="Selectionner la structure">
+
+            <ng-template let-structure pTemplate="item">
+              <div class="structure-item">
+                <div>{{structure.nom}} ==> {{structure.societe.raisonSocial}}</div>
+              </div>
+            </ng-template>
+          </p-dropdown>
+          <small style="color: red;" id="roles-help" *ngIf="submitted && f['structure'].errors && f['structure'].errors?.['required']" class="p-error block">Champ Obligatoire </small>
+        </div>
+
+        <div class="field mb-4 col-12 md:col-6">
+          <label for="num_tel" class="font-medium text-900 label-required" >Numéro Télephone</label>
+          <div class="p-inputgroup">
+            <span class="p-inputgroup-addon">(+213)</span>
+            <p-inputNumber id="numTel" formControlName="phone" [ngClass]="{'ng-invalid ng-dirty' : this.isAddFailed && f['phone'].errors}"> </p-inputNumber>
+          </div>
+          <small style="color: red;" id="phone-help" *ngIf="submitted && f['phone'].errors && f['phone'].errors?.['required']" class="p-error block">Champ Obligatoire </small>
+        </div>
+        <div class="field mb-4 col-12 md:col-6">
+          <label for="fax" class="font-medium text-900">Fax</label>
+          <div class="p-inputgroup">
+            <span class="p-inputgroup-addon">(+213)</span>
+            <p-inputNumber id="numTel" formControlName="fax"> </p-inputNumber>
+          </div>
+          <small style="color: red;" id="fax-help" *ngIf="submitted && f['fax'].errors " class="p-error block">Champ Obligatoire </small>
+        </div>
+
+        <div class="field mb-4 col-12 md:col-6">
+          <label for="dateNaiss" class="font-medium text-900">Date de naissance</label>
+          <p-calendar [showIcon]="true" inputId="icon"  dateFormat="yy-mm-dd" formControlName="dateNaiss" ></p-calendar>
+
+        </div>
+        <div class="field mb-4 col-12 md:col-6">
+          <label for="pays" class="font-medium text-900">Pays</label>
+          <p-dropdown [options]="pays" formControlName="pays" [ngClass]="{'ng-invalid ng-dirty' : this.isAddFailed && f['pays'].errors}" optionLabel="nom" [filter]="true" filterBy="nom" [showClear]="true" display="chip" optionValue="nom" placeholder="Selectionner le pays">
+            <ng-template let-pays pTemplate="item">
+              <div class="flex align-items-center">
+                <img src="{{pays.image}}" [class]="'flag flag-' + pays.designation.toLowerCase()" style="width:21px"  />
+                <span class="ml-2">{{pays.nom}}</span>
+              </div>
+            </ng-template>
+          </p-dropdown>
+          <small style="color: red;" id="roles-help" *ngIf="submitted && f['pays'].errors && f['pays'].errors?.['required']" class="p-error block">Champ Obligatoire </small>
+        </div>
+        <div class="field mb-4 col-12 md:col-6">
+          <label for="email" class="font-medium text-900 label-required">Email</label>
+          <span class="p-input-icon-left">
+            <i class="pi pi-envelope"></i>
+            <input type="text" pInputText placeholder="Email"  formControlName="email" [ngClass]="{'ng-invalid ng-dirty' : this.isAddFailed && f['email'].errors}"/>
+            <small style="color: red;" id="email-help" *ngIf="submitted && f['email'].errors && f['email'].errors?.['required']" class="p-error block">Champ Obligatoire </small>
+            <small style="color: red;" id="email-help" *ngIf="submitted && f['email'].errors && f['email'].errors?.['email']" class="p-error block">Format Email Invalid </small>
+          </span>
+        </div>
+        <div class="field mb-4 col-12 md:col-6">
+          <label for="bio" class="font-medium text-900">Adresse</label>
+          <span class="p-input-icon-left">
+            <i class="pi pi-map-marker"></i>
+            <input type="text" pInputText placeholder="Adresse ..." formControlName="adresse"  [ngClass]="{'ng-invalid ng-dirty' : this.isAddFailed && f['adresse'].errors}"/>
+            <small style="color: red;" id="adresse-help" *ngIf="submitted && f['adresse'].errors " class="p-error block">Champ Obligatoire </small>
+          </span>
+        </div>
+
+        <div class="col-12 formgroup-inline">
+            <button pButton pRipple label="Créer utilisateur" class="field w-auto mt-3 p-button-success" (click)="saveUser()" *ngIf="!userId && !readOnly"></button>
+            <button pButton pRipple label="Modifier l'utilisateur" class="field w-auto mt-3 p-button-success" (click)="saveUser()" *ngIf="userId && !readOnly"></button>
+            <button pButton pRipple label="Annuler" class="field w-auto mt-3 p-button-plain" (click)="annuler()" *ngIf="!readOnly"></button>
+            <button pButton pRipple label="Retour" class="field w-auto mt-3 p-button-plain" (click)="annuler()" *ngIf="readOnly"></button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+

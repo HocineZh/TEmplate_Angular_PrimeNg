@@ -1,0 +1,10 @@
+:host ::ng-deep {
+.p-accordion .p-accordion-content{
+    padding: 0.2rem 0.5rem;
+}
+
+.p-accordion .p-accordion-header:not(.p-disabled).p-highlight .p-accordion-header-link{
+    background-color: var(--surface-200)
+  }
+
+}

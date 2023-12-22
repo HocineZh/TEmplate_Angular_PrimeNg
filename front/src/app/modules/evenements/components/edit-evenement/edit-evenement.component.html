@@ -1,0 +1,585 @@
+
+<div >
+  <div class="card">
+      <p-toast key="tst"></p-toast>
+      <p-confirmDialog header="Confirmation" key="confirmation" icon="pi pi-exclamation-triangle" [style]="{width: '350px'}" acceptButtonStyleClass="p-button-text" rejectButtonStyleClass="p-button-text">
+      </p-confirmDialog>
+
+    <div *ngIf="isEvenementLoaded">
+        <div class=" grid col-12 pb-1 " style="position:relative">
+
+            <h6 *ngIf="selectedEvenement.previsionnel === true ; else elseOg" class="font-semibold mb-3 p-2 organeEditEv" [style.backgroundColor]= "'rgba(145,146,154,0.7)'" [style.borderColor]= 'selectedEvenement.typeOrgane.backgroundColor' [style.color]= 'selectedEvenement.typeOrgane.textColor' >{{ selectedEvenement.organe.titre}}</h6>
+            <ng-template #elseOg>
+                <h6 class="font-semibold mb-3 p-2 organeEditEv" [style.backgroundColor]= 'selectedEvenement.backgroundColor' [style.color]= 'selectedEvenement.typeOrgane.textColor' >{{ selectedEvenement.organe.titre}} <span class="mr-1">N°:</span>{{ selectedEvenement.numero }}</h6>
+            </ng-template>
+                    <div class="col-12 sm:col-8 pb-0">
+                    <div class="border-round "  style="position: relative;" class="surface-border flex align-items-center">
+                        <div class="mr-4" >
+                            <time datetime="" class="icon">
+                                <em>{{selectedEvenement.dateDebut | date : "cccc"}} </em>
+                                <strong>{{selectedEvenement.dateDebut | date : "MMMM"}} </strong>
+                                <span>{{selectedEvenement.dateDebut | date : "dd"}} </span>
+                                </time>
+                            </div>
+                        <div class="flex flex-column mt-3">
+
+                            <h5 class="text-900 font-semibold text-muted mb-2">{{selectedEvenement.titre}}</h5>
+                            <span class="text-800 font-medium mb-3">
+                                <span  class="text-900 font-medium mb-3"  *ngIf="selectedEvenement.seances!.length>1">
+                                    Séance N°: <span class="text-red-500">{{ selectedEvenement.seances!.length }} </span> <span class="mx-1">-</span>
+                                </span>
+                                {{ getFormattedDateEvent(selectedEvenement.dateDebut,selectedEvenement.dateFin)  }}
+                            </span>
+
+                            <!-- <span class="text-900 font-medium text-lg mb-3">Etat: {{selectedEvenement.etat}}</span> -->
+                            <span class="text-900 font-medium text-lg mb-3">
+                                <span class="text-900 font-medium text-lg" style="display:inline-block ;margin-right: 5px;">Etat: </span>
+                                <span style="display:inline-block;position: relative;" [class]="'ev-badge-status py-2 px-3 font-semibold  ev-status-' + sharedDataEvService.getClassEtatEvenement(selectedEvenement.etat)">
+                                {{ sharedDataEvService.getformattedEtatEvenement(selectedEvenement.etat) }}
+                                <i *ngIf="selectedEvenement.etat ==='PUBLIER'" class="pi pi-send ev-badge-icon"></i>
+                                <i *ngIf="selectedEvenement.etat ==='CLOTURER'" class="pi pi-lock ml-2"></i>
+                                <i *ngIf="selectedEvenement.etat ==='ANNULER'" class="pi pi-times-circle ml-2"></i>
+                                </span>
+                            </span>
+                        </div>
+
+                    </div>
+                    </div>
+                    <div class="col-12 sm:col-4 lex gap-2 flex flex-row-reverse pb-0">
+                     <div *ngIf="!selectedEvenement.previsionnel && selectedEvenement.etat!=='CLOTURER' ">
+                      <div [elemPrivilege]="['evenement.menuev_actions']" accessEvmControl>
+                       <p-menu #menuActionsEvenement [model]="itemsActionsEv" appendTo="body" styleClass="menuActions" [popup]="true"></p-menu>
+                       <button pButton pRipple label="Actions" (click)="menuActionsEvenement.toggle($event)" icon="pi pi-list" class="p-button-outlined p-button-primary" style="height: fit-content;"></button>
+                      </div>
+                    </div>
+                    <div *ngIf="selectedEvenement.previsionnel">
+
+                         <p-menu #menuActionsEvenement [model]="itemsActionsEv" appendTo="body" styleClass="menuActions" [popup]="true"></p-menu>
+                         <button pButton pRipple label="Actions" (click)="menuActionsEvenement.toggle($event)" icon="pi pi-list" class="p-button-outlined p-button-primary" style="height: fit-content;"></button>
+
+                    </div>
+                    </div>
+
+        </div>
+
+
+        <p-tabView  [(activeIndex)]="activeIndexTabView" (onChange)="handleChangeTabs($event)" orientation="left" styleClass="tabview-custom">
+
+             <p-tabPanel class="line-height-3 m-0">
+                                <ng-template pTemplate="header">
+                                    <i class="pi pi-calendar"></i>
+                                    <span style="margin:0 0.5rem;padding-top: 1px;">Détails</span>
+                                </ng-template>
+
+                                <div *ngIf="view === 'details'">
+                                    <div class="grid">
+                                        <div class="col-12">
+                                            <div *ngIf="!selectedEvenement.previsionnel && (selectedEvenement.etat === 'CREATION' || selectedEvenement.etat === 'PUBLIER' || selectedEvenement.etat === 'EN COURS' )"
+                                                class="card p-fluid pb-0 mb-3" style="{{getBackColorCardPB()}}" style="border-color: #f0bebe; color: #283e59;"   [elemRolePrivilege]="['evenement.details']" [elemPrivilege]="['evenement.detailsPublication']" accessEvmControl >
+                                                    <div class="p-formgrid grid pt-1 px-0">
+                                                        <div class="col-12 xl:col-9 lg:col-9 md:col-9 p-0 mb-0">
+                                                        <p *ngIf="(selectedEvenement.etat === 'CREATION')" class="pt-3 ml-2 mb-5" style="line-height: 2;">
+                                                            Cet évènement n'est pas encore publié.Les membres n'auront pas d'accéss a cet évènement.
+                                                        </p>
+                                                        <ul *ngIf="(selectedEvenement.etat === 'PUBLIER' || selectedEvenement.etat === 'EN COURS')" class="card_etat">
+                                                                <li>Cet évènement est <strong>publié</strong> et <strong>visible</strong> par les membres de l'organe de gestion. Date publication :<span class="font-bold mr-1"> {{selectedEvenement.publierLe! | date : 'EEEE, dd MMM yyyy' }} </span></li>
+                                                                <li *ngIf="selectedEvenement.dateevPublier && !selectedEvenement.dateevValide">
+                                                                 La <strong>date</strong> de l'évènement est <strong>publiée</strong> pour validation par les membres. Dernier délais
+                                                                    <span class="text-red-400 font-bold mr-1"> {{ sharedDataEvService.getCalculatedDateDelais(selectedEvenement.publierLe!, getDelaisValidationDate() , true)  | date : 'EEEE, dd MMM yyyy' }} </span>
+                                                                </li>
+                                                                <li *ngIf="selectedEvenement.dateevValide">
+                                                                 La <strong>date</strong> de l'évènement est <strong style="color: rgb(90, 175, 76);">validée</strong>.
+                                                                </li>
+                                                                <li *ngIf="!selectedEvenement.dateevPublier && !selectedEvenement.dateevValide ">
+                                                                 La <strong>date</strong> de l'évènement n'est <strong>pas publiée</strong> pour validation par les membres.
+                                                                </li>
+                                                                <li *ngIf="selectedEvenement.odjPublier && !selectedEvenement.odjValide">
+                                                                 L'<strong>ordre du jour</strong> est <strong>publié</strong> pour propositions et validation par les membres. Dernier délais <span class="text-red-400 font-bold mr-1"> {{ sharedDataEvService.getCalculatedDateDelais(selectedEvenement.publierLe!, getDelaisValidationODJ(), true)  | date : 'EEEE, dd MMM yyyy' }} </span>
+                                                                </li>
+                                                                <li *ngIf="selectedEvenement.odjValide">
+                                                                 L'<strong>ordre du jour</strong> de l'évènement est <strong style="color: rgb(90, 175, 76);">validé.</strong>
+                                                                </li>
+                                                                <li *ngIf="!selectedEvenement.odjPublier && !selectedEvenement.odjValide ">
+                                                                  L'<strong>ordre du jour</strong> de l'évènement n'est <strong>pas publié</strong> pour propositions et validation par les membres.
+                                                                </li>
+                                                          </ul>
+
+                                                        </div>
+                                                        <div class="col-12 xl:col-3 lg:col-3 md:col-3 mb-0" [elemPrivilege]="['evenement.publier']" accessEvmControl>
+                                                            <button pButton pRipple type="button" icon="pi pi-send" [label]="(selectedEvenement.etat === 'CREATION') ? 'Publier l\'évènement' : 'Paramètres de publication'" class="p-button-raised" [ngClass]="getBackColorButtonPB()" (click)="publierEvenementDialog()"></button>
+                                                        </div>
+                                                    </div>
+                                            </div>
+                                            <ul *ngIf="!selectedEvenement.previsionnel && (selectedEvenement.etat === 'ANNULER')"
+                                            class="card p-fluid ml-0 mb-4" style="{{getBackColorCardPB()}}"
+                                                                           style="border-color: #f0bebe; color: #283e59;"
+                                                                           style="list-style-type: circle;
+                                                                           list-style-position: inside;
+                                                                           list-style-image: none;
+                                                                           "
+                                                                         [elemRolePrivilege]="['evenement.details']" [elemPrivilege]="['evenement.detailsAnnulation']" accessEvmControl>
+                                                <li class="py-2"> Cet évènement a été <strong>Annulé</strong> le :<span class="font-bold mr-1"> {{selectedEvenement.annulerLe! | date : 'EEEE, dd MMM yyyy' }} </span></li>
+                                                <li class="py-2"> <span class="underline">Motif annulation</span> :  <div class="inline-block" [innerHTML]="selectedEvenement.motifAnnulation"></div>
+                                                </li>
+
+                                            </ul>
+
+                                            <div class="card">
+                                                <div class="col-12">
+                                                    <div class="text-900 font-semibold mb-2 ">{{evenementvValidation.titre.label}}</div>
+                                                    <p class="flex align-items-center m-0">
+                                                        <i class="pi  pi-pencil text-700 mr-2"></i>
+                                                        <span>{{selectedEvenement.titre}}</span>
+
+                                                    </p>
+                                                </div>
+                                                <div class="col-12">
+                                                    <div class="text-900 font-semibold mb-2">{{evenementvValidation.emplacement.label}}</div>
+                                                    <p class="flex align-items-center m-0">
+                                                        <i class="pi pi-map-marker text-700 mr-2"></i>
+                                                        <span>{{selectedEvenement.emplacement}}</span>
+
+                                                    </p>
+                                                </div>
+                                                <div class="col-12">
+                                                    <span class="text-900 font-semibold block mb-2">{{evenementvValidation.description.label}}</span>
+                                                    <p class="flex align-items-center m-0">
+                                                    <i class="pi pi-fw pi-comments text-700 mr-2"></i>
+                                                    <span class="block mb-3">{{selectedEvenement.description}}</span>
+                                                </p>
+                                                </div>
+                                            </div>
+
+
+                                            <div class="card p-fluid">
+                                            <div class="p-formgrid grid">
+                                            <div class="field col">
+                                                <div class="text-900 font-semibold mb-2">{{evenementvValidation.dateDebut.label}}</div>
+                                                <p class="flex align-items-center m-0">
+                                                    <i class="pi pi-fw pi-clock text-700 mr-2"></i>
+                                                    <span>{{selectedEvenement.dateDebut | date: 'dd/MM/yyyy HH:mm'}}</span>
+                                                </p>
+                                                </div>
+                                            <div class="field col">
+                                                <div class="text-900 font-semibold mb-2">{{evenementvValidation.dateFin.label}}</div>
+                                                <p class="flex align-items-center m-0">
+                                                    <i class="pi pi-fw pi-clock text-700 mr-2"></i>
+                                                    <span>{{selectedEvenement.dateFin | date: 'dd/MM/yyyy HH:mm'}}</span>
+                                                </p>
+                                            </div>
+                                            <div class="field col">
+                                                <div class="text-900 font-semibold mb-2">{{evenementvValidation.isperiodique.label}}</div>
+                                                <p class="flex align-items-center m-0">
+                                                    <p-inputSwitch inputId="isPeriodiqueDetails" [(ngModel)]="selectedEvenement.isperiodique" [disabled]="true" ></p-inputSwitch>
+                                                </p>
+                                            </div>
+                                            <div *ngIf="selectedEvenement.isperiodique" class="field col">
+                                                <div class="text-900 font-semibold mb-2">{{evenementvValidation.periodicite.label}}</div>
+                                                <p class="flex align-items-center m-0">
+                                                    <span>{{selectedEvenement.periodicite}}</span>
+                                                </p>
+                                            </div>
+                                        </div>
+                                            </div>
+
+                                            <div class="card p-fluid">
+                                            <div class="p-formgrid grid">
+                                                <div class="field col" *ngIf="!selectedEvenement.typeEvenement || !selectedEvenement.typeEvenement.value">
+                                                    <div class="text-900 font-semibold mb-2">{{evenementvValidation.typeOrgane.label}}</div>
+                                                    <p class="flex align-items-center m-0">
+                                                        <span class="inline-flex flex-shrink-0 w-1rem h-1rem mr-2 border-circle" [style.backgroundColor]="selectedEvenement.typeOrgane.backgroundColor"></span>
+                                                        <span>{{selectedEvenement.typeOrgane.designation}}</span>
+                                                    </p>
+                                                </div>
+                                                <div class="field col">
+                                                    <div class="text-900 font-semibold mb-2">{{evenementvValidation.organe.label}}</div>
+                                                    <p class="flex align-items-center m-0">
+                                                        <span class="inline-flex flex-shrink-0 w-1rem h-1rem mr-2 border-circle" [style.backgroundColor]="selectedEvenement.typeOrgane.backgroundColor"></span>
+                                                        <span>{{selectedEvenement.organe.titre}}</span>
+                                                    </p>
+                                                </div>
+                                                <div class="field col" *ngIf="selectedEvenement.typeEvenement && selectedEvenement.typeEvenement.value">
+                                                    <div class="text-900 font-semibold mb-2">{{evenementvValidation.typeEvenement.label}}</div>
+                                                    <p class="flex align-items-center m-0">
+                                                    <span>{{selectedEvenement.typeEvenement.value.designation}}</span>
+                                                    </p>
+                                                </div>
+                                                <div class="field col">
+                                                    <div class="text-900 font-semibold mb-2">{{evenementvValidation.remuneration.label}}</div>
+                                                    <p class="flex align-items-center m-0">
+                                                        <p-inputSwitch inputId="isRemunererDetails" [(ngModel)]="selectedEvenement.remuneration" [disabled]="true" ></p-inputSwitch>
+                                                    </p>
+                                                </div>
+                                            </div>
+                                            </div>
+                                    </div>
+
+                                </div>
+                                </div>
+
+                                <div *ngIf="view === 'edit'">
+
+                                <div class="grid p-fluid formgrid">
+                                <div class="col-12 field">
+                                    <label for="title" class="text-900 font-semibold label-required">{{evenementvValidation.titre.label}}</label>
+                                    <span class="p-input-icon-left">
+                                        <i class="pi pi-pencil"></i>
+                                        <input id="title" type="text" pInputText placeholder="Titre"   [(ngModel)]="selectedEvenement.titre" [required]="true" maxlength="255" />
+                                    </span>
+                                </div>
+                                <div class="col-12 field">
+                                    <label for="location" class="text-900 font-semibold">{{evenementvValidation.emplacement.label}}</label>
+                                    <span class="p-input-icon-left">
+                                        <i class="pi pi-map-marker"></i>
+                                        <input id="emplacement" type="text" pInputText placeholder="Emplacement" [(ngModel)]="selectedEvenement.emplacement" maxlength="255" />
+                                    </span>
+                                </div>
+                                <div class="col-12 field">
+                                    <label for="description" class="text-900 font-semibold">{{evenementvValidation.description.label}}</label>
+                                    <textarea id="description" type="text" pInputTextarea [rows]="9" [(ngModel)]="selectedEvenement.description" maxlength="2500"></textarea>
+                                </div>
+
+                                <p class="col-12">
+                                    <p-divider></p-divider>
+                                </p>
+
+                                <div class="col-12 grid p-fluid formgrid">
+                                    <div class="col-12 md:col-6 field">
+                                        <label for="type-organe" class="text-900 font-semibold label-required">{{evenementvValidation?.typeOrgane?.label}}</label>
+                                        <p-dropdown  inputId="type-organe" placeholder="Séléctionner un type d'organe"  [options]="[selectedEvenement.typeOrgane]" [(ngModel)]="selectedEvenement.typeOrgane">
+                                            <ng-template pTemplate="selectedItem">
+                                                <div *ngIf="selectedEvenement.typeOrgane" class="flex align-items-center">
+                                                    <div class="flex-shrink-0 w-1rem h-1rem mr-2 border-circle" [style.backgroundColor]="selectedEvenement.typeOrgane.backgroundColor"></div>
+                                                    <div>{{selectedEvenement.typeOrgane.designation}}</div>
+                                                </div>
+                                            </ng-template>
+
+                                            <ng-template let-typeOrgane pTemplate="item">
+                                                <div class="flex align-items-center">
+                                                    <div class="flex-shrink-0 w-1rem h-1rem mr-2 border-circle" [style.backgroundColor]="typeOrgane.backgroundColor"></div>
+                                                    <div>{{typeOrgane.designation}}</div>
+                                                </div>
+                                            </ng-template>
+                                        </p-dropdown>
+                                    </div>
+                                    <div class="col-12 md:col-6 field">
+                                        <label for="organe" class="text-900 font-semibold label-required">{{evenementvValidation?.organe?.label}}</label>
+                                        <p-dropdown  inputId="organe" placeholder="Séléctionner un organe de gestion"  [options]="[selectedEvenement.organe]" [(ngModel)]="selectedEvenement.organe">
+                                            <ng-template pTemplate="selectedItem">
+                                                <div *ngIf="selectedEvenement.typeOrgane" class="flex align-items-center">
+                                                    <div class="flex-shrink-0 w-1rem h-1rem mr-2 border-circle" [style.backgroundColor]="selectedEvenement.typeOrgane.backgroundColor"></div>
+                                                    <div>{{selectedEvenement.organe.titre}}</div>
+                                                </div>
+                                            </ng-template>
+
+                                            <ng-template let-organe pTemplate="item">
+                                                <div class="flex align-items-center">
+                                                    <div class="flex-shrink-0 w-1rem h-1rem mr-2 border-circle" [style.backgroundColor]="selectedEvenement.typeOrgane.backgroundColor"></div>
+                                                    <div>{{organe.titre}}</div>
+                                                </div>
+                                            </ng-template>
+                                        </p-dropdown>
+                                    </div>
+                                    <div class="col-12 md:col-6  field" *ngIf="selectedEvenement.typeEvenement && selectedEvenement.typeEvenement.value">
+                                        <label for="typeEvenement" class="text-900 font-semibold label-required">{{evenementvValidation?.typeEvenement?.label}}</label>
+                                        <p-dropdown inputId="typeEvenement" [options]="type_evenements" [(ngModel)]="selectedEvenement.typeEvenement.value" placeholder="Selectionner un type évènement" ></p-dropdown>
+
+                                    </div>
+                                    <div class="col-12 md:col-6 field">
+
+                                        <label for="isRemunerer" class="text-900 font-semibold">{{evenementvValidation?.remuneration?.label}}</label>
+
+                                        <div style="margin-top: 15px;;" >
+                                            <p-inputSwitch inputId="isRemunerer" [(ngModel)]="selectedEvenement.remuneration"></p-inputSwitch>
+                                        </div>
+
+                                    </div>
+                                </div>
+
+                                <p class="col-12">
+                                    <p-divider></p-divider>
+                                </p>
+
+                                <div class="col-12 md:col-6 field">
+                                    <label for="editStart" class="text-900 font-semibold label-required">{{evenementvValidation.dateDebut.label}}</label>
+                                    <p-calendar dateFormat="dd/mm/yy" [showTime]="true" [showIcon]="true" [minDate]="minDate"   [required]="true" inputId="editDateDebut" [(ngModel)]="selectedEvenement.dateDebut" (onSelect)="onChangeDateDebut($event)" (onInput)="onChangeDateFin($event)"></p-calendar>
+                                </div>
+                                <div class="col-12 md:col-6 field">
+                                    <label for="editEnd" class="text-900 font-semibold label-required">{{evenementvValidation.dateFin.label}}</label>
+                                    <p-calendar  dateFormat="dd/mm/yy"  [showTime]="true" [showIcon]="true"  [required]="true" [minDate]="selectedEvenement.dateDebut!" inputId="editDateEnd" [(ngModel)]="selectedEvenement.dateFin" (onInput)="onChangeDateFin($event)"></p-calendar>
+                                </div>
+                            </div>
+                            </div>
+
+                            <div class="col-12" >
+                                <p-toolbar>
+                                    <div class="p-toolbar-group-left flex flex-wrap">
+
+                                        <button *ngIf="view === 'edit'" pButton pRipple type="button" label="Annuler" class="p-button-text" (click)="handleExit()"></button>
+
+                                    </div>
+
+                                    <div class="p-toolbar-group-right">
+                                        <button pButton *ngIf="view === 'edit'" label="{{ evenementvValidation.bouttonEnregistrer.label }}" class="p-button-success" icon="pi pi-check" (click)="handleSaveEvenement()" [disabled]="selectedEvenement.titre?.trim() === '' || selectedEvenement.dateDebut === null || selectedEvenement.dateFin === null "></button>
+                                       <ng-container *ngIf="selectedEvenement.etat!=='CLOTURER'">
+                                        <button pButton *ngIf="view === 'details'" label="{{ evenementvValidation.bouttonModifier.label }}" icon="pi pi-pencil" (click)="onEditClick()" [disabled]=""  [elemPrivilege]="['evenement.update']" accessEvmControl></button>
+                                      </ng-container>
+                                    </div>
+                                </p-toolbar>
+
+                            </div>
+             </p-tabPanel>
+             <p-tabPanel class="line-height-3 m-0" *ngIf="hasAccessTabReponses()">
+                <ng-template pTemplate="header">
+                    <i class="pi pi-reply mr-2"></i>
+                    <span style="margin:0 0.5rem;padding-top: 1px;">Mes réponses</span>
+                </ng-template>
+
+                <ng-template pTemplate="content">
+
+                    <div class="col-12 card">
+                        <!-- <h5><i class="pi pi-reply mr-2"></i>Mes réponses et validations</h5> -->
+                        <p-accordion>
+                            <p-accordionTab *ngIf="selectedEvenement.dateevPublier"  [selected]="true" class="line-height-3 m-0 " [elemPrivilege]="['evenement.reponses.date']" accessEvmControl>
+                                <ng-template pTemplate="header">
+                                    Réponse validation date <span class="text-sm mx-2">( Dernier délais  <span class="text-red-400">{{sharedDataEvService.getCalculatedDateDelais(selectedEvenement.publierLe!, selectedEvenement.delaisEvenement?.reponseValidationDate, true)  | date : 'EEEE, dd MMM yyyy' }}</span> )</span>
+                                </ng-template>
+                                <div class="grid p-fluid formgrid py-3">
+                                    <div class="col-12 field mb-5">
+                                        <label for="reponseDate" class="text-900 font-semibold">Réponse date :</label>
+                                        <p-selectButton inputId="reponseDate" [options]="reponseDateOptions" [ngClass]="reponseMembreDate"  [(ngModel)]="reponseMembreDate" optionValue="reponseMembreDate" optionLabel="name" ></p-selectButton>
+
+                                    </div>
+                                    <div *ngIf="reponseMembreDate === 'proposer'" class="col-6 field mb-5">
+                                        <label for="propositionMembreDate" class="text-900 font-semibold">Date proposer :</label>
+                                        <p-calendar dateFormat="dd/mm/yy"   [required]="true" [showIcon]="true" inputId="propositionMembreDate" [(ngModel)]="propositionMembreDate" title="Champs obligatoire."></p-calendar>
+
+                                    </div>
+
+                                    <div *ngIf="reponseMembreDate === 'proposer'" class="col-12 field">
+                                        <label for="motifProposition" class="text-900 font-semibold">Motif proposition :</label>
+                                        <textarea id="motifProposition" type="text" pInputTextarea [rows]="7" [(ngModel)]="motifPropositionMembre" style="resize: none"></textarea>
+
+                                    </div>
+                                </div>
+                                <div class="col-12" >
+                                    <p-toolbar>
+                                        <div class="p-toolbar-group-left"></div>
+                                        <div class="p-toolbar-group-right">
+                                            <button pButton label="Enregistrer" icon="pi pi-check" (click)="saveValidationMembreDate()" [disabled]="(!propositionMembreDate && reponseMembreDate === 'proposer') ||(reponseMembreDate !== 'proposer' && reponseMembreDate!='valider' )"></button>
+                                        </div>
+                                    </p-toolbar>
+
+                                </div>
+                            </p-accordionTab>
+                            <p-accordionTab *ngIf="selectedEvenement.dateevValide && selectedEvenement.currentSeance.etat ==='Créée'" class="line-height-3 m-0" [selected]="true" [elemPrivilege]="['evenement.reponses.presence']" accessEvmControl>
+                              <ng-template pTemplate="header">
+                                Réponse validation présence
+                              </ng-template>
+                              <app-convocation [selectedEvenement]="selectedEvenement"></app-convocation>
+                            </p-accordionTab>
+                            <p-accordionTab *ngIf="selectedEvenement.dateevValide && convocationFile" class="line-height-3 m-0" [selected]="true" [elemPrivilege]="['evenement.reponses.presence']" accessEvmControl>
+                              <ng-template pTemplate="header">
+                                Télécharger la convocation signé
+                              </ng-template>
+                              <div class="card">
+                                <div class="formgroup-inline">
+                                  <div class="field col-4 flex flex-wrap">
+                                    <i class="{{this.fileService.getIconFile(convocationFile.nom).icon}}" style="font-size: 1.5rem ; color : {{this.fileService.getIconFile(convocationFile.nom).color}}"></i>
+                                    <span class="file-text">{{convocationFile.nom}}</span>
+                                  </div>
+                                  <div class="field col-3">
+                                    <span class="file-text">{{convocationFile.size}} Ko</span>
+                                  </div>
+                                  <div class="field col-2">
+                                    <button pButton pRipple type="button" icon="pi pi-download" class="p-button-raised p-button-primary" (click)="downloadFile(convocationFile.idFile!,convocationFile.nom)"></button>
+                                  </div>
+
+                                </div>
+                              </div>
+                            </p-accordionTab>
+
+                        </p-accordion>
+
+                    </div>
+
+
+                </ng-template>
+
+             </p-tabPanel>
+
+            <p-tabPanel *ngIf="hasAccessTabMembres()" class="line-height-3 m-0" >
+                        <ng-template pTemplate="header">
+                            <i class="pi pi-user"></i>
+                            <span style="margin:0 0.5rem;padding-top: 1px;">Membres</span>
+                        </ng-template>
+                        <ng-template pTemplate="content" *ngIf="isVisibleMembre$">
+                                <app-edit-membres *ngIf = "selectedEvenement"  [selectedEvenement]="selectedEvenement"></app-edit-membres>
+                        </ng-template>
+            </p-tabPanel>
+
+            <p-tabPanel *ngIf="hasAccessTabRemplacement()" class="line-height-3 m-0" >
+              <ng-template pTemplate="header">
+                  <i class="pi pi-users"></i>
+                  <span style="margin:0 0.5rem;padding-top: 1px;">Remplacements</span>
+              </ng-template>
+              <ng-template pTemplate="content" *ngIf="isVisibleMembre$">
+                      <app-list-remplacement *ngIf = "selectedEvenement"  [selectedEvenement]="selectedEvenement"></app-list-remplacement>
+              </ng-template>
+            </p-tabPanel>
+
+
+
+            <p-tabPanel class="line-height-3 m-0" *ngIf="hasAccessTabODJ()">
+                        <ng-template pTemplate="header">
+                            <i class="pi pi-book"></i>
+                            <span style="margin:0 0.5rem;padding-top: 1px;">Ordre du jour</span>
+                        </ng-template>
+
+                        <ng-container *ngIf="isVisibleODJ$">
+                            <app-edit-odj *ngIf = "selectedEvenement"  [selectedEvenement]="selectedEvenement" ></app-edit-odj>
+                        </ng-container>
+            </p-tabPanel>
+
+            <p-tabPanel class="line-height-3 m-0" *ngIf="selectedEvenement.hasAccessIntervenant">
+                <ng-template pTemplate="header">
+                    <i class="pi pi-file-import"></i>
+                    <span style="margin:0 0.5rem;padding-top: 1px;">Dépôt documents</span>
+                </ng-template>
+
+                <ng-container *ngIf="isVisibleTabIntervenants$">
+                    <app-intervenants-depot-documents *ngIf = "selectedEvenement"  [selectedEvenement]="selectedEvenement" ></app-intervenants-depot-documents>
+                </ng-container>
+    </p-tabPanel>
+
+
+             <p-tabPanel class="line-height-3 m-0" *ngIf="hasAccessTabSeances() && selectedEvenement.dateevValide" >
+                        <ng-template pTemplate="header">
+                            <i class="pi pi-history"></i>
+                            <span style="margin:0 0.5rem;padding-top: 1px;">Séances</span>
+                        </ng-template>
+
+                        <ng-container *ngIf="isVisibleSeances$">
+                            <app-list-seance *ngIf = "selectedEvenement"  [idEvenement]="selectedEvenement" ></app-list-seance>
+                        </ng-container>
+
+            </p-tabPanel>
+
+            <!-- <p-tabPanel class="line-height-3 m-0" *ngIf="hasAccessTabTaches()">
+                        <ng-template pTemplate="header">
+                            <i class="pi pi-list"></i>
+                            <span style="margin:0 0.5rem;padding-top: 1px;">Tâches</span>
+                        </ng-template>
+
+                        <ng-container *ngIf="isVisibleTaches$">
+                        <app-list-seance *ngIf = "selectedEvenement"  [idEvenement]="selectedEvenement" ></app-list-seance>
+                        </ng-container>
+
+            </p-tabPanel> -->
+
+  </p-tabView>
+
+  <p-dialog [(visible)]="showDialogAnnuler" [style]="{width: '35rem'}" [contentStyle]="{minHeight: '250px'}" [modal]="true" [closable]="true">
+      <ng-template pTemplate="header">
+          <span class="text-900 font-semibold text-xl">Annulation évènement</span>
+      </ng-template>
+      <ng-template pTemplate="content">
+        <div class="grid p-fluid formgrid mt-2">
+          <div class="col-12 field">
+              <label for="motifAnnulation" class="text-900 font-semibold">Motif</label>
+              <textarea id="motifAnnulation" type="text" pInputTextarea [rows]="11" [(ngModel)]="motifAnnulation" style="resize: none"></textarea>
+          </div>
+      </div>
+      <div class="grid p-fluid formgrid mt-2">
+          <div class="col-12 field">
+              <div class="field-checkbox">
+                  <p-checkbox id="notifierAnnulation" [(ngModel)]="notifierAnnulation" [binary]="true" inputId="notifierAnnulation"></p-checkbox>
+                  <label for="notifierAnnulation" class="text-900">Notifier les membres de l'évènement.</label>
+            </div>
+          </div>
+      </div>
+      </ng-template>
+      <ng-template pTemplate="footer">
+          <p>
+              <p-divider></p-divider>
+          </p>
+          <div>
+
+          <button pButton label="Annuler" class="p-button-danger" icon="pi pi-check" (click)="annulerEvenement()" [disabled]=""></button>
+
+        </div>
+      </ng-template>
+  </p-dialog>
+
+  <p-dialog [(visible)]="showDialogPublier" [style]="{width: '55rem'}" [contentStyle]="{minHeight: '350px'}" [modal]="true" [closable]="true">
+      <ng-template pTemplate="header">
+          <div>
+          <span class="text-900 font-semibold text-xl">{{ titreDialogPublier }}</span>
+          <span class="ml-1" *ngIf="selectedEvenement.publierLe">(Publier le {{selectedEvenement.publierLe! | date : 'EEEE, dd MMM yyyy' }}    )</span>
+          </div>
+
+      </ng-template>
+
+          <p-panel [toggleable]="true"  styleClass="panelTPO">
+              <ng-template pTemplate="header">
+                  <i class="pi pi-calendar-plus" style="font-size: 1.2rem"></i>
+                <span class="text-900 text-xl pl-2">Publication de la date</span>
+              </ng-template>
+              <div class="pt-5 pb-3">
+                  <div class="field-checkbox">
+                      <p-checkbox id="validationDate" [(ngModel)]="validationDate" [binary]="true" inputId="validationDate"></p-checkbox>
+                      <label for="validationDate" class="text-900">Publier la date et le process de validation par les membres.</label>
+                  </div>
+
+                  <div class="field-input mt-5">
+                  <span class="block mb-1">Delais de validation <span class="text-xs">( A compter a partir de la date de publication)</span></span>
+                  <p-inputNumber  inputId="delaisValidationDate" placeholder="Nombre de jours"   mode="decimal" [(ngModel)]="delaisValidationDate"  [showButtons]="true" [step]="1" [min]="1"> </p-inputNumber>
+                  <span *ngIf="delaisValidationDate && delaisValidationDate>0 " class="ml-2">(Dernier délais : <span class="text-red-400">
+                                      {{ ( selectedEvenement.etat === 'CREATION' ? sharedDataEvService.getCalculatedDateDelais(today, delaisValidationDate, true) : sharedDataEvService.getCalculatedDateDelais(selectedEvenement.publierLe!, delaisValidationDate, true) ) | date : 'EEEE, dd MMM yyyy' }}
+                                        </span>)
+                  </span>
+                  </div>
+            </div>
+        </p-panel>
+
+          <p-panel [toggleable]="true"  styleClass="panelTPO">
+              <ng-template pTemplate="header">
+                  <i class="pi pi-list" style="font-size: 1.2rem"></i>
+                  <span class="text-900  text-xl pl-2">Publication de l'ordre du jour</span>
+              </ng-template>
+              <div class="pt-5 pb-3">
+                  <div class="field-checkbox">
+                      <p-checkbox id="validationODJ" [(ngModel)]="validationODJ" [binary]="true" inputId="validationODJ"></p-checkbox>
+                      <label for="validationODJ" class="text-900">Publier l'ordre du jour et activer la fonctionnalité des propositions par les membres.</label>
+                  </div>
+
+                  <div class="field-input mt-5">
+                  <span class="block mb-1">Delais de validation <span class="text-xs">( A compter a partir de la date de publication)</span></span>
+                  <p-inputNumber  inputId="delaisValidationODJ" placeholder="Nombre de jours"   mode="decimal" [(ngModel)]="delaisValidationODJ"  [showButtons]="true" [step]="1" [min]="1" > </p-inputNumber>
+                  <span *ngIf="delaisValidationODJ && delaisValidationODJ>0 " class="ml-2">(Dernier délais : <span class="text-red-400">
+                      {{ ( selectedEvenement.etat === 'CREATION' ? sharedDataEvService.getCalculatedDateDelais(today, delaisValidationODJ, true) : sharedDataEvService.getCalculatedDateDelais(selectedEvenement.publierLe!, delaisValidationODJ, true) ) | date : 'EEEE, dd MMM yyyy' }}
+                  </span>)</span>
+                  </div>
+            </div>
+
+          </p-panel>
+
+
+
+      <ng-template pTemplate="footer">
+          <p>
+              <p-divider></p-divider>
+          </p>
+          <div>
+
+          <button pButton [label]="labelbuttonPublier" [class]="cssbuttonPublier" icon="pi pi-check" (click)="publierEvenement()" [disabled]=""></button>
+
+        </div>
+      </ng-template>
+  </p-dialog>
+</div>
+</div>
+</div>
+
+
+

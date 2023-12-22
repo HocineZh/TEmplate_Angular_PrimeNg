@@ -1,0 +1,87 @@
+<div class="grid">
+    <div class="col-12">
+        <div class="card px-6 py-6">
+            <p-toast></p-toast>
+            <p-toolbar styleClass="mb-4">
+                <ng-template pTemplate="left">
+                    <div class="my-2">
+                        <button pButton pRipple label="Ajouter" icon="pi pi-plus" class="p-button-success mr-2" (click)="openNew()" displayType="inline-flex"  [elemPrivilege]="['typeOrgane.add']" accessControl ></button>
+                        <button pButton pRipple label="Supprimer" icon="pi pi-trash" class="p-button-danger" (click)="deleteSelectedOrganes()" [disabled]="!selectedOrganes || !selectedOrganes.length" Privilege]="['typeOrgane.delete']" accessControl displayType="inline-flex"  ></button>
+                    </div>
+                </ng-template>
+            </p-toolbar>
+
+            <p-table #dt [value]="organes" [columns]="cols" responsiveLayout="scroll" [rows]="10"  [rows]="10" [paginator]="true" [rowsPerPageOptions]="[10,20,30]" [showCurrentPageReport]="true" currentPageReportTemplate="{last} sur {totalRecords}" [(selection)]="selectedOrganes" selectionMode="multiple" [rowHover]="true" dataKey="id">
+                <ng-template pTemplate="caption">
+                    <div class="flex flex-column md:flex-row md:justify-content-between md:align-items-center">
+                        <h5 class="m-0">Liste des organes</h5>
+                        <span class="block mt-2 md:mt-0 p-input-icon-left">
+                            <i class="pi pi-search"></i>
+                            <input pInputText type="text" (input)="onGlobalFilter(dt, $event)" placeholder="Rechercher..."  class="w-full sm:w-auto"/>
+                        </span>
+                    </div>
+                </ng-template>
+                <ng-template pTemplate="header">
+                    <tr>
+                        <th style="width: 3rem">
+                            <p-tableHeaderCheckbox></p-tableHeaderCheckbox>
+                        </th>
+                        <th pSortableColumn="designation">Designation<p-sortIcon field="designation"></p-sortIcon></th>
+                        <th pSortableColumn="abreviation">Abreviation <p-sortIcon field="abreviation"></p-sortIcon></th>
+                        <th pSortableColumn="description">Description <p-sortIcon field="description"></p-sortIcon></th>
+
+                        <th></th>
+                    </tr>
+                </ng-template>
+                <ng-template pTemplate="body" let-organe>
+                    <tr>
+                        <td>
+                            <p-tableCheckbox [value]="organe"></p-tableCheckbox>
+                        </td>
+                        <td style="width:30%; min-width:10rem;"><span class="p-column-title">Designation</span>
+                            {{organe.designation}}
+                        </td>
+                        <td style="width:30%; min-width:10rem;">
+                            <span class="p-column-title">Abreviation</span>
+                            {{organe.abreviation}}
+                        </td>
+
+                        <td style="width:30%; min-width:8rem;">
+                            <span class="p-column-title">Description</span>
+							{{organe.description}}
+                        </td>
+                        <td>
+                            <div class="flex">
+                                <button pButton pRipple icon="pi pi-pencil" class="p-button-rounded p-button-info mr-2" (click)="editOrgane(organe)" [elemPrivilege]="['typeOrgane.update']" accessControl displayType="inline-flex"></button>
+                                <button pButton pRipple icon="pi pi-trash" class="p-button-rounded p-button-danger" (click)="deleteOrgane(organe)" [elemPrivilege]="['typeOrgane.delete']" accessControl displayType="inline-flex"></button>
+                            </div>
+                        </td>
+                    </tr>
+                </ng-template>
+            </p-table>
+        </div>
+
+
+        <p-dialog [(visible)]="deleteOrganeDialog" header="Confirm" [modal]="true" [style]="{width:'450px'}">
+            <div class="flex align-items-center justify-content-center">
+                <i class="pi pi-exclamation-triangle mr-3" style="font-size: 2rem"></i>
+                <span *ngIf="organe">Êtes-vous sur de supprimer <b>{{organe.designation}}</b>?</span>
+            </div>
+            <ng-template pTemplate="footer">
+                <button pButton pRipple icon="pi pi-times" class="p-button-text" label="Non" (click)="deleteOrganeDialog = false"></button>
+                <button pButton pRipple icon="pi pi-check" class="p-button-text" label="Oui" (click)="confirmDelete()"></button>
+            </ng-template>
+        </p-dialog>
+
+        <p-dialog [(visible)]="deleteOrganesDialog" header="Confirm" [modal]="true" [style]="{width:'450px'}">
+            <div class="flex align-items-center justify-content-center">
+                <i class="pi pi-exclamation-triangle mr-3" style="font-size: 2rem"></i>
+                <span>Êtes-vous sur de supprimer les organes</span>
+            </div>
+            <ng-template pTemplate="footer">
+                <button pButton pRipple icon="pi pi-times" class="p-button-text" label="Non" (click)="deleteOrganesDialog = false"></button>
+                <button pButton pRipple icon="pi pi-check" class="p-button-text" label="Oui" (click)="confirmDeleteSelected()"></button>
+            </ng-template>
+        </p-dialog>
+    </div>
+</div>

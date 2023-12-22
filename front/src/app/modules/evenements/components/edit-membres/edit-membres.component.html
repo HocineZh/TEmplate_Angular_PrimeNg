@@ -1,0 +1,245 @@
+<p-confirmDialog [style]="{ width: '50vw' }" key="confirmDlg" acceptLabel="OUI" rejectLabel="NON" [position]="'center'" rejectButtonStyleClass="p-button-outlined"></p-confirmDialog>
+<p-toast key="tstMbr"></p-toast>
+<div class="grid">
+<div class="col-12 pt-1">
+
+    <div *ngIf="!selectedEvenement.dateevValide && selectedEvenement.dateevPublier  && !selectedEvenement.previsionnel" class="card col-12  pb-0 mt-3 " style="background-color: #f5d4d4; border-color: #f0bebe;  color: #283e59; margin-bottom: 1rem ;"
+                [elemRolePrivilege]="['evenement.details']" [elemPrivilege]="['evenement.details_validationDate']" accessEvmControl >
+        <div class="grid p-fluid col-12 px-0 py-2" >
+            <div class="col-12 md:col-9 mb-0">
+                <p style="line-height: 2;">
+                    <span>• </span> La date de l'évènement n'est pas encore validée.
+                </p>
+                <p *ngIf="selectedEvenement.dateevPublier && !selectedEvenement.dateevValide">
+                    <span>• </span> Validation de la date par les membres. Dernier délais
+                    <span class="text-red-400 font-bold mr-1"> {{ sharedDataEvService.getCalculatedDateDelais(selectedEvenement.publierLe!, getDelaisValidationDate() , true)  | date : 'EEEE, dd MMM yyyy' }}</span>
+                </p>
+           </div>
+            <ng-container *ngIf="selectedEvenement.etat!=='CLOTURER'">
+                <div class="col-12 md:col-3 mb-0" [elemPrivilege]="['evenement.validation_date']" accessEvmControl>
+                     <button pButton pRipple type="button" icon="pi pi-check"  label="Valider la date de l'évènement" (click)="confirmationValiderDate($event)"  class="p-button-raised p-button-danger "></button>
+                </div>
+           </ng-container>
+        </div>
+    </div>
+    <div *ngIf="selectedEvenement.dateevValide && !selectedEvenement.previsionnel"  class="card col-12 pb-0 mt-3" style="background-color: rgb(90, 175, 76, 0.5); border-color: #5aaf4c;  color: #283e59; box-shadow: 0 2px 1px -1px rgba(0, 0, 0, 0.2), 0 1px 1px 0 rgba(0, 0, 0, 0.14), 0 1px 3px 0 rgba(0, 0, 0, 0.12); margin-bottom: 1rem ;"
+            [elemRolePrivilege]="['evenement.details']" [elemPrivilege]="['evenement.details_validationDate']" accessEvmControl>
+        <div  class="grid col-12 p-fluid px-0 py-0" >
+            <div class="col-12 md:col-9 mb-0" >
+                <p style="line-height: 2;">
+                    La date de l'évènement est validée.
+                </p>
+            </div>
+            <div class="col-12 md:col-3 flex flex-row-reverse" style="margin-bottom: 0px;">
+                <span class="po-badge-status po-status-valide py-3 px-4 text-white font-semibold" style="background-color:rgb(90, 175, 76) ;"><span  class="pi pi-check mr-3 "></span><span>Date validée</span></span>
+            </div>
+
+        </div>
+    </div>
+    <div class="card">
+        <h6>Liste des membres de l'organe</h6>
+        <p-table #dt1 [value]="selectedEvenement.listeMembres" dataKey="convocation_id" [rows]="10" [loading]="loading" [rowHover]="true" styleClass="p-datatable-gridlines" [paginator]="true" [globalFilterFields]="['membre_nom','membre_prenom','membre_fonction','mandat_dateDebut','mandat_dateFin']">
+            <ng-template pTemplate="caption">
+                <div class="flex justify-content-between flex-column sm:flex-row">
+                    <button pButton label="Vider" class="p-button-outlined mb-2" icon="pi pi-filter-slash" (click)="clear(dt1)"></button>
+                    <span class="p-input-icon-left mb-2 w-25rem">
+                        <i class="pi pi-search"></i>
+                        <input pInputText type="text" #filter (input)="onGlobalFilter(dt1, $event)" placeholder="Recherche mot clé..." class="w-full"/>
+                    </span>
+                </div>
+            </ng-template>
+            <ng-template pTemplate="header">
+                <tr>
+                    <th style="min-width: 14rem">
+                        <div class="flex justify-content-between align-items-center">
+                            Membre
+							<p-columnFilter type="text" field="membre_nom" display="menu" placeholder="Rechercher par nom"></p-columnFilter>
+
+                        </div>
+                    </th>
+                    <th style="min-width: 14rem">
+                        <div class="flex justify-content-between align-items-center">
+                            Profil
+							<p-columnFilter type="text" field="profil_nom" display="menu" placeholder="Rechercher par profil"></p-columnFilter>
+
+                        </div>
+                    </th>
+                    <th style="min-width: 14rem">
+                        <div class="flex justify-content-between align-items-center">
+                            Fonction
+							<p-columnFilter type="text" field="membre_fonction" display="menu" placeholder="Filtrer par fonction"></p-columnFilter>
+
+                        </div>
+                    </th>
+                    <th style="min-width: 14rem">
+                        <div class="flex justify-content-between align-items-center">
+                            Socièté
+							<p-columnFilter type="text" field="membre_societe" display="menu" placeholder="Filtrer par socièté"></p-columnFilter>
+
+                        </div>
+                    </th>
+                    <th style="min-width: 6rem">
+                        <div class="flex justify-content-between align-items-center">
+                            Debut mandat
+                            <p-columnFilter type="date" field="mandat_dateDebut" display="menu" placeholder="dd/MM/yyyy"></p-columnFilter>
+                        </div>
+                    </th>
+                    <th style="min-width: 6rem">
+                        <div class="flex justify-content-between align-items-center">
+                            Fin mandat
+                            <p-columnFilter type="date" field="mandat_dateFin" display="menu" placeholder="mm/dd/yyyy"></p-columnFilter>
+                        </div>
+                    </th>
+
+                    <th  style="min-width: 8rem" *ngIf="showColumnVlDate()" >
+                        <div class="flex justify-content-between align-items-center">
+                            Validation Date
+                            <p-columnFilter  field="etat_validation_date" display="menu"></p-columnFilter>
+                        </div>
+                    </th>
+                    <th  style="min-width: 8rem" *ngIf="showColumnVlPresence()" >
+                        <div class="flex justify-content-between align-items-center">
+                            Validation présence
+                            <p-columnFilter  field="reponse_presence" display="menu"></p-columnFilter>
+                        </div>
+                    </th>
+                    <th  style="min-width: 8rem" *ngIf="showColumnVlOdj()" >
+                        <div class="flex justify-content-between align-items-center">
+                            Validation Ordre du jour
+                            <p-columnFilter  field="etat_validation_odj" display="menu"></p-columnFilter>
+                        </div>
+                    </th>
+                    <th  style="min-width: 8rem" *ngIf="showColumnDownloadConvocation()" >
+                      <div class="flex justify-content-between align-items-center">
+                        Convocation
+                      </div>
+                    </th>
+
+                    <th  style="min-width: 8rem" *ngIf="showColumnVlUploadConv()" >
+                      <div class="flex justify-content-between align-items-center">
+                        Convocation Signée
+                      </div>
+                    </th>
+
+                </tr>
+            </ng-template>
+            <ng-template pTemplate="body" let-membre>
+                <tr>
+                    <td>
+                        <ng-container *ngIf="membre.membre_photo; else elseAVBlock">
+                          <img [alt]="membre.membre_id" src="assets/demo/images/avatar/{{membre.membre_photo}}" width="32" style="vertical-align: middle"/>
+                       </ng-container>
+                       <ng-template #elseAVBlock>
+                         <p-avatar [label]="membre.initiales"  shape="circle" [style]="{'background-color':'#2196F3', 'color': '#ffffff'}"></p-avatar>
+                        </ng-template>
+                        <span class="image-text ml-2 mr-1 font-semibold">{{membre.membre_etatCivil + ' ' + membre.membre_nom + ' ' + membre.membre_prenom}} </span>
+                    </td>
+                    <td>
+                        <span class="image-text ml-2">
+                            {{ membre.profil_nom! | split: "_": 1  }}</span>
+                    </td>
+                    <td>
+                        <span class="image-text ml-2">{{membre.membre_fonction}}</span>
+                    </td>
+                    <td>
+                        <span class="image-text ml-2">{{membre.membre_societe}}</span>
+                    </td>
+                    <td>
+                        <span *ngIf=" membre.mandat_dateDebut===null || membre.mandat_dateDebut ==='' ; else elseMDBlock">/</span>
+                        <ng-template #elseMDBlock>
+                            <span>{{membre.mandat_dateDebut | date: 'dd/MM/yyyy'}}</span>
+                        </ng-template>
+
+                    </td>
+
+                    <td [style]="getClassMandatExpire(membre.mandat_dateFin) === 'blink' && membre.mandat_dateFin!==null  ?  'background-color: crimson; color: white;' : ''" >
+
+                        <span *ngIf=" membre.mandat_dateFin===null || membre.mandat_dateFin ==='' ; else elseFMBlock" >/</span>
+                        <ng-template #elseFMBlock>
+                            <span [ngClass]="getClassMandatExpire(membre.mandat_dateFin)">{{membre.mandat_dateFin | date: 'dd/MM/yyyy'}}</span>
+                        </ng-template>
+
+                    </td>
+
+
+                    <td  class="text-center" *ngIf="showColumnVlDate()"  >
+                        <ng-container *ngIf="membre.etat_validation_date === 'no response'; else elseVDBlock">
+                            <span class="text-grey-500" Tooltip="Le membre n'a pas encore répondu.">Aucune réponse</span>
+                        </ng-container>
+                        <ng-template #elseVDBlock>
+                            <i class="pi" [ngClass]="{'true-icon pi-check-circle text-green-500': membre.etat_validation_date === 'valider'}"  pTooltip="Motif :{{(membre.etat_validation_date === 'valider') ? membre.etat_validation_date : membre.propDate_motif }}"></i>
+                            <span *ngIf="membre.etat_validation_date === 'proposer'" pTooltip="Motif :{{(membre.etat_validation_date === 'valider') ? membre.etat_validation_date : membre.propDate_motif }}">Propose le <span class="bg-red-200"> {{membre.propDate_date | date: 'dd/MM/yyyy' }}</span> </span>
+                        </ng-template>
+
+                    </td>
+                    <td  class="text-center" *ngIf="showColumnVlPresence()"  >
+                        <ng-container *ngIf="!membre.reponse_presence ; else elseVDBlock">
+                             <span class="text-grey-500" Tooltip="Le membre n'a pas encore répondu.">Aucune réponse</span>
+                        </ng-container>
+                        <ng-template #elseVDBlock>
+                          <span>{{membre.reponse_presence}}</span>
+                         </ng-template>
+
+                  </td>
+                 <td  class="text-center" *ngIf="showColumnVlOdj()"  >
+                    <i class="pi" [ngClass]="{'true-icon pi-check-circle text-green-500': membre.etat_validation_odj === 'valider', 'false-icon pi-times-circle text-pink-500': membre.etat_validation_odj !== 'valider' }"  pTooltip="{{ membre.etat_validation_odj }}"></i>
+                 </td>
+                 <td  class="text-center" *ngIf="showColumnDownloadConvocation()"  >
+                  <button   pTooltip="Consulter" pButton pRipple type="button" icon="pi pi-search" class="p-button-rounded p-ripple" (click)="showConvocation(membre)"></button>
+                 </td>
+                 <td  class="text-center" *ngIf="showColumnVlUploadConv()"  >
+                  <button *ngIf= "membre.reponse_presence ==='PRESENT' && !membre.idFile && selectedEvenement.currentSeance.etat ==='Créée'"  pTooltip="Uploader" pButton pRipple type="button" icon="pi pi-upload" class="p-button-rounded p-ripple" (click)="uploadConvocationSigne(membre)"></button>
+                  <button *ngIf= "membre.reponse_presence ==='PRESENT' && membre.idFile && selectedEvenement.currentSeance.etat ==='Créée'"  pTooltip="Supprimer" pButton pRipple type="button" icon="pi pi-trash" class="p-button-rounded p-ripple p-button-danger delete-conv-sign" (click)="deleteFile(membre.idFile)"></button>
+                  <button *ngIf= "membre.reponse_presence ==='PRESENT' && membre.idFile && selectedEvenement.currentSeance.etat ==='Créée'"  pTooltip="Télecharger" pButton pRipple type="button" icon="pi pi-download" class="p-button-rounded p-ripple p-button-success" (click)="download(membre.idFile,membre.nom_doc)"></button>
+                  <i class="pi" [ngClass]="{'false-icon pi-times-circle text-red-500': membre.reponse_presence !=='PRESENT' || selectedEvenement.currentSeance.etat !=='Créée'}" ></i>
+                 </td>
+
+
+                </tr>
+
+            </ng-template>
+            <ng-template pTemplate="emptymessage">
+                <tr>
+                    <td colspan="8">Liste des membres vide.</td>
+                </tr>
+            </ng-template>
+            <ng-template pTemplate="loadingbody">
+                <tr>
+                    <td colspan="8">Chargement de la liste membres. Patienter svp.</td>
+                </tr>
+            </ng-template>
+        </p-table>
+    </div>
+
+</div>
+</div>
+
+<p-dialog header="header" *ngIf="previewConvocation" [(visible)]="previewConvocation" [breakpoints]="{'960px': '75vw', '640px': '90vw'}" [style]="{width: '45rem'}" [modal]="true" [closable]="true" >
+  <ng-template pTemplate="header">
+    <span class="text-900 font-semibold text-xl" *ngIf="selectedMembre.membre"> Détails de la Convocation</span>
+    <span class="text-900 font-semibold text-xl" *ngIf="!selectedMembre.membre"> Détails de l'invitation</span>
+  </ng-template>
+    <app-convocation-model (element)="setElement($event)" [selectedMembre] = "selectedMembre" [selectedEvenement]="selectedEvenement"></app-convocation-model>
+  <ng-template pTemplate="footer">
+    <button pButton pRipple type="button" label="Télécharger" class="p-button-raised" (click)="exportPdf()"></button>
+  </ng-template>
+</p-dialog>
+
+
+<p-dialog header="header" *ngIf="importConvoctionPreview" [(visible)]="importConvoctionPreview" [breakpoints]="{'960px': '75vw', '640px': '90vw'}" [style]="{width: '45rem'}" [modal]="true" [closable]="true" >
+  <ng-template pTemplate="header">
+    <span class="text-900 font-semibold text-xl">Importer la convocation signé</span>
+  </ng-template>
+    <p-fileUpload style="width: 98%;" mode="advanced"
+      [multiple]="false" [fileLimit]="1" uploadStyleClass="upload-button" cancelLabel="Annuler"
+      [customUpload]="true"
+      [showCancelButton]="true"  (onSelect)="onUpload($event)"
+      [maxFileSize]="1000000" label="Import" chooseLabel="Import" class="mr-2 inline-block"
+      accept=".pdf">
+    </p-fileUpload>
+  <ng-template pTemplate="footer">
+    <button pButton pRipple type="button" label="Importer" class="p-button-raised" (click)="importer()"></button>
+  </ng-template>
+</p-dialog>
+
+

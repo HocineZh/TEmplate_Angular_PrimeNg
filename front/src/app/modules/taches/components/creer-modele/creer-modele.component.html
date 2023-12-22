@@ -1,0 +1,34 @@
+<div class="card">
+    <p-toast></p-toast>
+    <span class="text-900 text-xl font-bold mb-4 block">{{properText}}</span>
+    <div class="grid">
+
+        <div class="col-12 lg:col-12">
+            <div class="grid formgrid p-fluid">
+                <div class="field mb-4 col-12">
+                    <label for="nom" class="font-medium text-900 label-required" >Nom du Modèle</label>
+                    <input id="nom" type="text" pInputText  [(ngModel)]="modele.nom" required autofocus [ngClass]="{'ng-invalid ng-dirty' : submitted && !modele.nom}">
+                    <small style="color: red;" *ngIf="submitted && !modele.nom">Champ Obligatoire</small>
+                </div>
+
+                <div class="col-12 xl:col-12">
+                  <div class="card" style="position: relative; padding-bottom: 20px;">
+                    <h5>Liste des tâches</h5>
+                    <p-pickList [source]="taches" [target]="targetTaches" sourceHeader="Liste des tâches" targetHeader="Liste des tâches sélectionnées" [dragdrop]="false"
+                          [responsive]="false" [sourceStyle]="{'height':'250px'}"  [targetStyle]="{'height':'250px','border-color' : submitted &&  targetTaches.length==0  ? 'red' : 'rgba(0, 0, 0, 0.10)' }"
+                          sourceFilterPlaceholder="Chercher par nom .." targetFilterPlaceholder="Chercher par nom .." breakpoint="1400px"
+                          >
+                      <ng-template let-tache pTemplate="item">
+                        <div>{{tache.nom}}</div>
+                      </ng-template>
+                    </p-pickList>
+                    <small style="color: red; position: absolute; right: 50px;" *ngIf="submitted && targetTaches.length==0">Champ Obligatoire</small>
+                  </div>
+                </div>
+                <div class="col-12">
+                    <button pButton pRipple label="{{properText}}" (click)="addModele()" class="w-auto mt-3"></button>
+                </div>
+            </div>
+        </div>
+    </div>
+  </div>

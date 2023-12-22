@@ -1,0 +1,195 @@
+<div class="grid">
+  <div class="col-12">
+    <div class="card">
+      <p-toolbar styleClass="mb-4">
+        <ng-template pTemplate="left">
+            <div class="my-2">
+              <button class="p-button-success mr-2" pButton icon="pi pi-fw pi-plus" label="Ajouter une nouvelle société" (click)="addSociete()" [elemPrivilege]="['societe.add']" accessControl displayType="inline-flex"></button>
+              <button class="p-button-success mr-2" pButton icon="pi pi-fw pi-plus" label="Ajouter une nouvelle structure" (click)="addStructure()" [elemPrivilege]="['structure.add']" accessControl displayType="inline-flex"></button>
+            </div>
+        </ng-template>
+      </p-toolbar>
+      <h5 class="table-title">Liste des sociétés</h5>
+      <p-toast></p-toast>
+      <p-table #dtso [value]="societes" [rowHover]="true" [rows]="10" styleClass="p-datatable-gridlines" [globalFilterFields]="['code','raisonSocial','siege']" (onRowExpand)="onRowExpand($event)" dataKey="code" [expandedRowKeys]="expandedRows" [tableStyle]="{'min-width': '65rem'}">
+        <ng-template pTemplate="caption">
+          <div class="flex flex-column md:flex-row md:justify-content-between md:align-items-center">
+            <button pButton label="Effacer" class="p-button-outlined mb-2" icon="pi pi-filter-slash" (click)="clearsociete(dtso)"></button>
+            <span class="block mt-2 md:mt-0 p-input-icon-left">
+                <i class="pi pi-search"></i>
+                <input pInputText  #filter type="text" (input)="onGlobalFilterSociete(dtso, $event)" placeholder="Recherche..."  class="w-full sm:w-auto"/>
+            </span>
+          </div>
+        </ng-template>
+        <ng-template pTemplate="header">
+          <tr>
+            <th style="width: 3rem"></th>
+            <th>
+              <div class="flex justify-content-between align-items-center">
+               Abréviation
+                <p-columnFilter type="text" pSortableColumn="code" field="code" display="menu" placeholder="Search by name"><p-sortIcon field="code"></p-sortIcon></p-columnFilter>
+              </div>
+            </th>
+            <th>
+              <div class="flex justify-content-between align-items-center">
+                Raison Sociale
+                <p-columnFilter type="text" pSortableColumn="raisonSocial" field="raisonSocial" display="menu" placeholder="Search by name"><p-sortIcon field="raisonSocial"></p-sortIcon></p-columnFilter>
+              </div>
+            </th>
+            <th>
+              <div class="flex justify-content-between align-items-center">
+                Siege
+                <p-columnFilter type="text" pSortableColumn="siege" field="siege" display="menu" placeholder="Search by name"><p-sortIcon field="siege"></p-sortIcon></p-columnFilter>
+              </div>
+            </th>
+
+
+            <th></th>
+          </tr>
+        </ng-template>
+        <ng-template pTemplate="body" let-societe let-expanded="expanded">
+          <tr>
+            <td>
+              <button type="button" pButton pRipple [pRowToggler]="societe" class="p-button-text p-button-rounded p-button-plain" [icon]="expanded ? 'pi pi-chevron-down' : 'pi pi-chevron-right'"></button>
+            </td>
+            <td style="min-width: 12rem;">{{societe.code}}</td>
+            <td style="min-width: 8rem;">{{societe.raisonSocial }}</td>
+            <td style="min-width: 10rem;">{{societe.siege}}</td>
+            <td>
+              <div class="flex">
+                  <button pButton pRipple icon="pi pi-pencil" class="p-button-rounded p-button-info mr-2" (click)="editSociete(societe)"></button>
+                  <button pButton pRipple icon="pi pi-trash" class="p-button-rounded p-button-danger" (click)="deleteSociete(societe)"></button>
+              </div>
+          </td>
+          </tr>
+        </ng-template>
+        <ng-template pTemplate="rowexpansion" let-societe>
+          <tr>
+            <td colspan="7">
+              <div class="p-3">
+                <h5 class="table-title">Liste des structures de {{societe.raisonSocial}}</h5>
+                <p-table #dtst [value]="societe?.structures!" [globalFilterFields]="['code','nom','chargeOrientations']" dataKey="code">
+                  <ng-template pTemplate="caption">
+                    <div class="flex flex-column md:flex-row md:justify-content-between md:align-items-center">
+                      <button pButton label="Effacer" class="p-button-outlined mb-2" icon="pi pi-filter-slash" (click)="clearStructure(dtst)"></button>
+                      <span class="block mt-2 md:mt-0 p-input-icon-left">
+                          <i class="pi pi-search"></i>
+                          <input pInputText #filterStr type="text" (input)="onGlobalFilterStructure(dtst, $event)" placeholder="Recherche..."  class="w-full sm:w-auto"/>
+                      </span>
+                    </div>
+                  </ng-template>
+                  <ng-template pTemplate="header">
+                    <tr>
+                      <th>
+                        <div class="flex justify-content-between align-items-center">
+                          Abréviation
+                          <p-columnFilter type="text" pSortableColumn="code" field="code" display="menu" placeholder="Search by name"><p-sortIcon field="code"></p-sortIcon></p-columnFilter>
+                        </div>
+                      </th>
+
+                      <th>
+                        <div class="flex justify-content-between align-items-center">
+                          Nom Structure
+                          <p-columnFilter type="text" pSortableColumn="nom" field="nom" display="menu" placeholder="Search by name"><p-sortIcon field="nom"></p-sortIcon></p-columnFilter>
+                        </div>
+                      </th>
+
+                      <th style="min-width: 12rem">
+                        <div class="flex justify-content-between align-items-center">
+                          Chargé d'orientation
+                          <p-columnFilter field="chargeOrientations" matchMode="between" display="menu" [showMatchModes]="false" [showOperator]="false" [showAddButton]="false">
+
+                          </p-columnFilter>
+                        </div>
+                      </th>
+
+                      <th style="width: 4rem"></th>
+                      <th style="width: 4rem"></th>
+                    </tr>
+                  </ng-template>
+                  <ng-template pTemplate="body" let-structure>
+                    <tr>
+                      <td style="text-align : center ;">{{structure.code}}</td>
+                      <td style="text-align : center ;">{{structure.nom}}</td>
+                      <td style="text-align : center ;">{{structure.chargeOrientation}}</td>
+                      <td style="text-align : center ;"><button pButton pRipple icon="pi pi-pencil" class="p-button-rounded p-button-info mr-2" (click)="editStructure(structure)"></button></td>
+
+                      <td style="text-align : center ;"><button pButton pRipple icon="pi pi-trash" class="p-button-rounded p-button-danger" (click)="deleteStructure(structure)"></button></td>
+
+                    </tr>
+                  </ng-template>
+                  <ng-template pTemplate="emptymessage">
+                    <tr>
+                      <td colspan="6">Pas de structure disponible pour cette société.</td>
+                    </tr>
+                  </ng-template>
+                </p-table>
+              </div>
+            </td>
+          </tr>
+        </ng-template>
+      </p-table>
+    </div>
+    <!-------------------------------------------------------------------------- Societe Dialog --------------------------------------------------------------------------->
+    <p-dialog [(visible)]="societeDialog" [style]="{width: '450px'}" header="Détails de la société" [modal]="true" class="p-fluid">
+      <ng-template pTemplate="content">
+          <div class="field">
+            <label for="code">Abréviation</label>
+            <input type="text" pInputText id="code" [(ngModel)]="societe.code" required autofocus [ngClass]="{'ng-invalid ng-dirty' : submittedSociete && !societe.code}"/>
+            <small style="color: red;" *ngIf="submittedSociete && !societe.code">Champ obligatoire.</small>
+          </div>
+          <div class="field">
+            <label for="raison_social">Raison sociale</label>
+            <input type="text" pInputText id="raison_social" [(ngModel)]="societe.raisonSocial" required autofocus [ngClass]="{'ng-invalid ng-dirty' : submittedSociete && !societe.raisonSocial}"/>
+            <small style="color: red;" *ngIf="submittedSociete && !societe.raisonSocial">Champ Obligatoire.</small>
+          </div>
+          <div class="field">
+            <label for="siege">Siège</label>
+            <input type="text" pInputText id="siege" [(ngModel)]="societe.siege" required autofocus [ngClass]="{'ng-invalid ng-dirty' : submittedSociete && !societe.siege}"/>
+            <small style="color: red;" *ngIf="submittedSociete && !societe.siege">Champ Obligatoire</small>
+          </div>
+      </ng-template>
+
+      <ng-template pTemplate="footer">
+          <button pButton pRipple label="Annuler" icon="pi pi-times" class="p-button-text" (click)="hideDialogSociete()"></button>
+          <button pButton pRipple label="Sauvegarder" icon="pi pi-check" class="p-button-text" (click)="saveSociete()"></button>
+      </ng-template>
+    </p-dialog>
+    <!-------------------------------------------------------------------------- ----------------------------------------------------------------------------------------------------->
+    <!--------------------------------------------------------------Structure Dialog ---------------------------------------------------------------------------------------------------->
+    <p-dialog [(visible)]="structureDialog" [style]="{width: '450px'}" header="Détails de la société" [modal]="true" class="p-fluid">
+      <ng-template pTemplate="content">
+          <div class="field">
+            <label for="code">Abréviation</label>
+            <input type="text" pInputText id="code" [(ngModel)]="structure.code" required autofocus [ngClass]="{'ng-invalid ng-dirty' : submittedStructure && !structure.code}"/>
+            <small style="color: red;" *ngIf="submittedStructure && !structure.code">Champ obligatoire.</small>
+          </div>
+          <div class="field">
+            <label for="nom_structure">Nom de la structure</label>
+            <input type="text" pInputText id="nom_structure" [(ngModel)]="structure.nom" required autofocus [ngClass]="{'ng-invalid ng-dirty' : submittedStructure && !structure.nom}"/>
+            <small style="color: red;" *ngIf="submittedStructure && !structure.nom">Champ est obligatoire.</small>
+          </div>
+          <div class="field">
+            <label for="nom_structure">Société</label>
+            <p-dropdown appendTo="body" [options]="societes" dataKey="raisonSocial" [(ngModel)]="structure.societe" placeholder="Selectionner la sociéte" optionLabel="raisonSocial" [ngClass]="{'ng-invalid ng-dirty' : submittedStructure && !structure.societe}" [filter]="true" filterBy="raisonSocial" [showClear]="true"></p-dropdown>
+            <small style="color: red;" *ngIf="submittedStructure && !structure.societe">Champ est obligatoire.</small>
+          </div>
+          <div class="field" *ngIf="structure.id">
+
+            <label for="charge_orientation" >Chargé Orientation</label>
+            <p-dropdown appendTo="body" [options]="users" dataKey="login" [(ngModel)]="structure.chargeOrientation" placeholder="Selectionner le chargé d'orientation" optionLabel="login"  optionValue="login" [filter]="true" filterBy="login" [showClear]="true"></p-dropdown>
+            <small style="color: red;" *ngIf="submittedStructure && structure.id && !structure.chargeOrientation">Champ est obligatoire.</small>
+          </div>
+
+
+      </ng-template>
+
+      <ng-template pTemplate="footer">
+          <button pButton pRipple label="Annuler" icon="pi pi-times" class="p-button-text" (click)="hideDialogStructure()"></button>
+          <button pButton pRipple label="Sauvegarder" icon="pi pi-check" class="p-button-text" (click)="saveStructure()"></button>
+      </ng-template>
+    </p-dialog>
+    <!-------------------------------------------------------------------------- ----------------------------------------------------------------------------------------------------->
+  </div>
+  <p-confirmDialog [style]="{width: '50vw'}"></p-confirmDialog>
+</div>

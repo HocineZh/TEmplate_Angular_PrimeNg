@@ -1,0 +1,40 @@
+
+
+
+<div #divToPrint>
+  <div class="entete-societe" >
+    <img src="../../../../../assets/images/email/entete_sonelgaz.jpg"  width="100%" height="100%"/>
+  </div>
+  <h2 class = "titre-left">
+    Mandat de représentativité
+  </h2>
+  <div class="content">
+    <span >Monsieur,<br/>
+      Je soussigné Monsieur/Madame <strong>{{mandatRemplacent.nomCompletMembre | uppercase }} </strong> membre du Conseil d’Administration de la Société <strong> {{mandatRemplacent.societe | uppercase }} </strong>
+      dont le siège social est à <strong> {{mandatRemplacent.societe }} </strong>,donne par la présente mandat à Monsieur/Madame
+      <strong> {{mandatRemplacent.nomCompletRemplacant }} </strong>, Administrateur à l’effet de me représenter à la réunion du  Conseil d’Administration de la Société <strong> {{mandatRemplacent.societe | uppercase}} </strong>
+      en date du <strong>{{mandatRemplacent.dateSeance | date : 'dd-MM-yyyy'}} </strong>
+      et ayant pour ordre :<br/>
+    </span>
+    <div class="pt-ordre content" >
+      <span *ngFor="let point of mandatRemplacent.ordreDuJour ;index as i">
+        {{i+1}}. {{point}}.<br/>
+      </span>
+    </div>
+    <div class="content">
+      <span>En conséquence, assister à cette réunion, prendre part à toutes discussions et délibérations,
+        émettre tout avis ou s’abstenir sur les questions portées à l’ordre du jour.</span>
+    </div>
+  </div>
+  <div class = "titre-right" >
+    <h4>
+      Le Mandataire
+    </h4>
+    <h4>
+      Le Mandant
+    </h4>
+  </div>
+</div>
+
+
+

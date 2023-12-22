@@ -1,0 +1,32 @@
+:host ::ng-deep {
+
+    .p-togglebutton.p-button.p-highlight:hover {
+        background: #2563eb;
+        border-color: #2563eb;
+        color: #ffffff;
+    }
+    
+    .p-togglebutton.p-button.p-highlight {
+        background: #3B82F6;
+        border-color: #3B82F6;
+        color: #ffffff;
+    }
+    
+    .p-togglebutton.p-button.p-highlight .p-button-icon-left, .p-togglebutton.p-button.p-highlight .p-button-icon-right {
+        color: #ffffff;
+    }
+    
+    .p-togglebutton.p-button.p-highlight:hover .p-button-icon-left, .p-togglebutton.p-button.p-highlight:hover .p-button-icon-right {
+        color: #ffffff;
+    }
+
+
+    //***************** p-select button highlight style **************************
+  .p-selectbutton .p-button.p-highlight {
+    background: rgba(59, 130, 246, 0.2);
+    border-color: #e0e0e1;
+    color: rgba(0, 0, 0, 0.87);
+  }
+
+}
+

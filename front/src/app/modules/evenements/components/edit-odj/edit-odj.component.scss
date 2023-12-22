@@ -1,0 +1,111 @@
+:host ::ng-deep {
+
+
+
+
+    .p-togglebutton.p-button:not(.p-disabled):not(.p-highlight):hover {
+        background: #e90262;
+        border-color: rgba(0, 0, 0, 0.12);
+        color: rgba(0, 0, 0, 0.87);
+    }
+    .p-togglebutton.p-button {
+        background: #e90262;
+        border-color: #e90262;
+        color: #ffffff;
+    }
+
+    .p-togglebutton.p-button:not(.p-highlight) .p-button-icon-left, .p-togglebutton.p-button:not(.p-highlight) .p-button-icon-right {
+        color: #ffffff;
+    }
+
+
+
+.p-togglebutton.p-button.p-highlight:hover {
+    background: #1bc009;
+    border-color: #2cf209;
+    color: rgb(0, 0, 0);
+}
+
+.p-togglebutton.p-button.p-highlight {
+    background: #1bc009;
+    border-color: #2cf209;
+    color: #ffffff;
+}
+
+.p-togglebutton.p-button.p-highlight .p-button-icon-left, .p-togglebutton.p-button.p-highlight .p-button-icon-right {
+    color: #ffffff;
+}
+
+.panelTPO .p-panel-header{
+
+    background-color: #f8f9fa;
+}
+
+.p-toolbar.tbValidationOdj{
+    background-color: rgb(242, 242, 242);
+    padding-left: 8px;
+    padding-right: 8px;
+    padding-top: 20px;
+    padding-bottom: 20px;
+    margin-left: 20px;
+    margin-right: 20px;
+    margin-top: 7px;
+    margin-bottom: 15px;
+
+  }
+
+  //Style Documents
+
+  .docsPo{
+   /*  position: relative;  */
+    /* height: 75px;  */
+    /* width: 100%; */
+  }
+
+  .docPoIcon{
+    /* float: left;  */
+    display: block;
+    width: 42px;
+    height: 42px;
+    /* margin-left: 10px; */
+  }
+
+  .docPoNom{
+    font-family: Arial;
+    font-size: 1.1em;
+    /* float: left;
+    width: 60%; */
+    margin: 0 0 0 20px;
+    margin-top: 0px;
+    height: 25px;
+    -ms-text-overflow: ellipsis;
+    -o-text-overflow: ellipsis;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
+  }
+
+  .docPoTaille{
+    font-weight: normal;
+    font-style: italic;
+    font-family: Arial;
+    font-size: 1.1em;
+    /* float: left;
+    width: 60%; */
+    margin: 0 0 0 20px;
+    margin-top: 0px;
+    height: 25px;
+    -ms-text-overflow: ellipsis;
+    -o-text-overflow: ellipsis;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
+  }
+
+  .btn-action-doc{
+    display: inline-flex !important;
+  }
+
+
+
+}

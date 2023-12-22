@@ -1,0 +1,101 @@
+<div class="col-12">
+    <div class="card px-6 py-6">
+        <p-toast></p-toast>
+        <p-toolbar styleClass="mb-4">
+            <ng-template pTemplate="left">
+                <div class="my-2">
+                    <button pButton pRipple label="New" icon="pi pi-plus" class="p-button-success mr-2"
+                        (click)="openNew()"></button>
+
+                </div>
+            </ng-template>
+
+            <ng-template pTemplate="right">
+                <!-- <p-fileUpload mode="basic" accept="image/*" [maxFileSize]="1000000" label="Import" chooseLabel="Import"
+                    class="mr-2 inline-block"></p-fileUpload>
+                <button pButton pRipple label="Export" icon="pi pi-upload" class="p-button-help"
+                    (click)="dt.exportCSV()"></button>-->
+            </ng-template>
+        </p-toolbar>
+        <div class="text-900 text-xl font-semibold mb-3">Listes des dossiers</div>
+        <div style="margin-bottom: 1rem">
+            <p-tree class="w-full md:w-30rem" [value]="files" [draggableNodes]="true" [droppableNodes]="true"
+                draggableScope="self" droppableScope="self"></p-tree>
+        </div>
+        <div class="grid">
+            <div *ngFor="let folder of folders" class="col-12 md:col-6 xl:col-4">
+                <div
+                    class="p-3 border-1 surface-border flex align-items-center justify-content-between hover:surface-100 cursor-pointer border-round">
+                    <div class="flex align-items-center">
+                        <i [ngClass]="folder.icon" class="text-2xl mr-3"></i>
+                        <span class="text-900 text-lg font-medium">{{folder.designation}}</span>
+                    </div>
+                    <!-- <span class="text-600 text-lg font-semibold">{{folder.size}}</span>-->
+                </div>
+            </div>
+        </div>
+
+        <p-dialog [(visible)]="productDialog" [style]="{width: '450px'}" header="Ajouter un dossier" [modal]="true"
+            class="p-fluid">
+            <ng-template pTemplate="content">
+
+                <div class="col-12 ">
+                    <div class="field ">
+                        <label for="nom" class="font-medium text-900">Selectionner le dossier parent</label>
+                        <p-dropdown [options]="folders" [(ngModel)]="selectedFolder" placeholder="Select a City"
+                            optionLabel="name" [showClear]="true"> [filter]="true" [filterBy]="name" </p-dropdown>
+                    </div>
+
+                    <!-- <div class="field ">
+                        <label for="nom" class="font-medium text-900">Selectionner le dossier parent</label>
+                        <p-dropdown [options]="folders" [(ngModel)]="selectedFolder" optionLabel="name" [filter]="true"
+                            filterBy="name" [showClear]="true" placeholder="Select a Country">
+                            <ng-template pTemplate="selectedItem">
+                                <div class="flex align-items-center" *ngIf="selectedFolder">
+                                    <div>{{selectedFolder.name}}</div>
+                                </div>
+                            </ng-template>
+                            <ng-template let-folder pTemplate="item">
+                                <div class="flex align-items-center">
+                                    <div>{{folder.name}}</div>
+                                </div>
+                            </ng-template>
+                        </p-dropdown>
+                    </div>
+                       -->
+                    <div class="field ">
+
+                        <label for="nom" class="font-medium text-900">Nom du dossier</label>
+                        <input id="nom" type="text" pInputText [(ngModel)]="folder.designation" required="true">
+                    </div>
+
+                    <div class="field">
+                        <label for="nom" class="font-medium text-900">Visibilité</label>
+                        <div class="flex ">
+                            <p-radioButton name="vi" value="Tout le monde" [(ngModel)]="visibilite"
+                                inputId="in1"></p-radioButton>
+                            <label for="in1" class="ml-2">Tout le monde</label>
+                        </div>
+
+                        <div class="flex ">
+                            <p-radioButton name="vis" value="Limitée" [(ngModel)]="visibilite"
+                                inputId="in2"></p-radioButton>
+                            <label for="in2" class="ml-2">Limitée</label>
+                        </div>
+                    </div>
+
+                </div>
+            </ng-template>
+            <ng-template pTemplate="footer">
+                <button pButton pRipple label="Annuler" icon="pi pi-times" class="w-auto mt-3"
+                    (click)="hideDialog()"></button>
+
+                <button pButton pRipple label="Créer" icon="pi pi-times" class="w-auto mt-3"
+                    (click)="createFolder()"></button>
+
+            </ng-template>
+        </p-dialog>
+
+
+    </div>
+</div>

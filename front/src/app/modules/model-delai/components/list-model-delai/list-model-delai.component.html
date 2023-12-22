@@ -1,0 +1,147 @@
+<div class="grid">
+    <div class="col-12">
+        <div class="card px-6 py-6">
+            <!--<p-toast></p-toast>-->
+            <p-toolbar styleClass="mb-4">
+                <ng-template pTemplate="left">
+                    <div class="my-2">
+
+                        <button pButton pRipple label="Nouveau" icon="pi pi-plus" class="p-button-success mr-2"
+                            [routerLink]="['/modelDelai/addModel']" routerLinkActive="active">
+                        </button>
+
+                        <button pButton pRipple label="Delete" icon="pi pi-trash" class="p-button-danger"
+                            (click)="deleteSelectedmodels()" [disabled]="!selectedmodels || !selectedmodels.length">
+                        </button>
+                    </div>
+                </ng-template>
+
+                <!--<ng-template pTemplate="right">
+                    <p-fileUpload mode="basic" accept="image/*" [maxFileSize]="1000000" label="Import"
+                        chooseLabel="Import" class="mr-2 inline-block"></p-fileUpload>
+                    <button pButton pRipple label="Export" icon="pi pi-upload" class="p-button-help"
+                        (click)="dt.exportCSV()"></button>
+                </ng-template>-->
+            </p-toolbar>
+
+            <p-table #dt [value]="models" [columns]="cols" responsiveLayout="scroll" [rows]="10"
+                [globalFilterFields]="['reponseConvocation','reporgSeance','reponseValidationDate','reponseValidationPv']" [rows]="10"
+                [paginator]="true" [rowsPerPageOptions]="[10,20,30]" [showCurrentPageReport]="true"
+                currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
+                [(selection)]="selectedmodels" selectionMode="multiple" [rowHover]="true" dataKey="id">
+                <ng-template pTemplate="caption">
+                    <div class="flex flex-column md:flex-row md:justify-content-between md:align-items-center">
+                        <h5 class="m-0">Gestion des modèles de délai</h5>
+                        <span class="block mt-2 md:mt-0 p-input-icon-left">
+                            <i class="pi pi-search"></i>
+                            <input pInputText type="text" (input)="onGlobalFilter(dt, $event)" placeholder="Search..."
+                                class="w-full sm:w-auto" />
+                        </span>
+                    </div>
+                </ng-template>
+                <ng-template pTemplate="header">
+                    <tr>
+                        <th style="width: 3rem">
+                            <p-tableHeaderCheckbox></p-tableHeaderCheckbox>
+                        </th>
+                        <th pSortableColumn="titre">Titre du modèle<p-sortIcon
+                            field="titre"></p-sortIcon></th>
+                        <th pSortableColumn="convocation">Réponse convocation<p-sortIcon
+                                field="convocation"></p-sortIcon></th>
+                        <th pSortableColumn="reporg_seance">Reprogrammation séance<p-sortIcon
+                                field="reporg_seance"></p-sortIcon></th>
+                        <th pSortableColumn="validation_date">Réponse validation date<p-sortIcon
+                                field="validation_date"></p-sortIcon></th>
+                        <th pSortableColumn="validation_points">Réponse validation points<p-sortIcon
+                                field="validation_points"></p-sortIcon></th>
+                        <th pSortableColumn="documents_points">Dépos documents points<p-sortIcon
+                                field="documents_points"></p-sortIcon></th>
+                        <th pSortableColumn="documents_points">Réponse documents points<p-sortIcon
+                                field="documents_points"></p-sortIcon></th>
+                        <th pSortableColumn="utilisation_ulterieurs">Rappel utilisation ultérieurs<p-sortIcon
+                                field="utilisation_ulterieurs"></p-sortIcon></th>
+                        <th></th>
+
+                    </tr>
+                </ng-template>
+                <ng-template pTemplate="body" let-model of models>
+                    <tr>
+                        <td>
+                            <p-tableCheckbox [value]="model"></p-tableCheckbox>
+                        </td>
+                        <td style="width:14%; min-width:10rem;">
+                            <span class="p-column-title">Titre du modèle</span>
+                            {{model.titre}}
+                        </td>
+                        <td style="width:14%; min-width:10rem;">
+                            <span class="p-column-title">Réponse convocation</span>
+                            {{model.reponseConvocation}}
+                        </td>
+                        <td style="width:15%; min-width:10rem;">
+                            <span class="p-column-title">Reprogrammation séance</span>
+                            {{model.reporgSeance}}
+                        </td>
+                        <td style="width:14%; min-width:10rem;">
+                            <span class="p-column-title">Réponse validation date</span>
+                            {{model.reponseValidationDate}}
+                        </td>
+                        <td style="width:14%; min-width:10rem;">
+                            <span class="p-column-title">Réponse validation points</span>
+                            {{model.reponseValidationPoints}}
+                        </td>
+                        <td style="width:15%; min-width:10rem;">
+                            <span class="p-column-title">Dépos documents points</span>
+                            {{model.deposDocumentsPoints}}
+                        </td>
+                        <td style="width:14%; min-width:10rem;">
+                            <span class="p-column-title">Réponse validation PV</span>
+                            {{model.reponseValidationPv}}
+                        </td>
+                        <td style="width:14%; min-width:10rem;">
+                            <span class="p-column-title">Rappel utilisation ultérieurs</span>
+                            {{model.rappelUtilisationUlterieurs}}
+                        </td>
+                        <td>
+                            <div class="flex">
+                                <button pButton pRipple icon="pi pi-pencil"
+                                    class="p-button-rounded p-button-edit mr-2"
+                                    (click)="editModel(model)">
+                                </button>
+                                <button pButton pRipple icon="pi pi-trash" class="p-button-rounded p-button-danger"
+                                    (click)="deleteModel(model)">
+                                </button>
+
+                            </div>
+                        </td>
+                    </tr>
+                </ng-template>
+            </p-table>
+        </div>
+
+        <p-dialog [(visible)]="deleteModelDialog" header="Confirm" [style]="{width:'450px'}">
+            <div class="flex align-items-center justify-content-center">
+                <i class="pi pi-exclamation-triangle mr-3" style="font-size: 2rem"></i>
+                <span *ngIf="model">Etes vous sur de vouloir supprimer le modèle sélectionné<b>{{model.id}}</b>?</span>
+            </div>
+            <ng-template pTemplate="footer">
+                <button pButton pRipple icon="pi pi-times" class="p-button-text" label="No"
+                    (click)="deleteModelDialog = false"></button>
+                <button pButton pRipple icon="pi pi-check" class="p-button-text" label="Yes"
+                    (click)="confirmDelete()"></button>
+            </ng-template>
+        </p-dialog>
+
+        <p-dialog [(visible)]="deleteModelsDialog" header="Confirm" [style]="{width:'450px'}">
+            <div class="flex align-items-center justify-content-center">
+                <i class="pi pi-exclamation-triangle mr-3" style="font-size: 2rem"></i>
+                <span>Etes vous sur de vouloir supprimer les modèles sélectionnés?</span>
+            </div>
+            <ng-template pTemplate="footer">
+                <button pButton pRipple icon="pi pi-trash" class="p-button-rounded p-button-danger" label="No" (click)="deleteModelsDialog = false"></button>
+                <button pButton pRipple icon="pi pi-check" class="p-button-text" label="Yes"
+                    (click)="confirmDeleteSelected()"></button>
+            </ng-template>
+        </p-dialog>
+
+    </div>
+</div>

@@ -1,0 +1,123 @@
+<div class="d-flex flex-column file-explorer" appKeyBoardShortKey>
+  <div class="part">
+    <div *ngIf="!onBegin" class="top-sub-menu flex-1">
+      <div (click)="returnBack()" class="top-menu-item">
+        <i class="pi pi-arrow-left"></i>
+        <span>undo</span>
+      </div>
+      <div title="Shift + N" *ngIf="currentFolder?.data?.dossier !== undefined && parentHasPermission('w')" (click)="openNewFolderDialog()" class="top-menu-item">
+        <i class="pi pi-folder"></i>
+        <span>Nouveau dossier</span>
+      </div>
+      <div (click)="refresh()" class="top-menu-item">
+        <i class="pi pi-refresh"></i>
+        <span>actualiser</span>
+      </div>
+      <div title="Shift + U" (click)="openUploadFileDialog()" *ngIf="currentFolder !== undefined  && parentHasPermission('w')" class="top-menu-item">
+        <i class="pi pi-upload"></i>
+        <span>importer</span>
+      </div>
+      <div (click)="download()" *ngIf="selectedItems.length > 0 && hasPermission('w')" class="top-menu-item">
+        <i class="pi pi-download"></i>
+        <span>télécharger</span>
+      </div>
+      <div title="Shift + R" (click)="openRenameItemDialog()" *ngIf="selectedItems.length == 1 && hasPermission('w')" class="top-menu-item">
+        <i class="pi pi-pencil"></i>
+        <span>Renommer</span>
+      </div>
+      <div title="Shift + D" *ngIf="selectedItems.length > 0 && hasPermission('d')" (click)="openDeleteItemDialog()" class="top-menu-item">
+        <i class="pi pi-trash" style="color: red"></i>
+        <span>supprimer</span>
+      </div>
+      <div title="Shift + G" *ngIf="selectedItems.length > 0 && (isOwner() | async)" (click)="openGrantPermissionDialog()" class="top-menu-item">
+        <i class="pi pi-unlock" style="color: var(--cyan-700)"></i>
+        <span>Accorder des permissions</span>
+      </div>
+    </div>
+    <div class="top-sub-menu">
+      <div (click)="selectedViewMode ='grid'" [ngClass]="{selected: selectedViewMode == 'grid'}"  class="top-menu-item">
+        <i class="pi pi-th-large"></i>
+      </div>
+      <div (click)="selectedViewMode ='list'" [ngClass]="{selected: selectedViewMode == 'list'}" class="top-menu-item">
+        <i class="pi pi-list"></i>
+      </div>
+    </div>
+  </div>
+  <div class="part align-self-stretch">
+    <div class="navigation-menu">
+      <p-tree 
+          selectionMode="single"
+          (onNodeSelect)="onSelectFromTree($event)"
+          [(selection)]="currentFolder"
+          [value]="folders"
+          class="w-full md:w-30rem"
+          [loading]="getMoreFoldersLoading"
+      >
+        <ng-template let-item pTemplate="url">
+          <b class="w-100">{{ item.label }}</b>
+        </ng-template>
+    </p-tree>
+    </div>
+    <div class="navigator-body">
+      <div class="tool-menu">
+        <div  class="path">
+          <div *ngIf="!onBegin">
+            <span *ngFor="let item of path;let i = index; let last = last">
+              <span (click)="goTo(i)" class="link" [ngClass]="{active: item === currentFolder}" ><span class="text">{{item.label}}</span></span>  
+              <span *ngIf="!last">></span>         
+            </span>
+          </div>
+          <a *ngIf="onBegin" routerLink="/dossier/list/1" class="link"><span class="text">Aller à la racine</span></a>
+        </div>
+        <div class="search">
+          <span class="p-input-icon-left">
+            <i class="pi pi-search"></i>
+            <input #seachInput (input)="refresh()" [(ngModel)]="searchKeyword" placeholder="Recherche" type="text" pInputText />
+          </span>
+        </div>
+      </div>
+      <div class="content">
+        <div *ngIf="getMoreFoldersLoading" class="loading-layout">
+          <i class="pi pi-spin pi-spinner" style="font-size: 4rem"></i>
+        </div>
+        <div class="flex justify-content-center align-items-center">
+          <span style="font-size: 16px; margin-top: 20px!important;" *ngIf="currentFolder?.children?.length== 0 && searchKeyword.length === 0"class="m-auto ">Empty folder</span>
+          <span style="font-size: 16px; margin-top: 20px!important;" *ngIf="currentFolder?.children?.length== 0 && searchKeyword.length > 0"class="m-auto ">0 result found</span>
+        </div>
+        <div *ngIf="selectedViewMode ==='grid'" class="grid row">
+          
+          <div *ngFor="let item of currentFolder?.children"  class="col-md-3">
+            <div (click)="singleClick(item)" (dblclick)="doubleClick(item)" [ngClass]="{selected: selectedItems.includes(item)}" class="item">
+              <i [ngClass]="item.icon" class="icon"></i>
+              <span class="title">{{ item.label}}</span>
+            </div>
+          </div>        
+        </div>
+
+        <div *ngIf="selectedViewMode ==='list'" class="row grid" class="list">
+          <p-table *ngIf="currentFolder?.children?.length ?? 0 > 0" [value]="$any(currentFolder?.children)" [tableStyle]="{ 'min-width': '50rem' }">
+                <ng-template pTemplate="header">
+                    <tr>
+                        <th>Nom</th>
+                        <th>Type</th>
+                        <th>Propriétaire</th>
+                        <th>Créé à</th>
+                        <th>Autorisations</th>
+                    </tr>
+                </ng-template>
+                <ng-template pTemplate="body" let-item>
+                    <tr class="item" [ngClass]="{selected: selectedItems.includes(item)}" (click)="singleClick(item)" (dblclick)="doubleClick(item)">
+                      <td><i [ngClass]="item.icon" class="icon"></i> {{item.label}}</td>
+                      <td>{{item.type == 'file' ? item.data.privilegeDocument.document.mimeType : "Dossier"}}</td>
+                      <td>{{item.type == 'file' ? item.data.privilegeDocument.document.owner.nom + " " + item.data.privilegeDocument.document.owner.prenom : item.data.dossier.owner.nom + " " + item.data.dossier.owner.prenom}}</td>
+                      <td>{{(item.type == 'file' ?  item.data.privilegeDocument.document.dateCreation : "")  | date: 'longDate'}}</td>
+                      <td>{{item.type == 'file' ?  item.data.privilegeDocument.privilege : item.data.privilege }}</td>
+                    </tr>
+                </ng-template>
+            </p-table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<p-toast></p-toast>

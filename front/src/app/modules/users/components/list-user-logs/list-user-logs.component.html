@@ -1,0 +1,129 @@
+<div class="grid">
+    <div class="col-12">
+        <div class="card px-6 py-6">
+            <h5 class="m-0 table-title">Liste des logs des utilisateurs</h5>
+            <p-table #dt [value]="userLog" styleClass="p-datatable-gridlines" responsiveLayout="scroll" [rows]="10"
+                [globalFilterFields]="['userLogDetails.login','userLogDetails.nameOfAction', 'date']" [rows]="10" [paginator]="true"
+                [rowsPerPageOptions]="[10,20,30]" [showCurrentPageReport]="true"
+                currentPageReportTemplate="Afficher {first} un {last} des {totalRecords} utilisateurs"
+                [(selection)]="selectedUsers" selectionMode="multiple" [rowHover]="true" dataKey="id">
+                <ng-template pTemplate="caption">
+                    <div class="flex justify-content-between flex-wrap">
+                        <div class="flex justify-content-start flex-wrap">
+                            <div class="flex align-items-center justify-content-center m-2">
+                                <button pButton label="Effacer" class="p-button-outlined" icon="pi pi-filter-slash" (click)="clear(dt)">
+                                    </button>
+                            </div>
+                            <div class="flex align-items-center justify-content-center m-2">
+                                <p-calendar [(ngModel)]="selected_month" view="month" dateFormat="mm/yy" [readonlyInput]="true"
+                                    (ngModelChange)="onSelectMonthChange($event)"></p-calendar>
+                            </div>
+                        </div>
+                        <div class="flex justify-content-start flex-wrap">
+                                    <div class="flex align-items-center justify-content-center m-2 p-input-icon-left">
+                                        <!-- <span class="block mt-2 md:mt-0 p-input-icon-left"> -->
+                                            <i class="pi pi-search"></i>
+                                                <input pInputText #filter type="text" (input)="onGlobalFilter(dt, $event)" placeholder="Recherche..."
+                                                    class="w-full sm:w-auto" />
+                                        <!-- </span>     -->
+                                    </div>
+                                    <div class="flex align-items-center justify-content-center m-2">
+                                        <button type="button" pButton pRipple icon="pi pi-file-pdf" (click)="exportPdf()"
+                                            class="p-button-warning mr-2" pTooltip="PDF" tooltipPosition="bottom"></button>
+                                    </div>
+
+                                    <div class="flex align-items-center justify-content-center m-2">
+                                        <button type="button" pButton pRipple icon="pi pi-file-excel" (click)="exportExcel()"
+                                            class="p-button-success mr-2" pTooltip="XLS" tooltipPosition="bottom"></button>
+                                    </div>
+                        </div>
+                    </div>
+                </ng-template>
+                <ng-template pTemplate="header">
+                    <tr>
+                        <th pSortableColumn="userLogDetails.login">
+                            <div class="flex justify-content-between align-items-center">
+                                <div>
+                                    Login
+                                    <p-sortIcon field="userLogDetails.login"></p-sortIcon>
+                                </div>
+                                <p-columnFilter type="text" field="userLogDetails.login" display="menu"></p-columnFilter>
+                            </div>
+                        </th>
+                        <th pSortableColumn="userLogDetails.nameOfAction">
+                            <div class="flex justify-content-between align-items-center">
+                                <div>
+                                    Action
+                                    <p-sortIcon field="userLogDetails.nameOfAction"></p-sortIcon>
+                                </div>
+                                <p-columnFilter type="text" field="userLogDetails.nameOfAction" display="menu"></p-columnFilter>
+                            </div>
+                        </th>
+                        <th pSortableColumn="date">
+                            <div class="flex justify-content-between align-items-center">
+                                <div>
+                                    Date
+                                    <p-sortIcon field="date"></p-sortIcon>
+                                </div>
+                                <p-columnFilter type="date" field="date" display="menu" dateFormat="dd/mm/yy"></p-columnFilter>
+                                <!-- <p-columnFilter type="date" field="date" display="menu">
+                                    <p-calendar
+                                        dateFormat="dd/mm/yyyy">
+                                    </p-calendar>
+                                </p-columnFilter> -->
+                            </div>
+                        </th>
+                        <th>
+                            Detail
+                        </th>
+                    </tr>
+                </ng-template>
+                <ng-template pTemplate="body" let-user>
+                    <tr>
+                        <td style="width:20%; min-width:10rem;">
+                            <span class="p-column-title">Login</span>
+                            {{user.userLogDetails.login}}
+                        </td>
+                        <td style="width:35%; min-width:8rem;">
+                            <span class="p-column-title">Action</span>
+                            {{user.userLogDetails.nameOfAction}}
+                        </td>
+                        <td style="width:38%; min-width:10rem;">
+                            <span class="p-column-title">Date</span>
+                            {{user.date | date:'dd/MM/yyyy HH:mm:ss'}}
+
+                        </td>
+                        <td style="width:7%; min-width:10rem;">
+                            <p-overlayPanel #op>
+                                <ng-template pTemplate="content">
+                                    {{user.userLogDetails.login}} <br>
+                                    {{user.userLogDetails.nameOfAction}} : <br>
+                                    <ng-container *ngIf="[3].includes(user.userLogDetails.actionsLogid)">
+                                        à l'évenment :
+                                    </ng-container>
+                                    <ng-container *ngIf="![0,1].includes(user.userLogDetails.actionsLogid)">
+                                        {{user.userLogDetails.titreAction}} <br>
+                                    </ng-container>
+                                    En : {{user.date  | date:'dd/MM/yyyy HH:mm:ss'}} <br>
+                                    <ng-container *ngIf="[2, 3, 4, 8, 9, 10].includes(user.userLogDetails.actionsLogid)">
+                                        Date debut: {{user.userLogDetails.dateDebut | date:'dd/MM/yyyy HH:mm:ss'}} <br>
+                                    </ng-container>
+                                    <ng-container *ngIf="[2, 3, 4, 8, 9, 10].includes(user.userLogDetails.actionsLogid)">
+                                        Date fin: {{user.userLogDetails.dateFin | date:'dd/MM/yyyy HH:mm:ss'}} <br>
+                                    </ng-container>
+                                    Adress ip : {{user.adresseIp}}
+                                </ng-template>
+                            </p-overlayPanel>
+                            <button pButton pRipple (click)="op.toggle($event)" pButton pRipple icon="pi pi-info-circle"
+                                class="p-button-rounded p-button-info mr-2">
+                            </button>
+                        </td>
+                    </tr>
+                </ng-template>
+            </p-table>
+        </div>
+
+    </div>
+</div>
+
+

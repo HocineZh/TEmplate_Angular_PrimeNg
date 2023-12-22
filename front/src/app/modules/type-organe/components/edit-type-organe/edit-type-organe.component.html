@@ -1,0 +1,101 @@
+<div class="card">
+  <span class="text-900 text-xl font-bold mb-4 block">Modifier Type Organe</span>
+  <p-toast></p-toast>
+  <div class="grid">
+    <div class="col-12 lg:col-12">
+      <form class="grid formgrid p-fluid" [formGroup]="typeOrganeForm">
+
+        <div class="field mb-4 col-12 md:col-6">
+          <label for="désignation" class="font-medium text-900 label-required">Désignation</label>
+          <div class="p-inputgroup">
+            <input type="text" pInputText placeholder="Désignation" formControlName="designation"  [ngClass]="{'ng-invalid ng-dirty' : this.isAddFailed && f['designation'].errors}"/>
+          </div>
+            <small style="color: red;" id="titre-help" *ngIf="submitted && f['designation'].errors && f['designation'].errors?.['required']" class="p-error block">Champ Obligatoire </small>
+        </div>
+
+        <div class="field mb-4 col-12 md:col-6">
+          <label for="abreviation" class="font-medium text-900 label-required">Abréviation</label>
+          <div class="p-inputgroup">
+            <input type="text" pInputText placeholder="Abréviation" formControlName="abreviation"  [ngClass]="{'ng-invalid ng-dirty' : this.isAddFailed && f['abreviation'].errors}"/>
+          </div>
+          <small style="color: red;" id="titre-help" *ngIf="submitted && f['abreviation'].errors && f['abreviation'].errors?.['required']" class="p-error block">Champ Obligatoire </small>
+        </div>
+
+        <div class="field mb-4 col-12 md:col-6">
+          <label for="existeQuorum" class="font-medium text-900 label-required">Existe Quorum?</label>
+
+          <div class="grid formgrid">
+              <div class="col-12 md:col-4">
+                  <div class="field-radiobutton">
+                      <p-radioButton name="existeQuorum" value="true" formControlName="existeQuorum" id="oui" (onFocus)="showValueQuorum()"></p-radioButton>
+                      <label for="oui">Oui</label>
+                  </div>
+              </div>
+              <div class="col-12 md:col-4">
+                  <div class="field-radiobutton">
+                      <p-radioButton name="existeQuorum" value="false" formControlName="existeQuorum" id="non" (onFocus)="showValueQuorum()"></p-radioButton>
+                      <label for="non">Non</label>
+                  </div>
+              </div>
+          </div>
+          <small style="color: red;" id="phone-help" *ngIf="submitted && f['existeQuorum'].errors && f['existeQuorum'].errors?.['required']" class="p-error block">Champ Obligatoire </small>
+        </div>
+
+        <div class="field mb-4 col-12 md:col-6" *ngIf="existeQuorum">
+          <label for="quorum" class="font-medium text-900 label-required">Valeur Quorum</label>
+          <div class="p-inputgroup">
+            <input type="text" pInputText placeholder="Quorum" formControlName="quorum"/>
+          </div>
+
+        </div>
+
+        <div class="field mb-4 col-12 md:col-6">
+          <label for="delai" class="font-medium text-900 label-required">modèle de délai</label>
+          <p-dropdown [options]="delais" formControlName="modelDelais"  optionLabel="titre" [filter]="true" filterBy="titre" [showClear]="true" display="chip" placeholder="Selectionner le modèle de délai" [ngClass]="{'ng-invalid ng-dirty' : this.isAddFailed && f['modelDelais'].errors}">
+            <ng-template let-delai pTemplate="item">
+              <div class="structure-item">
+                <div>{{delai.titre}}</div>
+              </div>
+            </ng-template>
+          </p-dropdown>
+          <small style="color: red;" id="titre-help" *ngIf="submitted && f['modelDelais'].errors && f['modelDelais'].errors?.['required']" class="p-error block">Champ Obligatoire </small>
+        </div>
+
+      <div class="field mb-4 col-12 md:col-6">
+      <label for="ordreJour" class="font-medium text-900 label-required">modèle d'ordre du jour</label>
+
+      <p-dropdown [options]="ordreJours" formControlName="modelOrdreJour"  optionLabel="titre" [filter]="true" filterBy="titre" [showClear]="true" display="chip" placeholder="Selectionner le modèle d'ordre du jour" [ngClass]="{'ng-invalid ng-dirty' : this.isAddFailed && f['modelOrdreJour'].errors}">
+        <ng-template let-ordre pTemplate="item">
+          <div class="structure-item">
+          <div>{{ordre.titre}}</div>
+          </div>
+        </ng-template>
+      </p-dropdown>
+      <small style="color: red;" id="titre-help" *ngIf="submitted && f['modelOrdreJour'].errors && f['modelOrdreJour'].errors?.['required']" class="p-error block">Champ Obligatoire </small>
+          </div>
+
+     <div class="field mb-4 col-12 md:col-6">
+      <label for="process" class="font-medium text-900 label-required">modèle de process</label>
+      <p-dropdown [options]="process" formControlName="modeleProcess"  optionLabel="nomModele" [filter]="true" filterBy="nomModele" [showClear]="true" display="chip" placeholder="Selectionner le modèle du processus" [ngClass]="{'ng-invalid ng-dirty' : this.isAddFailed && f['modeleProcess'].errors}">
+        <ng-template let-process pTemplate="item">
+          <div class="structure-item">
+          <div>{{process.nomModele}}</div>
+          </div>
+        </ng-template>
+      </p-dropdown>
+      <small style="color: red;" id="titre-help" *ngIf="submitted && f['modeleProcess'].errors && f['modeleProcess'].errors?.['required']" class="p-error block">Champ Obligatoire </small>
+      </div>
+      <div class="field mb-4 col-12 md:col-12">
+        <label for="description" class="font-medium text-900">Déscription</label>
+        <textarea rows="5" cols="30" pInputTextarea placeholder="Déscription" formControlName="description"></textarea>
+
+      </div>
+        <div class="col-12">
+            <button pButton pRipple label="Modifier" class="w-auto mt-3 p-button-success mr-2" (click)="saveOrgane()"></button>
+            <button pButton pRipple label="Annuler" class="w-auto mt-3 p-button-default" (click)="closeSaveTypeOrgane()"></button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+

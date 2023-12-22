@@ -1,0 +1,32 @@
+
+<div [style]="{ padding: '20px', width: '400px' }">
+    <div class="row my-2">
+        Créez un nouveau dossier sur le chemin suivant
+    </div >
+    <div class="row my-2" >
+        <span class="p-input-icon-left w-full">
+            <i class="pi pi-angle-right"></i>
+            <input disabled class="w-full my-2" type="text" placeholder="Entrez un chemin" pInputText [(ngModel)]="path" />
+        </span>
+        <span class="p-input-icon-left w-full">
+            <i class="pi pi-plus"></i>
+            <input 
+                    pInputText 
+                    #folderNameInput 
+                    class="w-full my-2" 
+                    type="text" 
+                    placeholder="Entrez un nom de dossier" 
+                    [(ngModel)]="folderName"
+                    #folderNameRef="ngModel"
+                    required
+                    minlength="2"
+                    [ngClass] ="{'ng-invalid ng-dirty': folderNameRef.invalid && (folderNameRef.dirty || folderNameRef.touched)}"
+             />
+        </span>
+        <small *ngIf="folderNameRef.errors?.['required']" class="text-red-700">Folder name is required.</small>
+        <small *ngIf="folderNameRef.errors?.['minlength']" class="text-red-700">Folder name must be at least 2 characters long.</small>
+    </div>
+        <div style="display: flex;" class="justify-content-center my-2">
+            <p-button [disabled]="folderNameRef?.invalid ?? false && (folderNameRef?.dirty ?? false || folderNameRef?.touched ?? false)" class="w-full" (click)="createFolder()" [loading]="loading" icon="pi pi-plus" label="Créer" severity="danger"></p-button>
+        </div>
+</div>

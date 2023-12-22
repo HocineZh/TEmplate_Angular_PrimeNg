@@ -1,0 +1,228 @@
+<div class="card">
+    <p-toast key="tst"></p-toast>
+    <div class="flex flex-column py-2 mb-1">
+        <h4 class="pb-2 mb-2 border-bottom-1 surface-border">Bilans organes de gestion</h4>
+    </div>
+
+  
+      
+    <div class="grid">
+       
+        <div class="col-12 md:col-4 field p-fluid">
+            <label for="start" class="block text-900 font-semibold">Societés</label>
+            <p-dropdown [options]="structures" [(ngModel)]="selected_societe" optionLabel="customLabel" placeholder="Séléctionner la société" [showClear]="true" (ngModelChange)="onSocieteChange($event)"></p-dropdown>
+        </div>
+       
+        <div class="col-12 md:col-4 field p-fluid">
+            <label for="start" class="block text-900 font-semibold">Type organe</label>
+            <p-dropdown  inputId="type-organe" placeholder="Séléctionner le type organe"  [options]="type_organes" [(ngModel)]="selected_typeorgane" [showClear]="true" (ngModelChange)="onTypeOrganeChange($event)">
+                <ng-template pTemplate="selectedItem">
+                    <div *ngIf="selected_typeorgane" class="flex align-items-center">
+                        <div class="flex-shrink-0 w-1rem h-1rem mr-2 border-circle" [style.backgroundColor]="selected_typeorgane.backgroundColor"></div>
+                            <div>{{selected_typeorgane.designation}}</div>
+                        </div>
+                </ng-template>
+                                
+                <ng-template let-typeOrgane pTemplate="item">
+                    <div class="flex align-items-center">
+                        <div class="flex-shrink-0 w-1rem h-1rem mr-2 border-circle" [style.backgroundColor]="typeOrgane.backgroundColor"></div>
+                            <div>{{typeOrgane.designation}}</div> 
+                        </div>
+                </ng-template>
+            </p-dropdown>                
+        </div>
+        <!-- <div class="col-12 md:col-4 field p-fluid">
+            <label for="start" class="block text-900 font-semibold">Organe de gestion</label>
+            <p-dropdown  inputId="organe" placeholder="Séléctionner l'organe de gestion"  [options]="selected_typeorgane?.organes" [(ngModel)]="selected_organe" [showClear]="true" (ngModelChange)="onOrganeDeGestionChange($event)">
+                <ng-template pTemplate="selectedItem">
+                    <div *ngIf="selected_organe" class="flex align-items-center">
+                        <div class="flex-shrink-0 w-1rem h-1rem mr-2 border-circle" [style.backgroundColor]="selected_typeorgane.backgroundColor"></div>
+                        <div>{{selected_organe.titre}}</div>
+                    </div>
+                </ng-template>
+                    
+                <ng-template let-organe pTemplate="item">
+                    <div class="flex align-items-center">
+                        <div class="flex-shrink-0 w-1rem h-1rem mr-2 border-circle" [style.backgroundColor]="selected_typeorgane.backgroundColor"></div>
+                        <div>{{organe.titre}}</div> 
+                    </div>
+                 </ng-template>
+             </p-dropdown>
+        </div>
+        <div class="col-12 md:col-4 field  p-fluid">
+            <label for="typeEvenement" class="block text-900 font-semibold">Type évènement</label>
+            <p-dropdown inputId="typeEvenement" placeholder="Séléctionner le type évènement" [options]="type_evenements" [(ngModel)]="selected_typeEvenement" [showClear]="true"></p-dropdown>
+        </div> -->
+        <div class="col-12 md:col-4 field p-fluid">
+            <label for="typeBilan" class="block text-900 font-semibold">Type bilan</label>
+            <p-dropdown inputId="typeBilan" placeholder="Sélectionner le type bilan"
+                [options]="['Mensuel', 'Trimestriel', 'Semestriel', 'Annuel']" [(ngModel)]="selected_typeBilan"
+                (ngModelChange)="onSelectedTypeBilanChange($event)" [showClear]="true"></p-dropdown>
+            
+            <!-- Show p-calendar for Annuel -->
+            <div *ngIf="selected_typeBilan === 'Annuel'">
+                <p-calendar view="year" dateFormat="yy" inputId="yearpicker" [(ngModel)]="selected_year"
+                    (ngModelChange)="onSelectedYearChange($event)"></p-calendar>
+            </div>
+            
+            <!-- Show p-calendar and p-dropdown for Semestriel -->
+            <div *ngIf="selected_typeBilan === 'Semestriel'">
+                <p-calendar view="year" dateFormat="yy" inputId="yearpicker" [(ngModel)]="selected_year"
+                    (ngModelChange)="onSelectedYearSemestreChange($event)"></p-calendar>
+                <p-dropdown [options]="['1st Semester', '2nd Semester']" [(ngModel)]="selected_semester"
+                    (ngModelChange)="onSelectedNumSemestre($event)"></p-dropdown>
+            </div>
+            
+            <!-- Show p-calendar and p-dropdown for Trimestriel -->
+            <div *ngIf="selected_typeBilan === 'Trimestriel'">
+                <p-calendar view="year" dateFormat="yy" inputId="yearpicker" [(ngModel)]="selected_year" 
+                (ngModelChange)="onSelectedYearTrimesterChange($event)"></p-calendar>
+                <p-dropdown [options]="['1st Trimester', '2nd Trimester', '3rd Trimester']" [(ngModel)]="selected_trimester"
+                    (ngModelChange)="onSelectedNumTrimester($event)"></p-dropdown>
+            </div>
+            
+            <!-- Show p-calendar for Mensuel -->
+            <div *ngIf="selected_typeBilan === 'Mensuel'">
+                <p-calendar [(ngModel)]="selected_month" view="month" dateFormat="mm/yy" [readonlyInput]="true"
+                    (ngModelChange)="onSelectMonthChange($event)"></p-calendar>
+            </div>
+        </div>
+        
+    </div>
+ 
+    <div class="flex w-full justify-content-end border-top-1 surface-border mt-3 py-5 px-5 gap-3">    
+        <button pButton pRipple type="button" icon="pi pi-check" label="show"  class="p-button-primary h-3rem" [disabled]="selected_societe === null || selected_typeorgane === null || selected_typeBilan === null || fillerVar == true" (click)="onFilter()"></button>
+        <!-- <p-button [loading]="pdfGenerating" (click)="openPDF()">Export to PDF</p-button> -->
+    </div>
+
+    <div class="flex w-full justify-content-end border-top-1 surface-border mt-3 py-5 px-5 gap-3">
+        <button *ngIf="isExportContentVisible" pButton pRipple type="button" icon="pi pi-check" label="Export the bilan" [loading]="pdfGenerating" class="p-button-primary h-3rem" (click)="exportPdf()"></button>
+    </div>
+    <div class="flex flex-column py-2 mb-1">
+        <div style="display: none;" id="exportContent">
+                <!-- <div style="text-align: center;">
+                    <h3> {{entete}} </h3>
+                </div>
+                <br/>
+                <br/>
+                <br/>
+                <div style="text-align: center; color: rgb(71, 86, 146)">
+                    <p> BILAN {{ bilanTitre }} des organes de gestion de la Société </p>
+                </div>
+                <br/>
+                <div>
+                    <p style="color: blue;"> 
+                        1. BILAN DU CONSEIL D’ADMINISTRATION OU CONSEIL DE GESTION 
+                    </p>
+                    <br/>
+                    <p>
+                        Durant le ………………………, le Conseil d’Administration de ……………… a tenu ………. (.X.) réunion(s).
+                    </p>    
+                <br/>
+                </div>
+                <br/>
+                <br />
+                <div>
+                    <p>
+                        1.1. THEMES EXAMINES PAR REUNION DU CONSEIL D’ADMINISTRATION
+                    </p>
+                </div> -->
+                <p style="color: blue;">
+                    1.1. THEMES EXAMINES PAR REUNION DU CONSEIL D’ADMINISTRATION
+                </p>
+                <p-table [value]="extractedData" styleClass="p-datatable-gridlines" responsiveLayout="scroll" >
+                    <ng-template pTemplate="header">
+                        <tr>
+                            <th *ngFor="let col of cols">{{ col.header }}</th>
+                            
+                        </tr>
+                    </ng-template>
+                    <ng-template pTemplate="body" let-event>
+                        <tr>
+                            <td>{{ event.NumSession }}</td>
+                            <td>{{ event.DateRenion }}</td>
+                            <td>  
+                                {{ event.PointsOrderJ }}
+                            </td>
+                        </tr>
+                    </ng-template>
+                </p-table>
+                <br/>
+                <br/>
+                <br/>
+                <p style="color: blue;">
+                    1.1.1. ETAT RECAPITULATIF
+                </p>
+                <p-table [value]="extractedData2" styleClass="p-datatable-gridlines" responsiveLayout="scroll">
+                    <ng-template pTemplate="header">
+                        <tr>
+                            <th *ngFor="let col of cols2">{{ col.header }}</th>
+                            
+                        </tr>
+                    </ng-template>
+                    <ng-template pTemplate="body" let-event>
+                        <tr>
+                            <td>{{ event.NumSession }}</td>
+                            <td>{{ event.DateRenion }}</td>
+                            <td>
+                                {{ event.nbrRes }}
+                            </td>
+                            <td>
+                                {{ event.nbrMembre }}
+                            </td>
+                        </tr>
+                    </ng-template>
+                </p-table>
+                <br/>
+                <br />
+                <br />
+                <p style="color: blue;">
+                    1.2. ETAT DETAILLE DES RESOLUTIONS
+                </p>
+                <p-table [value]="extractedData3">
+                    <ng-template pTemplate="header">
+                        <tr>
+                            <th *ngFor="let col of cols3">{{ col.header }}</th>
+                        </tr>
+                    </ng-template>
+                    <ng-template pTemplate="body" let-rowData>
+                        <tr>
+                            <td>{{ rowData.NumSession }}</td>
+                            <td>{{ rowData.DateRenion }}</td>
+                            <td>{{ rowData.refRes }}</td>
+                            <td>{{ rowData.ObjRes }}</td>
+                        </tr>
+                    </ng-template>
+                </p-table>
+        </div>
+    </div>
+    
+</div>
+
+
+ 
+ 
+
+
+
+
+
+
+
+
+
+
+
+ 
+
+
+
+
+
+
+
+
+
+
+
+

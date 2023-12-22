@@ -1,0 +1,148 @@
+<div class="card">
+  <span class="text-900 text-xl font-bold mb-4 block">Modifier les informations d'une orientation</span>
+  <div class="grid">
+      <p-toast></p-toast>
+      <div class="col-12 lg:col-12">
+          <div class="grid formgrid p-fluid">
+              <div class="field mb-4 col-12">
+                  <label for="intitule" class="font-medium text-900">Intitulé</label>
+                  <input id="intitule" type="text" pInputText [(ngModel)]="orientation.intitule" required="true">
+              </div>
+              <div class="field mb-4 col-12">
+                  <label for="contenu" class="font-medium text-900">Contenu</label>
+                  <textarea id="contenu" type="text" pInputTextarea [(ngModel)]="orientation.contenu"
+                      required="true" rows="5" [autoResize]="true"></textarea>
+              </div>
+              <div class="field mb-4 col-12 md:col-6">
+                  <label for="famille" class="font-medium text-900">Famille</label>
+                  <p-dropdown [options]="familles" [(ngModel)]="orientation.parametrageGeneralByFamilleid" placeholder="Selectionner une famille"
+                      optionLabel="titre" [showClear]="true" [filter]="true" filterBy="titre"> </p-dropdown>
+              </div>
+              <!--<div class="field mb-4 col-12 md:col-6">
+                  <label for="societe" class="font-medium text-900">Société</label>
+                  <p-dropdown [options]="societes" dataKey="id" [(ngModel)]="oss.structureByStructureid!.societe"
+                      placeholder="Selectionner la sociéte" optionLabel="raisonSocial"
+
+                      [filter]="true" filterBy="raisonSocial" [showClear]="true"
+                      (ngModelChange)="getAllStructureBySociete(oss.structureByStructureid!.societe!.code!)"></p-dropdown>
+
+              </div>-->
+
+              <div *ngIf="oss.structureByStructureid" class="field mb-4 col-12 md:col-6">
+                  <label for="structure" class="font-medium text-900">Structure responsable *</label>
+                  <p-dropdown [options]="structures" dataKey="id"
+                      [(ngModel)]="oss.structureByStructureid"
+                      placeholder="Selectionner la structure" optionLabel="code" [showClear]="true"
+                      [filter]="true" dataKey="id" filterBy="code">
+                      <div>{{ oss.structureByStructureid!.societe!.code }} - {{ oss.structureByStructureid!.nom }} </div></p-dropdown>
+              </div>
+
+              <div *ngIf="oss.structureByStructureid" class="field mb-4 col-12 md:col-6">
+                  <label for="user" class="font-medium text-900">Chargé de suivi de l'orientation *</label>
+                  <input id="intitule" type="text" pInputText [(ngModel)]="oss.structureByStructureid!.chargeOrientation" required="true">
+              </div>
+              <div *ngIf="oss.userByUserid" class="field mb-4 col-12 md:col-6">
+                  <label for="user" class="font-medium text-900">Personne responsable *</label>
+                  <p-dropdown [options]="users" [(ngModel)]="oss.userByUserid"
+                      placeholder="Selectionner le chargé de l'orientation" optionLabel="login" [showClear]="true"
+                      dataKey="login" [filter]="true" filterBy="login">
+                  </p-dropdown>
+              </div>
+              <div class="field mb-4 col-12 md:col-6">
+                  <div class="field">
+                      <label class="font-medium text-900">Type orientation</label>
+                  </div>
+                  <div class="flex flex-wrap gap-3">
+
+                      <div class="flex align-items-center">
+                          <p-radioButton id="type1" name="type" value="PV" [(ngModel)]="orientation.type"></p-radioButton>
+                          <label for="type1" class="font-medium text-900">PV</label>
+                      </div>
+                      <div class="flex align-items-center">
+                          <p-radioButton id="type2" name="type" value="Resolution"
+                              [(ngModel)]="orientation.type"></p-radioButton>
+                          <label for="type2" class="font-medium text-900">Résolution</label>
+                      </div>
+                      <div class="flex align-items-center">
+                          <p-radioButton id="type2" name="type" value="PV/Resolution"
+                              [(ngModel)]="orientation.type"></p-radioButton>
+                          <label for="type2" class="font-medium text-900">PV/Résolution</label>
+                      </div>
+                  </div>
+              </div>
+
+              <div class="field mb-4 col-12" *ngIf="documentsOrientation.length">
+                  <div class="field">
+                      <span class="p-column-title font-medium text-900">Extrait du PV ou Résolution </span>
+
+                      <div class="col-12 field mt-1">
+                          <ng-container *ngIf=" documentsOrientation && documentsOrientation.length>0">
+
+                              <div style="position: relative; height: 75px; width: 100%;"
+                                  *ngFor="let document of documentsOrientation ">
+                                  <div class="col-12 xl:col-9 lg:col-9 md:col-9 p-0 mb-0">
+                                      <p class="pt-3 ml-2 mb-5" style="line-height: 2;">
+
+                                      </p>
+                                  </div>
+                                  <span
+                                      [style]="'background-image : url(assets/layout/images/evenements/icons_docs/' + getExtDoc(document.nom)+ '.png)'"
+                                      style="display: inline-block; float: left; width: 48px;height: 48px; margin-left: 10px;"></span>
+
+                                  <h4 [pTooltip]="document.nom!" style="font-family: Arial;
+                                  font-size: 1.1em;
+                                  display: inline-block;
+                                  float: left;
+                                  width: 60%;
+                                  margin: 0 0 0 20px;
+                                    margin-top: 0px;
+                                  height: 25px;
+                                  -ms-text-overflow: ellipsis;
+                                  -o-text-overflow: ellipsis;
+                                  text-overflow: ellipsis;
+                                  overflow: hidden;
+                                  white-space: nowrap;
+                                ">{{document.nom}}</h4>
+                                  <h4 style="font-weight: normal;
+                                  font-style: italic;
+                                  font-family: Arial;
+                                  font-size: 1.1em;
+                                  display: inline-block;
+                                  float: left;
+                                  width: 60%;
+                                  margin: 0 0 0 20px;
+                                    margin-top: 0px;
+                                  height: 25px;
+                                  -ms-text-overflow: ellipsis;
+                                  -o-text-overflow: ellipsis;
+                                  text-overflow: ellipsis;
+                                  overflow: hidden;
+                                  white-space: nowrap;">Taille : {{50 * 0.000125}} Ko</h4>
+                                  <div>
+                                      <button pButton pRipple icon="pi pi-download"
+                                          class="p-button-primary h-2rem w-2rem mr-2" (click)="downloadFile(document)"
+                                          pTooltip="Télécharger" tooltipPosition="top" type="button"></button>
+                                          <button pButton pRipple icon="pi pi-trash" class="p-button-danger h-2rem w-2rem"
+                                          (click)="deleteFile(document,$event)" pTooltip="Supprimer"
+                                          tooltipPosition="top" type="button"></button>
+                                  </div>
+                              </div>
+
+                          </ng-container>
+                      </div>
+                  </div>
+              </div>
+
+
+      </div>
+
+      </div>
+      <div class="col-12">
+
+          <!--<button pButton pRipple label="Retour" icon="pi pi-times" class="w-auto mt-3" (click)="onBack()"></button>-->
+
+          <button pButton pRipple label="Modifier" icon="pi pi-check" class="w-auto mt-3"
+              (click)="updateorientation()"></button>
+      </div>
+  </div>
+</div>

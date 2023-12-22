@@ -1,0 +1,43 @@
+<div class="card">
+
+<p-toast key="tstCalendarEv"></p-toast>
+<full-calendar *ngIf="today" [options]="calendarOptions">
+    <ng-template #eventContent let-arg>
+        <div class="py-1 pl-1" (mouseover)="op.show($event)" (mouseleave)="op.hide()" >
+        <span class="inline-block pr-1">{{ arg.event.title }}
+        </span>
+        <span class="inline-block">
+            <i *ngIf="arg.event.extendedProps.etat ==='PUBLIER'"  class="pi pi-send ev-badge-icon " style="font-size: 0.8rem"></i>
+            <i *ngIf="arg.event.extendedProps.etat ==='CLOTURER'" class="pi pi-lock ev-badge-icon " style="font-size: 0.8rem"></i>
+            <i *ngIf="arg.event.extendedProps.etat ==='ANNULER'" class="pi pi-times-circle ev-badge-icon" style="font-size: 0.9rem"></i>
+        </span>
+    </div>
+    <p-overlayPanel  #op [style]="{background:'rgba(105,105,105,0.9)', color:'white', margin :'0%', padding :'0%', 'min-width' : '330px', 'font-size' : '0.8rem', opacity:'.9', 'z-index' : '9999', }" >
+        <ng-template pTemplate="content" >
+            <div class="pb-2"> {{ arg.event.extendedProps.organe.titre }} N°: {{ arg.event.extendedProps.numero }}</div>
+            <div class="pb-2"> Titre : {{ arg.event.extendedProps.titre }}</div>
+            <div class="pb-2"> Lieu : {{ arg.event.extendedProps.emplacement }}</div>
+            <div  class="pb-2"  *ngIf="arg.event.extendedProps.seances.length>1">
+                Séance N°: <span class="text-red-500 font-bold">{{ arg.event.extendedProps.seances.length }}</span>
+            </div>
+
+            <div class="pb-2"  style="color : white"><span >Etat : {{sharedDataEvService.getformattedEtatEvenement(arg.event.extendedProps.etat).toLowerCase()}}</span></div>
+            <div  class="pt-2 border-top-1"  *ngIf="arg.event.extendedProps.seances.length>1">
+
+              <ng-container *ngFor="let seance of arg.event.extendedProps.seances; let index =index; let isLast = last" >
+                   <span *ngIf="!isLast">
+                        Séance N°: <span class="text-red-500 font-bold">{{ index + 1 }}</span>  -  le {{ getFormattedDateEvent(seance.dateDebut,seance.dateFin)  }}
+                   </span>
+                </ng-container>
+
+            </div>
+
+        </ng-template>
+
+        </p-overlayPanel>
+    </ng-template>
+</full-calendar>
+<div class="loading-indicator" *ngIf="isLoadingCalendar">
+    <p-progressSpinner  styleClass="w-8rem h-8rem" strokeWidth="4"  animationDuration=".5s"></p-progressSpinner>
+</div>
+</div>

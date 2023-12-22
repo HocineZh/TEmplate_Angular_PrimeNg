@@ -1,0 +1,10 @@
+<div 
+  class="title" 
+  [innerHTML]="title">	
+</div>
+<div *ngFor="let legend of legends" class="inline-flex align-items-center gap-2 px-1">
+		<div class="legend-container">
+			<div class="legend-color" [style.backgroundColor]="legend.color"> </div>
+			<div class="legend-text">{{legend.name}}</div>
+		</div>
+	</div>

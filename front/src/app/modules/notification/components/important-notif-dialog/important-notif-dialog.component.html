@@ -1,0 +1,30 @@
+    <p-dialog header="Header" [draggable] = "false" position = "top" [modal]="true" [(visible)]="visible" [style]="{minWidth: '400px'}">
+
+            <ng-template pTemplate="header">
+                <span class="text-xl font-bold">Important notifications</span>
+            </ng-template>
+            <div style="max-height: 400px;">
+                <ul class="list-none p-0 m-0">
+                    <li class="px-3 py-1">
+                        <span>Vous avez <b>{{ notifications.length }}</b>  notifications non lues</span>
+                    </li>
+
+                    <li style="cursor: pointer;" (click)="hasSeenNotif(notif)" *ngFor="let notif of notifications;" class="p-3">
+                        <div class="flex align-items-center">
+
+                            <div class="flex flex-column ml-3 flex-1">
+                                <div class="flex align-items-center justify-content-between mb-1">
+                                    <span class="font-bold">{{ notif.alerteNotif.action.titre }}</span>
+                                    <small>{{ notif.alerteNotif.date }}</small>
+                                </div>
+                                <span class="text-sm line-height-3" [innerHTML] = "notif.alerteNotif.action.contenuMessage"></span>
+                            </div>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+        <ng-template pTemplate="footer">
+            <p-button icon="pi pi-times" (click)="visible = false" label="Fermer" severity="danger"></p-button>
+        </ng-template>
+    </p-dialog>
+

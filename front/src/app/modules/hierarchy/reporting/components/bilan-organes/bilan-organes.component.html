@@ -1,0 +1,82 @@
+ <div class="card">
+    <p-toast key="tst"></p-toast>
+    <div class="flex flex-column py-2 mb-1">
+        <h4 class="pb-2 mb-2 border-bottom-1 surface-border">Bilans organes de gestion</h4>
+    </div>
+
+  
+      
+    <div class="grid grid-nogutter gap-1  pt-1 flex-wrap flex-1 flex flex-column">
+       
+        <div class="col-12 field p-fluid">
+            <label for="start" class="block text-900 font-semibold">Societés</label>
+            <p-dropdown [options]="societes" [(ngModel)]="selected_societe" optionLabel="raisonSocial" placeholder="Séléctionner la société" [showClear]="true"></p-dropdown>
+        </div>
+        <div class="grid">
+            <div class="col-12 md:col-4 field p-fluid">
+                <label for="start" class="block text-900 font-semibold">Type organe</label>
+                <p-dropdown  inputId="type-organe" placeholder="Séléctionner le type organe"  [options]="type_organes" [(ngModel)]="selected_typeorgane" [showClear]="true" >
+                    <ng-template pTemplate="selectedItem">
+                        <div *ngIf="selected_typeorgane" class="flex align-items-center">
+                            <div class="flex-shrink-0 w-1rem h-1rem mr-2 border-circle" [style.backgroundColor]="selected_typeorgane.backgroundColor"></div>
+                            <div>{{selected_typeorgane.designation}}</div>
+                        </div>
+                    </ng-template>
+                    
+                    <ng-template let-typeOrgane pTemplate="item">
+                        <div class="flex align-items-center">
+                            <div class="flex-shrink-0 w-1rem h-1rem mr-2 border-circle" [style.backgroundColor]="typeOrgane.backgroundColor"></div>
+                            <div>{{typeOrgane.designation}}</div> 
+                        </div>
+                    </ng-template>
+                </p-dropdown>                
+            </div>
+            <div class="col-12 md:col-4 field p-fluid">
+                <label for="start" class="block text-900 font-semibold">Organe de gestion</label>
+                <p-dropdown  inputId="organe" placeholder="Séléctionner l'organe de gestion"  [options]="selected_typeorgane?.organes" [(ngModel)]="selected_organe" [showClear]="true" >
+                    <ng-template pTemplate="selectedItem">
+                        <div *ngIf="selected_organe" class="flex align-items-center">
+                            <div class="flex-shrink-0 w-1rem h-1rem mr-2 border-circle" [style.backgroundColor]="selected_typeorgane.backgroundColor"></div>
+                            <div>{{selected_organe.titre}}</div>
+                        </div>
+                    </ng-template>
+                    
+                    <ng-template let-organe pTemplate="item">
+                        <div class="flex align-items-center">
+                            <div class="flex-shrink-0 w-1rem h-1rem mr-2 border-circle" [style.backgroundColor]="selected_typeorgane.backgroundColor"></div>
+                            <div>{{organe.titre}}</div> 
+                        </div>
+                    </ng-template>
+                </p-dropdown>
+            </div>
+            <div class="col-12 md:col-4 field  p-fluid">
+                <label for="typeEvenement" class="block text-900 font-semibold">Type évènement</label>
+                <p-dropdown inputId="typeEvenement" placeholder="Séléctionner le type évènement" [options]="type_evenements" [(ngModel)]="selected_typeEvenement" [showClear]="true"></p-dropdown>
+            </div>
+       </div>
+    </div>
+    
+    
+    <div class="grid py-2">
+        <div class="col-12 md:col-4   p-fluid">
+            <label for="typeBilan" class="block text-900 font-semibold">Type bilan</label>
+            <p-dropdown inputId="typeBilan" placeholder="Séléctionner le type bilan" [options]="['Mensuel','Trimestriel','Semestriel', 'Annuel']" [(ngModel)]="selected_typeBilan" [showClear]="true"></p-dropdown>
+        </div>
+
+        <div class="col-12 md:col-4   p-fluid">
+            <label for="start" class="block text-900 font-semibold">Periode du</label>
+            <p-calendar dateFormat="dd/mm/yy" placeholder="Séléctionner la date"  [showIcon]="true" inputId="start" [(ngModel)]="selectedDateFrom"></p-calendar>
+        </div>
+        <div class="col-12 md:col-4  p-fluid">
+            <label for="end" class="block text-900 font-semibold">Periode au</label>
+            <p-calendar dateFormat="dd/mm/yy" placeholder="Séléctionner la date" [minDate]="selectedDateFrom"   [showIcon]="true" inputId="end" [(ngModel)]="selectedDateTo"></p-calendar>
+        </div>
+     
+   
+    </div>
+   
+ 
+  <div class="flex w-full justify-content-end border-top-1 surface-border mt-3 py-5 px-5 gap-3">    
+    <button pButton pRipple type="button" icon="pi pi-check" label="Afficher" class="p-button-primary h-3rem" (click)="onFilter()"></button>
+</div>
+</div>

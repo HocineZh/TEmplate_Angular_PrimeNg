@@ -1,0 +1,83 @@
+<div >
+  
+  <div class="flex select-user-menu" >
+    <div class="p-2 border-1 surface-border border-round w-20rem">
+        <p class="text-center surface-border border-bottom-1"><b>Utilisateurs actifs</b></p>
+        <div class="search w-full">
+            <span class="p-input-icon-left w-full">
+              <i class="pi pi-search"></i>
+              <input (input)="onSearchInputChange($event)" class="w-full" placeholder="Rechercher par nom ou par email" type="text" pInputText [(ngModel)]="searchInput" />
+            </span>
+          </div>
+        <ul [style]="{height: '250px', overflowY: 'auto'}"  class="list-none flex flex-column drag-column gap-2 p-0 m-0">
+          <li class="flex justify-content-center align-items-center my-2" *ngIf="loadingGetUser">
+            <i class="pi pi-spin pi-spinner" style="font-size: 2rem"></i>
+          </li>
+            <li dragEffect="copyMove" *ngFor="let user of activeUsers" class="p-2  flex justify-content-between align-items-center border-round shadow-1" pDraggable (onDragStart)="dragStart(user)" (onDragEnd)="dragEnd()">
+                <div class="flex flex-column ">
+                    <p class="m-0 text-color">{{user.nom }} {{ user.prenom }}</p>
+                    <p class="text-sm text-color-secondary">{{ user.fonction }}</p>
+                </div>
+                  <div class="cursor-pointer" (click) ="selectUser(user)"><i class="pi pi-arrow-right "></i></div>                 
+              </li>
+        </ul>
+    </div>
+    <div [style]="{overflowY: 'auto', overflowX: 'hidden'}" class="p-2 border-1 surface-border border-round w-30rem" pDroppable (onDrop)="drop()">
+        <p class="text-center surface-border border-bottom-1"><b>Utilisateurs sélectionnés</b></p>
+        <ul class="list-none flex flex-column drop-column  gap-2 p-0 m-0" *ngIf="selectedUsers" >
+            <li (click)="onUserSelectedClick(user)" *ngFor="let user of selectedUsers" [ngClass]="{selected: userIsSelectedForPrivilege(user), error: userNotHasPrivilege(user)}" class="p-2 flex justify-content-between cursor-pointer align-items-center border-round shadow-1">
+                <div class="flex flex-column ">
+                    <p class="m-0 text-color">{{user.user.nom }} {{ user.user.prenom }}</p>
+                    <p class="text-sm text-color-secondary">{{ user.user.fonction }}</p>
+                </div>
+                  <div class="cursor-pointer" (click) ="unSelectUser(user.user)"><i class="pi pi-times "></i></div>
+            </li>
+        </ul>
+    </div>
+  </div>
+  <div *ngIf="currentUserIndex.length > 0" class="row flex my-3">
+    <div class="mx-2">
+      <p-checkbox
+        (onChange) = "setPermission()"
+        [(ngModel)]="readPermissions"
+        [binary]="true"
+        [readonly]="writePermissions || deletedPermission"
+        inputId="readPermissions"
+      ></p-checkbox>
+      <label class="ml-1" for="readPermissions">Autorisation de lecture</label>
+    </div>
+    <div class="mx-2">
+      <p-checkbox
+        (onChange) = "setReadPermission($event)"
+        [(ngModel)]="writePermissions"
+        [binary]="true"
+        inputId="writePermissions"
+      ></p-checkbox>
+      <label class="ml-1" for="writePermissions">Autorisation d'écriture</label>
+    </div>
+    <div class="mx-2">
+      <p-checkbox
+        (onChange) = "setReadPermission($event)"
+        [(ngModel)]="deletedPermission"
+        [binary]="true"
+        inputId="deletedPermission"
+      ></p-checkbox>
+      <label class="ml-1" for="deletedPermission">Autorisation de suppression</label>
+    </div>
+  </div>
+  <div class="w-full  action-btn">
+    <div class="my-2">
+      <button
+      pRipple
+      pButton
+      class="w-full p-button-info"
+      (click)="grantPermission()"
+      [loading]="loading"
+      [disabled]="hasEmptyPrivilege.length > 0"
+      icon="pi pi-lock"
+      label="Accorder des permissions"
+      severity="info"
+    ></button>
+    </div>
+  </div>
+</div>

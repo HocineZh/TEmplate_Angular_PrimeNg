@@ -1,0 +1,52 @@
+
+
+    <div #divToPrint>
+      <div class="entete-societe" style ="width: 100%; height : 50px ; margin-top : 10px ; margin-bottom : 30px ;">
+        <img src="../../../../../assets/images/email/entete_sonelgaz.jpg"  width="100%" height="100%"/>
+      </div>
+
+      <h5 class = "titre-left" style="margin-bottom : 35px;">{{selectedEvenement.typeOrgane.designation}}<br />
+        N° .........../{{ selectedEvenement.dateDebut | date : 'yyyy'}}
+      </h5>
+      <div class = "titre-right" style=" width : 100% ; text-align:end ; margin-bottom : 25px line-height : 1.5 ;">
+        <span style="text-align :left ;">
+          {{selectedMembre.membre_etatCivil =="Mr" ? "Monsieur" : "Madame"}}
+          {{selectedMembre.membre_nom | uppercase  }} {{selectedMembre.membre_prenom |  uppercase  }}. <br/>
+          {{selectedMembre.profil_nom! | split : "_" : 1}}<br />
+        </span>
+      </div>
+      <div class = "titre-right" style=" width : 100% ; text-align:end ; margin-bottom : 35px">
+        <span >
+          Alger, {{ currentDate | date : 'dd MMMM yyyy'}}
+        </span>
+      </div>
+      <div class="objet" style="  margin-bottom : 35px ;">
+        <span>
+          Objet : Réunion du {{selectedEvenement.typeOrgane.designation}} du {{ selectedEvenement.dateDebut | date : 'dd/MM/yyyy'}}
+        </span>
+      </div>
+      <div class="content" style="  margin-bottom : 35px ;">
+        <span style ="line-height : 2.5 ;">Monsieur,<br/>
+        J’ai l’honneur de vous informer que le {{selectedEvenement.organe.designation}} . se réunira
+        le {{selectedEvenement.dateDebut | date : 'EEEE d MMMM yyyy' }} à {{selectedEvenement.dateDebut | date : 'hh' }}h{{selectedEvenement.dateDebut | date : 'mm' }}, au siège social de {{selectedEvenement.emplacement}} , et sera appelé à délibérer sur l’ordre du jour suivant :<br/>
+        Ordre du Jour proposé :<br/>
+        </span>
+        <div style="margin-bottom: 10px; margin-left : 10px;">
+          <span *ngFor="let point of selectedEvenement.listePointsOrdre ;index as i">
+            {{i+1}}. {{point.designation}}.<br/>
+          </span>
+        </div>
+        <div>
+          Veuillez agréer,  {{selectedMembre.membre_etatCivil =="Mr" ? "Monsieur" : "Madame"}}, l’expression de notre parfaite considération.
+        </div>
+
+      </div>
+      <div class = "titre-right" style=" width : 100% ; text-align:end ;">
+        <h5 >
+          Le Président du Conseil d’Administration,
+        </h5>
+      </div>
+    </div>
+
+
+

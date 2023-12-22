@@ -1,0 +1,28 @@
+<div class="grid">
+    <div class="col-24 xl:col-12">
+        <div class="card">
+            <p-pickList [source]="sourceModelPOJs" [target]="targetModelPOJs" sourceHeader="Point ordre de jour"
+                targetHeader="Liste des points déjà attachés" [dragdrop]="true" [responsive]="true"
+                [sourceStyle]="{ height: '30rem' }" [targetStyle]="{ height: '30rem' }" filterBy="titre"
+                sourceFilterPlaceholder="recherche par titre" targetFilterPlaceholder="Recherche par titre"
+                breakpoint="1400px">
+                <ng-template let-modelPOJ pTemplate="item">
+                    <div class="flex flex-wrap p-2 align-items-center gap-3">
+                        <div class="flex-1 flex flex-column gap-2">
+                            <span class="font-bold">{{ modelPOJ.titre }}</span>
+                        </div>
+                    </div>
+                </ng-template>
+            </p-pickList>
+        </div>
+    </div>
+    <div class="col-12">
+      <div class="col-12 formgroup-inline">
+      <button *ngIf="targetModelPOJs !== null " pButton pRipple label="Ajouter" class="field w-auto mt-3 p-button-success"
+      (click)="submit()"></button>
+                  <!-- <button *ngIf="targetModelPOJs && targetModelPOJs.length > 0 && model !==0" pButton pRipple label="Modifier" sclass="field w-auto mt-3 p-button-success"
+                      (click)="submit()"></button> -->
+          <button pButton pRipple label="Retour" class="field w-auto mt-3 p-button-plain" (click)="onBack()"></button>
+        </div>
+      </div>
+</div>

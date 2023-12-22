@@ -1,0 +1,9 @@
+
+<span class="p-input-icon-right flex-1 w-full sm:w-auto border-round">
+    <i class="pi pi-times-circle" (click)="clearText()" ></i>
+    <input pInputText id="titre_po" type="text" pInputText placeholder="Titre point ordre du jour"  [(ngModel)]="newPointOrdre.titre" (keydown.enter)="addPointOJToEvenement()" />
+</span>
+<div class="flex w-full sm:w-auto gap-3">
+        <button pButton pRipple label="Ajouter" icon="pi pi-send" class="w-full sm:w-auto" (click)="addPointOJToEvenement()" [disabled]="newPointOrdre.titre.trim() === ''"></button>
+</div>
+

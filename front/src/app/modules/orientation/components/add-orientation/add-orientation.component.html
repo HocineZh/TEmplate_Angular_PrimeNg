@@ -1,0 +1,354 @@
+<div class="card">
+  <span class="text-900 text-xl font-bold mb-4 block">Créer une orientation</span>
+  <div class="grid">
+      <p-toast></p-toast>
+      <div *ngIf="submitted == true" class="col-12 lg:col-12">
+          <p-fieldset legend="{{organe.typeOrgane!.designation}}" [toggleable]="true">
+              <li class="relative px-5 py-5 surface-border flex align-items-start sm:align-items-center">
+                  <div class="mr-4">
+                      <time datetime="" class="icon">
+                          <em>{{evenement.dateDebut | date : "cccc"}} </em>
+                          <strong>{{evenement.dateDebut | date : "MMMM"}} </strong>
+                          <span>{{evenement.dateDebut | date : "dd"}} </span>
+                      </time>
+                  </div>
+                  <div class="flex flex-column mt-3">
+
+                      <h5 class="font-semibold mb-3 ">{{ evenement.titre}} </h5>
+
+                      <span class="text-700 font-medium mb-3"> Du {{ evenement.dateDebut |date : 'dd/MM/YYYY'}} Au {{
+                          evenement.dateFin |date : 'dd/MM/YYYY'}}</span>
+                      <span class="text-900 font-medium mb-3">Lieu: {{evenement.emplacement}}</span>
+                      <span class="text-900 font-medium mb-3">Point concerné:
+                          {{selectedPointOrdre.description}}</span>
+                  </div>
+              </li>
+              <!--<div class="flex flex-column mt-3">
+                  <span class="text-900 font-medium mb-3">Liste des points d'ordre du jour:</span>
+                  <p-listbox [options]="evenement.listePointsOrdre!" [(ngModel)]="evenement.listePointsOrdre"
+                      optionLabel="designation" class="flex flex-column mt-3" [style]="{ width: '15rem' }">
+                      <ng-template let-po pTemplate="item">
+                          <div class="flex align-items-center gap-2">
+                              <img src="assets/layout/images/icons8-check.png" [class]="'flag flag-'"
+                                  style="width: 18px" />
+                              <div>{{ po.designation }}</div>
+                          </div>
+                      </ng-template>
+                  </p-listbox>
+              </div>-->
+          </p-fieldset>
+      </div>
+      <div class="col-12 lg:col-12">
+          <div class="card">
+              <div class="grid formgrid p-fluid">
+                  <div class="field mb-4 col-12">
+                      <label for="intitule" class="font-medium text-900 ">Intitulé *</label>
+                      <input id="intitule" type="text" pInputText [(ngModel)]="orientation.intitule" required="true">
+                  </div>
+                  <div class="field mb-4 col-12 md:col-6">
+
+                      <label class="font-medium text-900"> concerne *</label>
+
+                      <div class="grid formgrid">
+                          <div class="col-12 md:col-4">
+                              <div class="field-radiobutton">
+                                  <p-radioButton id="type3" name="type" value="Structure"
+                                      [(ngModel)]="orientationStructureSuivi.typeSuivi"></p-radioButton>
+                                  <label for="type3" class="font-medium text-900">Structure</label>
+                              </div>
+                          </div>
+                          <div class="col-12 md:col-4">
+                              <div class="field-radiobutton">
+                                  <p-radioButton id="type4" name="type" value="Individu"
+                                      [(ngModel)]="orientationStructureSuivi.typeSuivi"></p-radioButton>
+                                  <label for="type4" class="font-medium text-900">Individu</label>
+                              </div>
+                          </div>
+                      </div>
+                      <small style="color: red;" id="phone-help" *ngIf="submittedStructure"
+                          class="p-error block">Champ
+                          Obligatoire
+                      </small>
+                  </div>
+                  <div class="field mb-4 col-12 md:col-6">
+
+                      <label for="type_orientation " class="font-medium text-900">Type orientation *</label>
+
+                      <div class="grid formgrid">
+                          <div class="col-12 md:col-4">
+                              <div class="field-radiobutton">
+                                  <p-radioButton id="type1" name="type_orientation" value="PV"
+                                      [(ngModel)]="orientation.type"></p-radioButton>
+                                  <label for="type1" class="font-medium text-900">PV</label>
+                              </div>
+                          </div>
+                          <div class="col-12 md:col-4">
+                              <div class="field-radiobutton">
+                                  <p-radioButton id="type2" name="type_orientation" value="Resolution"
+                                      [(ngModel)]="orientation.type"></p-radioButton>
+                                  <label for="type2" class="font-medium text-900">Résolution</label>
+                              </div>
+                          </div>
+                          <div class="col-12 md:col-4">
+                              <p-radioButton id="type2" name="type" value="PV/Resolution"
+                                  [(ngModel)]="orientation.type"></p-radioButton>
+                              <label for="type2" class="font-medium text-900">PV/Résolution</label>
+                          </div>
+                      </div>
+                      <small style="color: red;" id="phone-help" *ngIf="submittedStructure"
+                          class="p-error block">Champ
+                          Obligatoire
+                      </small>
+                  </div>
+
+                  <div class="field mb-4 col-12 md:col-6">
+                      <label for="structure" class="font-medium text-900">Structures responsables *</label>
+                      <p-multiSelect [options]="structures"
+                          [(ngModel)]="orientationStructureSuivi!.selectedStructures"
+                          placeholder="Sélectionner les structures" optionLabel="code">
+                          <ng-template let-value pTemplate="selectedItems">
+
+                              <div class="inline-flex align-items-center gap-2 px-1"
+                                  *ngFor="let option of orientationStructureSuivi.selectedStructures">
+                                  <div>{{ option.societe!.code }} - {{ option.code }} </div>
+                              </div>
+                              <div *ngIf="!orientationStructureSuivi.selectedStructures">
+                                  Sélectionner les structures
+                              </div>
+                          </ng-template>
+                          <ng-template let-s pTemplate="item">
+                              <div class="flex align-items-center gap-2">
+                                  <div>{{ s.societe!.code }} - {{ s.code }} </div>
+                              </div>
+                          </ng-template>
+                      </p-multiSelect>
+                  </div>
+
+
+                  <div class="field mb-4 col-12 md:col-6">
+                      <label for="structure" class="font-medium text-900">Personnes responsables *</label>
+                      <p-multiSelect [options]="users" [(ngModel)]="orientationStructureSuivi!.selectedUsers"
+                          placeholder="Sélectionner les structures" optionLabel="code">
+                          <ng-template let-value pTemplate="selectedItems">
+
+                              <div class="inline-flex align-items-center gap-2 px-1"
+                                  *ngFor="let option of orientationStructureSuivi!.selectedUsers">
+                                  <div>{{ option.login }}</div>
+                              </div>
+                              <div *ngIf="!orientationStructureSuivi.selectedUsers">
+                                  Sélectionner les structures
+                              </div>
+                          </ng-template>
+                          <ng-template let-s pTemplate="item">
+                              <div class="flex align-items-center gap-2">
+                                  <div>{{ s.login }} </div>
+                              </div>
+                          </ng-template>
+                      </p-multiSelect>
+                  </div>
+
+                  <div class="field mb-4 col-12 md:col-6">
+                      <label for="famille" class="font-medium text-900">Famille *</label>
+                      <p-dropdown [options]="familles" [(ngModel)]="orientation.parametrageGeneralByFamilleid"
+                          placeholder="Selectionner une famille" optionLabel="titre" [showClear]="true"
+                          [filter]="true" filterBy="titre"> </p-dropdown>
+                  </div>
+
+                  <div class="field mb-4 col-12 md:col-6">
+                      <label for="dateEcheance" class="font-medium text-900">Date écheance *</label>
+                      <p-calendar appendTo="body" [showIcon]="true" inputId="icon" [minDate]="minDate"
+                          dateFormat="dd-mm-yy" [(ngModel)]="dateEch" [readonlyInput]="true"
+                          [required]="true"></p-calendar>
+                  </div>
+
+                  <div class="field mb-4 col-6">
+                      <label for="contenu" class="font-medium text-900">Contenu *</label>
+                      <textarea id="contenu" type="text" pInputTextarea [(ngModel)]="orientation.contenu"
+                          required="true" rows="5" [autoResize]="true"></textarea>
+                  </div>
+
+                  <div class="field mb-4 col-6">
+                      <label for="observation" class="font-medium text-900">Importer l'extrait de l'orientation/résolution *</label>
+                      <p-fileUpload #fileUpload id="documentMandatR" name="demo[]" chooseLabel="Importer"
+                          [fileLimit]="2" uploadLabel="Charger" cancelLabel="Annuler"
+                          (onSelect)="onUploadFile($event)" (onRemove)="onRemovedFile($event)" [multiple]="true"
+                          accept="image/*,.doc,.docx,application/pdf" [maxFileSize]="10000000">
+                      </p-fileUpload>
+                  </div>
+
+                  <div class="field mb-4 col-12">
+                      <label for="observation" class="font-medium text-900">Observation *</label>
+                      <textarea id="observation" type="text" pInputTextarea [(ngModel)]="orientation.motif"
+                          required="true" rows="2" [autoResize]="true"></textarea>
+                  </div>
+
+
+                  <div *ngIf="orientationStructureSuivi.selectedStructures" class="col-12 ">
+                      <label for="Detail" class="font-medium text-900">Liste des strutures chargées de l'orientation
+                          *</label>
+                      <!--<div class="card" *ngIf="orientationStructureSuivi.selectedStructures">-->
+                      <p-divider></p-divider>
+                      <p-toast></p-toast>
+                      <p-table [value]="orientationStructureSuivi.selectedStructures" dataKey="id" editMode="row"
+                          [tableStyle]="{'min-width': '50rem'}">
+                          <ng-template pTemplate="header">
+                              <tr>
+                                  <th style="width:10%">Code de la société</th>
+                                  <th style="width:10%">Code de la structure</th>
+                                  <th style="width:10%">Nom de la structure</th>
+                                  <th style="width:50%">Chargé de suivi de l'orientation</th>
+                                  <th style="width:20%"></th>
+                              </tr>
+                          </ng-template>
+                          <ng-template pTemplate="body" let-product let-editing="editing" let-ri="rowIndex">
+                              <tr [pEditableRow]="product">
+                                  <td style="width:20%; min-width:10rem;" fixed="true">
+
+                                      {{product.societe.code}}
+                                  </td>
+                                  <td style="width:20%; min-width:10rem;" fixed="true">
+
+                                      {{product.code}}
+                                  </td>
+                                  <td style="width:20%; min-width:10rem;" fixed="true">
+                                      {{product.nom}}
+                                  </td>
+
+                                  <td>
+                                      <p-cellEditor>
+                                          <ng-template pTemplate="input">
+                                              <input pInputText type="text" [(ngModel)]="product.chargeOrientation" required>
+                                          </ng-template>
+                                          <ng-template pTemplate="output">
+                                              {{product.chargeOrientation}}
+                                          </ng-template>
+                                      </p-cellEditor>
+                                  </td>
+
+
+                                  <td>
+                                      <div class="flex align-items-center justify-content-center gap-2">
+                                          <button *ngIf="!editing" pButton pRipple type="button" pInitEditableRow
+                                              icon="pi pi-pencil" (click)="onRowEditInit(product)"
+                                              class="p-button-rounded p-button-text"></button>
+                                          <button *ngIf="editing" pButton pRipple type="button" pSaveEditableRow
+                                              icon="pi pi-check" (click)="onRowEditSave(detail)"
+                                              class="p-button-rounded p-button-text p-button-success mr-2"></button>
+                                          <button *ngIf="editing" pButton pRipple type="button" pCancelEditableRow
+                                              icon="pi pi-times" (click)="onRowEditCancel(product, ri)"
+                                              class="p-button-rounded p-button-text p-button-danger"></button>
+                                      </div>
+                                  </td>
+                              </tr>
+                          </ng-template>
+                      </p-table>
+                      <!--</div>-->
+                  </div>
+                  <p-divider class="col-12 "></p-divider>
+                  <div *ngIf="orientationStructureSuivi.selectedUsers" class="col-12 ">
+                      <label for="Detail" class="font-medium text-900">Liste des personnes responsable de
+                          l'orientation
+                          *</label>
+                      <!--<div class="card" *ngIf="orientationStructureSuivi.selectedStructures">-->
+                      <p-divider></p-divider>
+                      <p-toast></p-toast>
+                      <p-table [value]="orientationStructureSuivi.selectedUsers" dataKey="id" editMode="row"
+                          [tableStyle]="{'min-width': '50rem'}">
+                          <ng-template pTemplate="header">
+                              <tr>
+                                  <th style="width:10%">Code de la société</th>
+                                  <th style="width:10%">Code de la structure</th>
+                                  <th style="width:10%">Nom de la structure</th>
+                                  <th style="width:50%">Chargé de suivi de l'orientation</th>
+                                  <th style="width:20%"></th>
+                              </tr>
+                          </ng-template>
+                          <ng-template pTemplate="body" let-product let-editing="editing" let-ri="rowIndex">
+                              <tr [pEditableRow]="product">
+                                  <td style="width:20%; min-width:10rem;" fixed="true">
+                                      {{product.structure.societe.code}}
+                                  </td>
+                                  <td style="width:20%; min-width:10rem;" fixed="true">
+
+                                      {{product.structure.code}}
+                                  </td>
+                                  <td style="width:20%; min-width:10rem;" fixed="true">
+                                      {{product.structure.nom}}
+                                  </td>
+                                  <td style="width:40%; min-width:10rem;" fixed="true">
+                                      {{product.login}}
+                                  </td>
+                              </tr>
+                          </ng-template>
+                      </p-table>
+                      <!--</div>-->
+                  </div>
+              </div>
+          </div>
+      </div>
+      <div class="col-12">
+          <div
+              class="col-12 flex flex-column lg:flex-row justify-content-center align-items-center lg:justify-content-end my-6">
+              <button pButton pRipple
+                  class="p-button-secondary p-button-outlined mt-3 lg:mt-0 w-full lg:w-auto flex-order-2 lg:flex-order-1 lg:mr-4"
+                  label="Retour" (click)="onBack()" icon="pi pi-fw pi-arrow-left"></button>
+              <button pButton pRipple class="p-button-primary w-full lg:w-auto flex-order-1 lg:flex-order-2"
+                  label="Ajouter" icon="pi pi-fw pi-check" (click)="saveOrientation()"></button>
+          </div>
+      </div>
+      <p-dialog [(visible)]="evenementDialog" [style]="{width: '450px'}" header="Choisir un évenemnt" [modal]="true"
+          class="p-fluid">
+          <ng-template pTemplate="content">
+
+              <div class="col-12 ">
+                  <div class="grid formgrid p-fluid">
+                      <div class="field mb-4 col-12 ">
+                          <label for="societe" class="font-medium text-900">Organe</label>
+                          <p-dropdown [options]="organes" dataKey="id" [(ngModel)]="organe" [required]="true"
+                              placeholder="Selectionner l'organe de gestion" optionLabel="titre"
+                              [ngClass]="{'ng-invalid ng-dirty' : submitted}" [filter]="true" filterBy="titre"
+                              [showClear]="true"></p-dropdown>
+                          <small style="color: red;" id="roles-help" *ngIf="submitted " class="p-error block">Champ
+                              Obligatoire</small>
+                      </div>
+                      <div class="field mb-4 col-12 ">
+                          <label for="dateFrom" class="font-medium text-900">Debut de l'évenement</label>
+                          <p-calendar appendTo="body" [showIcon]="true" inputId="icon" [maxDate]="minDate"
+                              dateFormat="dd-mm-yy" [(ngModel)]="dateFrom" [readonlyInput]="true" [required]="true"
+                              (ngModelChange)="getEventByOrgane()"
+                              placeholder="Selectionner la date début du l'évenement"></p-calendar>
+                      </div>
+                      <div class="field mb-4 col-12 ">
+                          <label for="famille" class="font-medium text-900">Liste des évenements</label>
+                          <p-dropdown appendTo="body" [options]="evenements" dataKey="id" [(ngModel)]="evenement"
+                              [required]="true" placeholder="Selectionner l'évenement" optionLabel="titre"
+                              [showClear]="true" (ngModelChange)="loadlistePointsOJEvenement()" [filter]="true"
+                              filterBy="titre"> </p-dropdown>
+                      </div>
+
+                      <div class="field mb-4 col-12 ">
+                          <label for="famille" class="font-medium text-900">Liste des points d'ordre du jours</label>
+                          <p-dropdown appendTo="body" [options]="evenement.listePointsOrdre!" dataKey="id"
+                              [(ngModel)]="selectedPointOrdre" [required]="true"
+                              placeholder="Selectionner le point d'ordre du jour" optionLabel="designation"
+                              [showClear]="true" [filter]="true" filterBy="designation"> </p-dropdown>
+                      </div>
+
+                  </div>
+
+              </div>
+
+
+          </ng-template>
+          <ng-template pTemplate="footer">
+              <button pButton pRipple label="Retour" icon="pi pi-times" class="p-button-text" (click)="hideDialog()">
+              </button>
+              <button pButton pRipple label="Ajouter" icon="pi pi-check" class="p-button-text"
+                  (click)="confirmDialog()">
+              </button>
+
+          </ng-template>
+      </p-dialog>
+
+  </div>
+</div>

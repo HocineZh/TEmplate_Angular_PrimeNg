@@ -1,0 +1,11 @@
+ ::ng-deep {
+.p-confirm-dialog-reject{
+    background-color: red !important;
+    color: white !important;
+  }
+  
+  .p-confirm-dialog-accept{
+    background-color: green !important;
+    color: white !important;
+  }
+} 

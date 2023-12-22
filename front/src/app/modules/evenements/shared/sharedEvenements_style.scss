@@ -1,0 +1,147 @@
+:host ::ng-deep {
+
+    //******************* style point ordres badge status ***********************************
+  
+ .po-badge-status{
+    display: block;
+  border-radius: var(--border-radius);
+  padding: 0.35em 0.7rem;
+  text-transform: uppercase;
+  font-weight: 700;
+  font-size: 12px;
+  letter-spacing: .3px;
+  max-width: fit-content;
+  }
+   
+  // Validé ou traité
+  .po-status-valide{
+    background-color: #0d763e;
+    color: white;
+  }
+  
+  .po-status-invalide{
+    //background-color: #e90262;
+    background: #c37b93;
+    color: white;
+  }
+  
+  //*************** Status traitement et propositions
+  //Proposer ou non traité
+  .po-status-proposer{
+  background-color: #e57f1a;
+  color: white;
+  }
+  
+  //en cours 
+  .po-status-new {
+    background-color: #23547b;
+    color: white;
+    
+  }
+
+  .po-status-ajourner {
+    background-color: #23547b;
+    color: white;
+    
+  }
+  
+  // Rejeté ou annuler
+  .po-status-annuler {
+    background-color: #d80000;
+    color: white;
+    
+  }
+
+  //badge dimension
+  .po-badge-dim{
+    //position: relative; 
+    display: inline-flex !important; 
+    min-width: 105px !important;
+  }
+   
+
+//----------------------------------- Evenement badge status --------------------------------------
+ 
+.ev-badge-status{
+  display: block;
+border-radius: var(--border-radius);
+padding: 0.35em 0.7rem;
+text-transform: uppercase;
+font-weight: 700;
+font-size: 12px;
+letter-spacing: .3px;
+max-width: fit-content;
+min-width: 80px;
+}
+
+.ev-badge-icon {
+  padding: .2rem .3rem;
+  position: absolute;
+  /* You may need to change top and right. They depend on padding/widht of .badge */
+  top: -1px;
+  right: -3px;
+  /* color: ;
+  background-color: transparent; */
+  border-radius: 50%;
+}
+
+ .ev-status-creation {
+    //background-color: #e57f1a;
+    background-color: #0589c6;
+    color: white;
+    
+  }
+
+  .ev-status-publier {
+    background-color: #0589c6;
+    color: white;
+    
+  }
+
+  .ev-status-encours {
+    //background-color: #c605c6;
+    background-color: #e57f1a;
+    color: white;
+    
+  }
+  .ev-status-terminer {
+    background-color: #0d763e;
+    color: white;
+    
+  }
+  .ev-status-cloturer {
+    background-color: #0d763e;
+    color: white;
+    
+  }
+  .ev-status-annuler {
+    background-color: #d80000;
+    color: white;
+    
+  }
+
+  
+
+  //********************* Card etat list style *************************
+  ul.card_etat{
+    margin-left: 10px;
+    padding-left: 0px;
+    list-style-type: circle; 
+    list-style-position: inside;
+    list-style-image: none;
+
+  }
+ 
+  ul.card_etat li{
+    
+    padding-bottom: 10px;
+  }
+
+  /****************** Date picker trigger *********************************/
+  .p-datepicker-trigger {
+      color: black;
+    }
+
+
+  
+  }

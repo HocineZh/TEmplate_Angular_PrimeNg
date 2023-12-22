@@ -1,0 +1,611 @@
+
+<div class="card" style="background-color: #eeebe8a6;">
+  <p-toast key="tstprv"></p-toast>
+  <p-confirmDialog header="Confirmation" key="confirmation" icon="pi pi-exclamation-triangle" [style]="{width: '350px'}" acceptButtonStyleClass="p-button-text" rejectButtonStyleClass="p-button-text">
+  </p-confirmDialog>
+  <div class="p-formgrid grid relative ">
+
+       <div style="position:absolute;top:30px; right:-55px;
+       -webkit-transform: rotate(90deg);
+        -moz-transform: rotate(90deg);
+        -o-transform: rotate(90deg);
+        -ms-transform: rotate(90deg);
+        transform: rotate(90deg);
+       ">
+       <button pButton pRipple type="button" label="Filtres" class="p-button-outlined px-4 py-1" (click)="toggleFilters()"></button>
+      </div>
+      <div class="field col-12 pb-1">
+         <h5>Programme des évènements prévisionnels</h5>
+      </div>
+      <div *ngIf="listSelectedFilters.length>0" class="field col-12  mt-0 pt-0 pb-2">
+
+          <p-toolbar styleClass="toolbar-filters" >
+              <div class="p-toolbar-group-left">
+                  <ng-container *ngFor="let itemFilter of listSelectedFilters;">
+                      <p-chip [label]="itemFilter.label" styleClass="mx-2" [removable]="true" (onRemove)="removeChipFilter(itemFilter)"></p-chip>
+                  </ng-container>
+              </div>
+
+              <div class="p-toolbar-group-right">
+
+                  <span>Nombre résultats : <span class="text-red-600">{{ nombreResultatEvs }}</span></span>
+              </div>
+          </p-toolbar>
+      </div>
+
+  </div>
+    <full-calendar *ngIf="today" [options]="calendarOptions">
+      <ng-template #eventContent let-arg>
+          <div class="py-1 pl-1"  (mouseover)="op.show($event)" (mouseleave)="op.hide()" >
+              <span >{{ arg.event.title }}</span>
+           </div>
+
+           <p-overlayPanel  #op [style]="{background:'rgba(105,105,105,0.9)', color:'white', margin :'0%', padding :'0%', 'min-width' : '300px', 'font-size' : '0.8rem',opacity:'.9', 'z-index' : '9999'}" >
+            <ng-template pTemplate="content" >
+                <div class="pb-2"> {{ arg.event.extendedProps.organe.titre }}</div>
+                <div class="pb-2"> Titre : {{ arg.event.extendedProps.titre }}</div>
+                <div class="pb-2"> Lieu : {{ arg.event.extendedProps.emplacement }}</div>
+                <div style="color : white"><span >Etat : {{sharedDataEvService.getformattedEtatEvenement(arg.event.extendedProps.etat)}}</span></div>
+
+            </ng-template>
+
+            </p-overlayPanel>
+       </ng-template>
+    </full-calendar>
+    <div class="loading-indicator" *ngIf="isLoadingCalendar">
+       <p-progressSpinner  styleClass="w-8rem h-8rem" strokeWidth="4"  animationDuration=".5s"></p-progressSpinner>
+   </div>
+   <!--  <div *ngIf="isLoadingCalendar" class="absolute top-0 right-0 h-full w-full bg-white opacity-50 z-50"></div> -->
+
+  <p-dialog #dd [(visible)]="showDialog" [breakpoints]="{'960px': '75vw', '640px': '90vw'}" [style]="{width: '90%'}" [contentStyle]="{minHeight: '450px', 'padding-bottom' : '0px'}" [modal]="true" [blockScroll]="true" [resizable]="true" [closable]="true" (onHide)="view = ''">
+      <ng-template pTemplate="header">
+          <span class="text-900 font-semibold text-xl">{{view === 'display' ? evenementPrvValidation.titreDialog.labelDetails: view === 'new' ? evenementPrvValidation.titreDialog.labelNew : evenementPrvValidation.titreDialog.labelEdit }}</span>
+      </ng-template>
+      <ng-template pTemplate="content">
+
+          <div *ngIf="view === 'display'">
+              <p-tabView orientation="left">
+              <p-tabPanel class="line-height-3 m-0">
+                  <ng-template pTemplate="header">
+                      <i class="pi pi-calendar"></i>
+                      <span style="margin:0 0.5rem;padding-top: 1px;">Détails évènement</span>
+                  </ng-template>
+                 <div class="grid" >
+                  <div class="col-12">
+                      <div class="card">
+                          <div class="col-12">
+                              <div class="text-900 font-semibold mb-2">{{evenementPrvValidation.titre.label}}</div>
+                              <p class="flex align-items-center m-0">
+                                  <i class="pi  pi-pencil text-700 mr-2"></i>
+                                  <span>{{changedEvent.titre}}</span>
+
+                              </p>
+                          </div>
+                          <div class="col-12">
+                              <div class="text-900 font-semibold mb-2">{{evenementPrvValidation.emplacement.label}}</div>
+                              <p class="flex align-items-center m-0">
+                                  <i class="pi pi-map-marker text-700 mr-2"></i>
+                                  <span>{{changedEvent.emplacement}}</span>
+
+                              </p>
+                          </div>
+                          <div class="col-12">
+                              <span class="text-900 font-semibold block mb-2">{{evenementPrvValidation.description.label}}</span>
+                              <p class="flex align-items-center m-0">
+                              <i class="pi pi-fw pi-comments text-700 mr-2"></i>
+                              <span class="block mb-3">{{changedEvent.description}}</span>
+                          </p>
+                        </div>
+                     </div>
+
+
+                    <div class="card p-fluid">
+                      <div class="p-formgrid grid">
+                          <div class="field md:col col-6">
+                              <div class="text-900 font-semibold mb-2">{{evenementPrvValidation.dateDebut.label}}</div>
+                              <p class="flex align-items-center m-0">
+                                  <i class="pi pi-fw pi-clock text-700 mr-2"></i>
+                                  <span>{{changedEvent.start | date: 'dd/MM/yyyy'}}</span>
+                              </p>
+                          </div>
+                          <div class="field md:col col-6">
+                          <div class="text-900 font-semibold mb-2">{{evenementPrvValidation.dateFin.label}}</div>
+                          <p class="flex align-items-center m-0">
+                              <i class="pi pi-fw pi-clock text-700 mr-2"></i>
+                              <span>{{changedEvent.end | date: 'dd/MM/yyyy'}}</span>
+                          </p>
+                          </div>
+                          <div class="field md:col col-6">
+                          <div class="text-900 font-semibold mb-2">{{evenementPrvValidation.isperiodique.label}}</div>
+                          <p class="flex align-items-center m-0">
+                              <p-inputSwitch inputId="isPeriodiqueDetails" [(ngModel)]="changedEvent.isperiodique" [disabled]="true" ></p-inputSwitch>
+                          </p>
+                          </div>
+                          <div *ngIf="changedEvent.isperiodique" class="field md:col col-6">
+                              <div class="text-900 font-semibold mb-2">{{evenementPrvValidation.periodicite.label}}</div>
+                              <p class="flex align-items-center m-0">
+                                  <span>{{changedEvent.periodicite}}</span>
+                              </p>
+                          </div>
+                     </div>
+                    </div>
+
+                  <div class="card p-fluid">
+                  <div class="p-formgrid grid">
+                      <div class="field col" *ngIf="!changedEvent.typeEvenement || !changedEvent.typeEvenement.value">
+                          <div class="text-900 font-semibold mb-2">{{evenementPrvValidation.typeOrgane.label}}</div>
+                          <p class="flex align-items-center m-0">
+                              <span class="inline-flex flex-shrink-0 w-1rem h-1rem mr-2 border-circle" [style.backgroundColor]="changedEvent.typeOrgane.backgroundColor"></span>
+                              <span>{{changedEvent.typeOrgane.designation}}</span>
+                          </p>
+                      </div>
+                      <div class="field col">
+                          <div class="text-900 font-semibold mb-2">{{evenementPrvValidation.organe.label}}</div>
+                          <p class="flex align-items-center m-0">
+                              <span class="inline-flex flex-shrink-0 w-1rem h-1rem mr-2 border-circle" [style.backgroundColor]="changedEvent.typeOrgane.backgroundColor"></span>
+                              <span>{{changedEvent.organe?.titre}}</span>
+                          </p>
+                      </div>
+                      <div class="field col"  *ngIf="changedEvent.typeEvenement && changedEvent.typeEvenement.value">
+                          <div class="text-900 font-semibold mb-2">{{evenementPrvValidation.typeEvenement.label}}</div>
+                          <p class="flex align-items-center m-0">
+                          <span>{{changedEvent.typeEvenement.value.designation}}</span>
+                          </p>
+                      </div>
+                      <div class="field col">
+                          <div class="text-900 font-semibold mb-2">{{evenementPrvValidation.remuneration.label}}</div>
+                          <p class="flex align-items-center m-0">
+                              <p-inputSwitch inputId="isRemunererDetails" [(ngModel)]="changedEvent.remuneration" [disabled]="true" ></p-inputSwitch>
+                          </p>
+                      </div>
+                   </div>
+                 </div>
+                 <div class="card p-fluid">
+                  <div class="p-formgrid grid">
+                      <div class="field col">
+                          <div class="text-900 font-semibold mb-2">{{evenementPrvValidation.etatEvenement.label}}</div>
+                          <p class="flex align-items-center m-0">
+                              <span  *ngIf="changedEvent.etat !== 'TRANSFORMER' ; else elseBlock" class="po-badge-status po-status-planification">EN PLANIFICATION</span>
+
+                              <ng-template #elseBlock><span class="po-badge-status po-status-exploiter mr-2">EXPLOITÉ</span><span> Si vous vouler consulter les détails de l'évènement en exploitation,
+                                  <a [routerLink]="['/evenements/edit', changedEvent.evenementId]" style="cursor:pointer; text-decoration: underline;">
+                                      cliquer ici
+                                </a>.</span>
+                              </ng-template>
+
+                          </p>
+                      </div>
+                  </div>
+                 </div>
+             </div>
+           </div>
+          </p-tabPanel>
+          <p-tabPanel *ngIf="hasAccessTabMembres()"  class="line-height-3 m-0" >
+              <ng-template pTemplate="header">
+                  <i class="pi pi-user"></i>
+                  <span style="margin:0 0.5rem;padding-top: 1px;">Membres</span>
+              </ng-template>
+              <ng-container>
+                      <app-edit-membres *ngIf = "changedEvent"  [selectedEvenement]="changedEvent"></app-edit-membres>
+              </ng-container>
+          </p-tabPanel>
+          <p-tabPanel *ngIf="hasAccessTabODJ()" class="line-height-3 m-0">
+              <ng-template pTemplate="header">
+                  <i class="pi pi-book"></i>
+                  <span style="margin:0 0.5rem;padding-top: 1px;">Ordre du jour</span>
+              </ng-template>
+
+                  <div class="grid p-fluid formgrid p-0 m-0">
+                      <div class="col-12">
+                      <ng-container >
+                          <app-edit-odj  *ngIf = "changedEvent"  [selectedEvenement]="changedEvent" ></app-edit-odj>
+                       </ng-container>
+                      </div>
+                  </div>
+
+          </p-tabPanel>
+         </p-tabView>
+
+          </div>
+
+
+
+          <div *ngIf="view === 'new' || view === 'edit' ">
+              <p-tabView orientation="left">
+                  <p-tabPanel  class="line-height-3 m-0">
+                      <ng-template pTemplate="header">
+                          <i class="pi pi-calendar"></i>
+                          <span style="margin:0 0.5rem;padding-top: 1px;">Détails évènement</span>
+                      </ng-template>
+
+                  <div class="grid p-fluid formgrid" style="overflow-y: auto">
+                    <div class="col-12 field">
+                      <label for="title" class="text-900 font-semibold label-required">{{evenementPrvValidation.titre.label}}</label>
+                      <span class="p-input-icon-left">
+                          <i class="pi pi-pencil"></i>
+                          <ng-container *ngIf="view === 'new'">
+                              <input id="title" type="text" pInputText placeholder="Titre" [(ngModel)]="newEvent.titre" [required]="true" title="Le titre est un champs obligatoire."  maxlength="255" />
+                          </ng-container>
+                          <ng-container *ngIf="view === 'edit'">
+                              <input id="title" type="text" pInputText placeholder="Titre" [(ngModel)]="changedEvent.titre" [required]="true" title="Le titre est un champs obligatoire." maxlength="255" />
+
+                          </ng-container>
+                      </span>
+                  </div>
+                  <div class="col-12 field">
+                      <label for="emplacement" class="text-900 font-semibold">{{evenementPrvValidation.emplacement.label}}</label>
+                      <span class="p-input-icon-left">
+                          <i class="pi pi-map-marker"></i>
+                          <ng-container *ngIf="view === 'new'">
+
+                             <input id="emplacement" type="text" pInputText placeholder="Emplacement" [(ngModel)]="newEvent.emplacement" maxlength="255"  />
+                          </ng-container>
+                          <ng-container *ngIf="view === 'edit'">
+                              <input id="emplacement" type="text" pInputText placeholder="Emplacement" [(ngModel)]="changedEvent.emplacement" maxlength="255"  />
+
+                          </ng-container>
+                      </span>
+                  </div>
+                  <div class="col-12 field">
+                      <label for="description" class="text-900 font-semibold">{{evenementPrvValidation.description.label}}</label>
+                      <ng-container *ngIf="view === 'new'">
+
+                      <textarea id="description" type="text" pInputTextarea [rows]="9" [(ngModel)]="newEvent.description" ></textarea>
+                       </ng-container>
+                      <ng-container *ngIf="view === 'edit'">
+                          <textarea id="description" type="text" pInputTextarea [rows]="9" [(ngModel)]="changedEvent.description" style="resize: none"></textarea>
+
+                      </ng-container>
+                  </div>
+
+                  <p class="col-12">
+                      <p-divider></p-divider>
+                  </p>
+
+                  <div class="col-12 grid p-fluid formgrid">
+
+                      <div class="col-12 md:col-6 field">
+
+                          <label for="type-organe" class="text-900 font-semibold label-required">{{evenementPrvValidation.typeOrgane.label}}</label>
+
+
+                          <ng-container *ngIf="view === 'new'">
+                              <p-dropdown (onChange)="onChangeTypeOrgane($event)" inputId="type-organe" placeholder="Séléctionner un type organe" [appendTo]="dd" [options]="type_organes_canCreate" [(ngModel)]="newEvent.typeOrgane" [showClear]="true" [required]="true" title="Champs obligatoire."  >
+                              <ng-template pTemplate="selectedItem">
+                                      <div *ngIf="newEvent.typeOrgane" class="flex align-items-center">
+                                          <div class="flex-shrink-0 w-1rem h-1rem mr-2 border-circle" [style.backgroundColor]="newEvent.typeOrgane.backgroundColor"></div>
+                                          <div>{{newEvent.typeOrgane.designation}}</div>
+                                      </div>
+                                  </ng-template>
+
+                                  <ng-template let-typeOrgane pTemplate="item">
+                                      <div class="flex align-items-center">
+                                      <div class="flex-shrink-0 w-1rem h-1rem mr-2 border-circle" [style.backgroundColor]="typeOrgane.backgroundColor"></div>
+                                          <div>{{typeOrgane.designation}}</div>
+                                      </div>
+                                  </ng-template>
+                              </p-dropdown>
+                      </ng-container>
+                      <ng-container *ngIf="view === 'edit'">
+                          <p-dropdown inputId="type-organeUpdate" [appendTo]="dd" [options]="[changedEvent.typeOrgane]" [(ngModel)]="changedEvent.typeOrgane"  [required]="true" title="Champs obligatoire.">
+                              <ng-template pTemplate="selectedItem">
+                                  <div *ngIf="changedEvent.typeOrgane" class="flex align-items-center">
+                                      <div class="flex-shrink-0 w-1rem h-1rem mr-2 border-circle" [style.backgroundColor]="changedEvent.typeOrgane.backgroundColor"></div>
+                                      <div>{{changedEvent.typeOrgane.designation}}</div>
+                                  </div>
+                              </ng-template>
+                              <ng-template let-typeOrgane pTemplate="item">
+                                  <div class="flex align-items-center">
+                                      <div class="flex-shrink-0 w-1rem h-1rem mr-2 border-circle" [style.backgroundColor]="typeOrgane.backgroundColor"></div>
+                                      <div>{{typeOrgane.designation}}</div>
+                                  </div>
+                              </ng-template>
+                          </p-dropdown>
+                      </ng-container>
+
+                      </div>
+
+                      <div class="col-12 md:col-6 field">
+                          <label for="organe" class="text-900 font-semibold label-required">{{evenementPrvValidation.organe.label}}</label>
+
+                          <ng-container *ngIf="view === 'new'">
+                              <p-dropdown  inputId="organe" placeholder="Séléctionner un organe de gestion" [appendTo]="dd" [options]="newEvent.typeOrgane?.organes" [(ngModel)]="newEvent.organe" [showClear]="true" [required]="true" title="Champs obligatoire." >
+                              <ng-template pTemplate="selectedItem">
+                                      <div *ngIf="newEvent.typeOrgane" class="flex align-items-center">
+                                          <div class="flex-shrink-0 w-1rem h-1rem mr-2 border-circle" [style.backgroundColor]="newEvent.typeOrgane.backgroundColor"></div>
+                                          <div>{{newEvent.organe.titre}}</div>
+                                      </div>
+                                  </ng-template>
+
+                                  <ng-template let-organe pTemplate="item">
+                                      <div class="flex align-items-center">
+                                      <div class="flex-shrink-0 w-1rem h-1rem mr-2 border-circle" [style.backgroundColor]="newEvent.typeOrgane.backgroundColor"></div>
+                                          <div>{{organe.titre}}</div>
+                                      </div>
+                                  </ng-template>
+                              </p-dropdown>
+                      </ng-container>
+                      <ng-container *ngIf="view === 'edit'">
+                          <p-dropdown inputId="organeUpdate" [appendTo]="dd" [options]="[changedEvent.organe]" [(ngModel)]="changedEvent.organe"  [required]="true" title="Champs obligatoire.">
+                              <ng-template pTemplate="selectedItem">
+                                  <div *ngIf="changedEvent.typeOrgane" class="flex align-items-center">
+                                      <div class="flex-shrink-0 w-1rem h-1rem mr-2 border-circle" [style.backgroundColor]="changedEvent.typeOrgane.backgroundColor"></div>
+                                      <div>{{changedEvent.organe.titre}}</div>
+                                  </div>
+                              </ng-template>
+                              <ng-template let-organe pTemplate="item">
+                                  <div class="flex align-items-center">
+                                      <div class="flex-shrink-0 w-1rem h-1rem mr-2 border-circle" [style.backgroundColor]="changedEvent.typeOrgane.backgroundColor"></div>
+                                      <div>{{organe.titre}}</div>
+                                  </div>
+                              </ng-template>
+                          </p-dropdown>
+                      </ng-container>
+
+                      </div>
+
+                      <div class="col-12  md:col-6 field" *ngIf="(view === 'new' && newEvent.typeOrgane && newEvent.typeOrgane?.abreviation !== 'CA') || ( view === 'edit' && changedEvent.typeEvenement && changedEvent.typeEvenement.value )">
+                          <label for="typeEvenement" class="text-900 font-semibold label-required">{{evenementPrvValidation.typeEvenement.label}}</label>
+                          <ng-container *ngIf="view === 'new'">
+                              <p-dropdown inputId="typeEvenement" [options]="type_evenements" [(ngModel)]="newEvent.typeEvenement" placeholder="Selectionner un type évènement" [showClear]="true" [required]="true" title="Champs obligatoire."></p-dropdown>
+                          </ng-container>
+
+                          <ng-container *ngIf="view === 'edit'">
+                              <p-dropdown inputId="typeEvenementUpdate" [options]="type_evenements" [(ngModel)]="changedEvent.typeEvenement.value" placeholder="Selectionner un type évènement"  [required]="true" title="Champs obligatoire."></p-dropdown>
+                          </ng-container>
+
+                      </div>
+
+                      <div class="col-12 md:col-6 field">
+
+                          <label for="isRemunerer" class="text-900 font-semibold">{{evenementPrvValidation.remuneration.label}}</label>
+
+                          <div style="margin-top: 15px;;" >
+                          <ng-container *ngIf="view === 'new'">
+                          <p-inputSwitch inputId="isRemunerer" [(ngModel)]="newEvent.remuneration"></p-inputSwitch>
+                          </ng-container>
+                          <ng-container *ngIf="view === 'edit'">
+                              <div style="margin-top: 15px;;" >
+                                  <p-inputSwitch inputId="isRemunererUpdate" [(ngModel)]="changedEvent.remuneration"></p-inputSwitch>
+                              </div>
+                          </ng-container>
+                          </div>
+
+                      </div>
+
+                </div>
+
+                  <p class="col-12">
+                      <p-divider></p-divider>
+                  </p>
+
+                  <ng-container *ngIf="view === 'new'">
+                      <div class="col-12 field">
+                          <label for="ChoixPlanification" class="text-900 font-semibold">{{ evenementPrvValidation.datePlanification.label }}</label>
+                          <p-selectButton inputId="ChoixPlanification" [options]="planificationOptions" [(ngModel)]="newEvent.isperiodique" optionValue="isperiodique" optionLabel="name" ></p-selectButton>
+                      </div>
+                      <div *ngIf="!newEvent.isperiodique" class="col-12 md:col-6 field">
+
+                          <label for="start" class="text-900 font-semibold label-required">{{evenementPrvValidation.dateDebut.label}}</label>
+                          <p-calendar [appendTo]="dd" dateFormat="dd/mm/yy"  [required]="true" [showIcon]="true" inputId="start" [(ngModel)]="newEvent.start" (onSelect)="onChangeDateDebut(newEvent.start, newEvent.end, 'new' )" (onInput)="onChangeDateFin(newEvent.start, newEvent.end, 'new' )"></p-calendar>
+                      </div>
+                      <div *ngIf="!newEvent.isperiodique" class="col-12 md:col-6 field">
+                          <label for="end" class="text-900 font-semibold label-required">{{evenementPrvValidation.dateFin.label}}</label>
+                          <p-calendar [appendTo]="dd" dateFormat="dd/mm/yy"  [minDate]="newEvent.start"  [required]="true"  [showIcon]="true" inputId="end" [(ngModel)]="newEvent.end"  (onInput)="onChangeDateFin(newEvent.start, newEvent.end, 'new' )"></p-calendar>
+                      </div>
+
+
+                      <div *ngIf="newEvent.isperiodique" class="col-12 grid field">
+
+                          <div  class="col-12 md:col-8 field">
+
+                              <div class="grid col-12 field">
+
+                                          <div class="col-12 md:col-6 field">
+                                              <label  class="text-900 font-semibold">Periodicité :</label>
+                                              <p-dropdown inputId="typePeriodicite" [options]="periodicite" [(ngModel)]="newPeriodicite.type" optionLabel="designation" (onChange)="onPeriodiciteChange($event)"  ></p-dropdown>
+                                              </div>
+
+
+                                              <div  *ngIf="newPeriodicite.type.id === 1" class="col-12 md:col-6 field">
+
+                                               <label  class="text-900 font-semibold">Chaque :</label>
+                                               <p-dropdown inputId="typePeriodicite" [options]="Jours" [(ngModel)]="newPeriodicite.designationJour" optionLabel="designation" ></p-dropdown>
+
+                                              </div>
+                                              <div  *ngIf="newPeriodicite.type.id === 2" class="grid col-12 md:col-6">
+
+                                                  <div  class="col-12 field">
+
+                                                      <div class="col-12 field mt-3">
+                                                      <label for="typePerMois" class="text-900 font-semibold ">Le : </label>
+
+                                                      <p-dropdown inputId="typePerMois" [options]="typePeriodiciteMois" [(ngModel)]="newPeriodicite.typePeriodiciteMois" optionLabel="designation"  ></p-dropdown>
+                                                      <br/>
+
+                                                      <p-dropdown *ngIf="newPeriodicite.typePeriodiciteMois.id !== 1"  inputId="jourPerMois" [options]="Jours" [(ngModel)]="newPeriodicite.designationJour" optionLabel="designation" ></p-dropdown>
+
+
+                                                      <p-inputNumber *ngIf="newPeriodicite.typePeriodiciteMois.id === 1"  inputId="numeroJourMois" mode="decimal" [(ngModel)]="newPeriodicite.numeroJour"  [showButtons]="true" [step]="1" [min]="1" [max]="31"> </p-inputNumber>
+                                                  </div>
+                                                </div>
+                                             </div>
+                                             <div  *ngIf="newPeriodicite.type.id === 3" class="grid col-12 md:col-6">
+
+                                              <div  class="col-12 field">
+
+                                                  <div class="col-12 field mt-3">
+                                                  <label for="typePerMois" class="text-900 font-semibold ">Le : </label>
+
+                                                  <p-dropdown inputId="typePerTrimestre" [options]="typePeriodiciteMois" [(ngModel)]="newPeriodicite.typePeriodiciteMois" optionLabel="designation" ></p-dropdown>
+                                                  <br/>
+
+                                                  <p-dropdown *ngIf="newPeriodicite.typePeriodiciteMois.id !== 1"  inputId="jourPerMois" [options]="Jours" [(ngModel)]="newPeriodicite.designationJour" optionLabel="designation" ></p-dropdown>
+
+
+                                                  <p-inputNumber *ngIf="newPeriodicite.typePeriodiciteMois.id === 1"  inputId="numeroJourMois" mode="decimal" [(ngModel)]="newPeriodicite.numeroJour" [showButtons]="true" [step]="1" [min]="1" [max]="31"> </p-inputNumber>
+                                                  <br/>
+                                                  <br/>
+                                                  <label for="numerpMoisTrimestre" class="text-900 font-semibold ">Mois du trimèstre : </label>
+
+                                                  <p-dropdown inputId="numerpMoisTrimestre" [options]="numerosMoisTrimestre" [(ngModel)]="newPeriodicite.numeroMoisTrimestre" optionLabel="designation" ></p-dropdown>
+
+
+                                              </div>
+                                            </div>
+                                           </div>
+
+                                           <div  *ngIf="newPeriodicite.type.id === 4" class="grid col-12 md:col-6">
+
+                                              <div  class="col-12 field">
+
+                                                  <div class="col-12 field mt-3">
+                                                  <label for="typePerSemestre" class="text-900 font-semibold ">Le : </label>
+
+                                                  <p-dropdown inputId="typePerSemestre" [options]="typePeriodiciteMois" [(ngModel)]="newPeriodicite.typePeriodiciteMois" optionLabel="designation" ></p-dropdown>
+                                                  <br/>
+
+                                                  <p-dropdown *ngIf="newPeriodicite.typePeriodiciteMois.id !== 1"  inputId="jourPerMois" [options]="Jours" [(ngModel)]="newPeriodicite.designationJour" optionLabel="designation" ></p-dropdown>
+
+
+                                                  <p-inputNumber *ngIf="newPeriodicite.typePeriodiciteMois.id === 1"  inputId="numeroJourMois" mode="decimal" [(ngModel)]="newPeriodicite.numeroJour" [showButtons]="true" [step]="1" [min]="1" [max]="31"> </p-inputNumber>
+                                                  <br/>
+                                                  <br/>
+                                                  <label for="numeroMoisSemestre" class="text-900 font-semibold ">Mois du semèstre : </label>
+
+                                                  <p-dropdown inputId="numeroMoisSemestre" [options]="numerosMoisSemestre" [(ngModel)]="newPeriodicite.numeroMoisSemestre" optionLabel="designation" ></p-dropdown>
+
+
+                                              </div>
+                                            </div>
+                                           </div>
+
+                                           <div  *ngIf="newPeriodicite.type.id === 5" class="grid col-12 md:col-6">
+
+                                              <div  class="col-12 field">
+
+                                                  <div class="col-12 field mt-3">
+                                                  <label for="typePerAnnee" class="text-900 font-semibold ">Le : </label>
+
+                                                  <p-dropdown inputId="typePerAnnee" [options]="typePeriodiciteMois" [(ngModel)]="newPeriodicite.typePeriodiciteMois" optionLabel="designation" ></p-dropdown>
+                                                  <br/>
+
+                                                  <p-dropdown *ngIf="newPeriodicite.typePeriodiciteMois.id !== 1"  inputId="jourPerMois" [options]="Jours" [(ngModel)]="newPeriodicite.designationJour" optionLabel="designation" ></p-dropdown>
+
+
+                                                 <p-calendar *ngIf="newPeriodicite.typePeriodiciteMois.id === 1" dateFormat="dd/mm"  [showTime]="false"  [required]="true" [showIcon]="true" inputId="numeroJourEtMois" [(ngModel)]="newPeriodicite.designationJourMois"></p-calendar>
+
+                                                  <br/>
+                                                  <br/>
+                                                  <label *ngIf="newPeriodicite.typePeriodiciteMois.id !== 1" for="numeroMoisAnnee" class="text-900 font-semibold ">Mois du l'année : </label>
+
+                                                  <p-dropdown *ngIf="newPeriodicite.typePeriodiciteMois.id !== 1" inputId="numeroMoisAnnee" [options]="numeroMoisAnnee" [(ngModel)]="newPeriodicite.numeroMoisAnnuel" optionLabel="designation" ></p-dropdown>
+
+
+                                              </div>
+                                            </div>
+                                           </div>
+
+
+
+                                          <div class="col-12 field mt-2">
+                                              <div class="flex align-items-center gap-1 m-1">
+                                              <p-checkbox  inputId="ignoreWeekends" [binary]="true" [(ngModel)]="newPeriodicite.ignoreWeekends" (onChange)="chkbIgnoreWeekendsChange()" ></p-checkbox>
+                                              <label for="ignoreWeekends">Ignorer les jours weekends</label>
+                                             </div>
+                                           </div>
+                                          <div class="col-12 field">
+                                              <div class="flex align-items-center gap-1 m-1">
+                                              <p-checkbox  inputId="ignoreFeriers" [binary]="true" [(ngModel)]="newPeriodicite.ingnoreFeriers" ></p-checkbox>
+                                              <label for="ignoreFeriers">Ignorer les jours feriés</label>
+                                              </div>
+                                         </div>
+
+                            </div>
+
+                          </div>
+
+                          <div  class="col-12 md:col-4 field">
+                              <div class="col-12 md:col-10 field">
+
+                                  <label for="start" class="text-900 font-semibold label-required">Periode du :</label>
+                                  <p-calendar [dateFormat]="formatPeriodeFrom" [showTime]="false"  [required]="true" title="Champs obligatoire." [showIcon]="true" inputId="priodeFrom" [(ngModel)]="newEvent.periodeFrom" (onSelect)="onChangePeriodeDebut($event)" (onInput)="onChangePeriodeFin($event)"></p-calendar>
+                              </div>
+                              <div class="col-12 md:col-10 mdfield">
+                                  <label for="end" class="text-900 font-semibold label-required">Periode au :</label>
+                                  <p-calendar [dateFormat]="formatPeriodeTo" [showTime]="false" [minDate]="newEvent.periodeFrom"  [required]="true" title="Champs obligatoire."  [showIcon]="true" inputId="periodeTo" [(ngModel)]="newEvent.periodeTo"  (onInput)="onChangePeriodeFin($event)"></p-calendar>
+                              </div>
+                          </div>
+
+                      </div>
+
+
+
+                 </ng-container>
+
+                  <ng-container *ngIf="view === 'edit'">
+                      <div class="col-12 md:col-6 field">
+                          <label for="editStart" class="text-900 font-semibold">{{evenementPrvValidation.dateDebut.label}}</label>
+                          <p-calendar [appendTo]="dd" dateFormat="dd/mm/yy"  [showTime]="false" [required]="true" inputId="editStart" [(ngModel)]="changedEvent.start" (onSelect)="onChangeDateDebut(changedEvent.start, changedEvent.end, 'edit' )" (onInput)="onChangeDateFin(changedEvent.start, changedEvent.end, 'edit' )"></p-calendar>
+                      </div>
+                      <div class="col-12 md:col-6 field">
+                          <label for="editEnd" class="text-900 font-semibold">{{evenementPrvValidation.dateFin.label}}</label>
+                          <p-calendar [appendTo]="dd" dateFormat="dd/mm/yy" [minDate]="changedEvent.start" [showTime]="false" [required]="true" inputId="editEnd" [(ngModel)]="changedEvent.end" (onInput)="onChangeDateFin(changedEvent.start, changedEvent.end, 'edit' )"></p-calendar>
+                      </div>
+                  </ng-container>
+
+
+              </div>
+          </p-tabPanel>
+
+          <p-tabPanel *ngIf="view === 'edit' && hasAccessTabMembres()"  class="line-height-3 m-0" >
+              <ng-template pTemplate="header">
+                  <i class="pi pi-user"></i>
+                  <span style="margin:0 0.5rem;padding-top: 1px;">Membres</span>
+              </ng-template>
+              <ng-container>
+                      <app-edit-membres *ngIf = "changedEvent"  [selectedEvenement]="changedEvent"></app-edit-membres>
+              </ng-container>
+          </p-tabPanel>
+          <p-tabPanel *ngIf="view === 'edit' && hasAccessTabODJ()" class="line-height-3 m-0" >
+              <ng-template pTemplate="header">
+                  <i class="pi pi-book"></i>
+                  <span style="margin:0 0.5rem;padding-top: 1px;">Ordre du jour</span>
+              </ng-template>
+              <div class="grid p-fluid formgrid  p-0 m-0">
+                 <div class="col-12">
+                  <ng-container >
+                      <app-edit-odj  *ngIf ="changedEvent"  [selectedEvenement]="changedEvent" ></app-edit-odj>
+                   </ng-container>
+                  </div>
+              </div>
+          </p-tabPanel>
+         </p-tabView>
+          </div>
+      </ng-template>
+
+      <ng-template pTemplate="footer">
+      <p>
+        <p-divider></p-divider>
+      </p>
+      <div *ngIf="view === 'display'" class="mb-2 flex flex-wrap justify-content-end pr-4 gap-2">
+          <!-- <p-splitButton  label="{{ evenementPrvValidation.bouttonModifier.label }}" icon="pi pi-pencil" [model]="buttonsItems" (onClick)="onEditClick()" styleClass="p-button-info"></p-splitButton> -->
+          <button  pButton pRipple type="button" label="{{ evenementPrvValidation.bouttonModifier.label }}"  icon="pi pi-pencil" class="p-button-info" (click) = "onEditClick()"  [disabled]="changedEvent.etat === 'TRANSFORMER'"  [elemPrivilege]="['evenement.exploiter_prv']" accessEvmControl></button>
+          <button  pButton pRipple type="button" label="Exploiter"  icon="pi pi-refresh" class="p-button-warning" (click) = "confirmationExploitation()"   [disabled]="changedEvent.etat === 'TRANSFORMER'"  [elemPrivilege]="['evenement.exploiter_prv']" accessEvmControl></button>
+          <button pButton pRipple type="button" label="Supprimer"  icon="pi pi-trash" class="p-button-danger" (click)="confirmationDelete()"  [disabled]="changedEvent.etat === 'TRANSFORMER'" [elemPrivilege]="['evenement.delete']" accessEvmControl ></button>
+      </div>
+      <div *ngIf="view === 'new' || view === 'edit'" class="grid">
+         <div class="text-left col">
+          <button pButton pRipple type="button" label="Annuler" class="p-button-text" (click)="handleExit()"></button>
+          </div>
+          <div class="text-right col">
+           <button pButton  label="{{ evenementPrvValidation.bouttonEnregistrer.label }}" class="p-button-success"  icon="pi pi-check" (click)="handleSave()" [disabled]="!validate()"></button>
+          </div>
+      </div>
+
+
+      </ng-template>
+  </p-dialog>
+</div>
+
+<app-prv-filters-sidebar></app-prv-filters-sidebar>

@@ -1,0 +1,76 @@
+<div class="card">
+    <span class="text-900 text-xl font-bold mb-4 block">Créer un model delai</span>
+    <div class="grid">
+        <p-toast></p-toast>
+
+        <div class="col-12 lg:col-12">
+            <div class="grid formgrid p-fluid">
+                <div class="field mb-4 col-12">
+                    <label for="Nom" class="font-medium text-900">Titre</label>
+                    <input type="text" pInputText id="name" [(ngModel)]="model.titre" required="true"
+                        [ngClass]="{'ng-invalid ng-dirty' : submitted && !model.titre}" />
+                    <small class="ng-dirty ng-invalid"></small>
+                </div>
+                <div class="field mb-4 col-12 md:col-6">
+                    <label for="nickname" class="font-medium text-900">Délai de réponse à la convocation (Jour)</label>
+                    <p-inputNumber mode="decimal" [showButtons]="true" [min]="0" [max]="100" [ariaRequired]="true"
+                        [(ngModel)]="model.reponseConvocation">
+                    </p-inputNumber>
+                </div>
+                <div class="field mb-4 col-12 md:col-6">
+                    <label for="city" class="font-medium text-900">Délai de reprogrammation de la séance (Jour)</label>
+                    <p-inputNumber mode="decimal" [showButtons]="true" [min]="0" [max]="100" [ariaRequired]="true"
+                        [(ngModel)]="model.reporgSeance">
+                    </p-inputNumber>
+                </div>
+                <div class="field mb-4 col-12 md:col-6">
+                    <label for="state" class="font-medium text-900">Délai de réponse de validation de la date de
+                        l'évenement (Jour)</label>
+                    <p-inputNumber mode="decimal" [showButtons]="true" [min]="0" [max]="100" [ariaRequired]="true"
+                        [(ngModel)]="model.reponseValidationDate">
+                    </p-inputNumber>
+                </div>
+                <div class="field mb-4 col-12 md:col-6">
+                    <label for="bio" class="font-medium text-900">Délai de réponse validation points d'ordre
+                        (Jour)</label>
+                    <p-inputNumber mode="decimal" [showButtons]="true" [min]="0" [max]="100" [ariaRequired]="true"
+                        [(ngModel)]="model.reponseValidationPoints">
+                    </p-inputNumber>
+                </div>
+                <div class="field mb-4 col-12 md:col-6">
+                    <label for="city" class="font-medium text-900">Délai dépos documents points d'ordre (Jour)</label>
+                    <p-inputNumber mode="decimal" [showButtons]="true" [min]="0" [max]="100" [ariaRequired]="true"
+                        [(ngModel)]="model.deposDocumentsPoints">
+                    </p-inputNumber>
+                </div>
+                <div class="field mb-4 col-12 md:col-6">
+                    <label for="state" class="font-medium text-900"> Délai de réponse de validation du PV (Jour)</label>
+                    <p-inputNumber mode="decimal" [showButtons]="true" [min]="0" [max]="100" [ariaRequired]="true"
+                        [(ngModel)]="model.reponseValidationPv">
+                    </p-inputNumber>
+                </div>
+                <div class="field mb-4 col-12 md:col-6">
+                    <label for="bio" class="font-medium text-900">Délai de rappel d'utilisation ulterieurs des
+                        orientations (en Jour)</label>
+                    <p-inputNumber mode="decimal" [showButtons]="true" [min]="0" [max]="100" [ariaRequired]="true"
+                        [(ngModel)]="model.rappelUtilisationUlterieurs">
+                    </p-inputNumber>
+                </div>
+                <div class="col-12">
+                    <p-toolbar>
+                        <div class="p-toolbar-group-left flex flex-wrap">
+
+                            <button pButton pRipple label="Retour" icon="pi pi-times" class="w-auto mt-3"
+                                (click)="onBack()"></button>
+                        </div>
+
+                        <div class="p-toolbar-group-right">
+                            <button pButton pRipple label="Ajouter" icon="pi pi-check" class="w-auto mt-3" (click)="onSubmit()" *ngIf="!modelId"></button>
+                            <button pButton pRipple label="Modifier" icon="pi pi-check" class="w-auto mt-3" (click)="onSubmit()" *ngIf="modelId"></button>                         
+                        </div>
+                    </p-toolbar>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

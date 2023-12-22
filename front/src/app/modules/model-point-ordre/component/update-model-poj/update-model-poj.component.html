@@ -1,0 +1,39 @@
+<div class="card">
+    <span class="text-900 text-xl font-bold mb-4 block">Modifier un modèle des points d'ordre de jour</span>
+    <div class="grid">
+
+      <div class="col-12 lg:col-10">
+        <div class="grid formgrid p-fluid">
+          <div class="field mb-4 col-12">
+            <label for="titre" class="font-medium text-900">Titre</label>
+            <input type="text" pInputText id="name" [(ngModel)]="modelPOJ.titre" required autofocus
+              [ngClass]="{'ng-invalid ng-dirty' : submitted && !modelPOJ.titre}" />
+            <small class="ng-dirty ng-invalid" *ngIf="submitted && !modelPOJ.titre">Titre is required.</small>
+          </div>
+          <div class="field mb-4 col-12">
+            <label for="description" class="font-medium text-900">Description</label>
+            <textarea id="description" pInputTextarea [(ngModel)]="modelPOJ.description" required rows="3"
+              [autoResize]="true" cols="20"></textarea>
+          </div>
+
+          <div class="col-12">
+              <!-- <p-toolbar>
+                <div class="p-toolbar-group-left flex flex-wrap">
+
+                  <button pButton pRipple label="Retour" icon="pi pi-times" class="w-auto mt-3" (click)="onBack()"></button>
+                </div>
+
+                <div class="p-toolbar-group-right">
+                  <button pButton pRipple label="Modifier" icon="pi pi-check" class="w-auto mt-3"
+                  (click)="updateModelPOJ()"></button>
+                </div>
+            </p-toolbar> -->
+            <div class="col-12 formgroup-inline">
+              <button pButton pRipple label="Modifier" class="field w-auto mt-3 p-button-success" (click)="updateModelPOJ()" ></button>
+
+              <button pButton pRipple label="Retour" class="field w-auto mt-3 p-button-plain" (click)="onBack()" ></button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>

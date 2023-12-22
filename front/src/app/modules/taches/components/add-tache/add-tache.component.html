@@ -1,0 +1,141 @@
+<div class="grid">
+    <div class="col-12">
+        <div class="card px-6 py-6">
+            <p-toast></p-toast>
+            <p-toolbar styleClass="mb-4">
+                <ng-template pTemplate="left">
+                    <div class="my-2 flex">
+                        <button pButton pRipple label="Ajouter" icon="pi pi-plus" class="p-button-success mr-2" (click)="showDialog()" [elemPrivilege]="['parametrage.tache.add']" accessControl></button>
+                        <button pButton pRipple label="Supprimer" icon="pi pi-trash" class="p-button-danger" (click)="deleteSelectedTaches()" [disabled]="!selectedTaches.length" [elemPrivilege]="['parametrage.tache.delete']" accessControl></button>
+                    </div>
+                </ng-template>
+            </p-toolbar>
+            <h5 class="m-0 table-title">Liste des tâches</h5>
+            <p-table #dt [value]="taches" styleClass="p-datatable-gridlines" responsiveLayout="scroll" [rows]="10" [globalFilterFields]="['nom','description']" [rows]="10" [paginator]="true" [rowsPerPageOptions]="[10,20,30]" [showCurrentPageReport]="true" currentPageReportTemplate="Affichage de {first} à {last} sur {totalRecords} tâches" [(selection)]="selectedTaches" selectionMode="multiple" [rowHover]="true" dataKey="id">
+                <ng-template pTemplate="caption">
+                    <div class="flex flex-column md:flex-row md:justify-content-between md:align-items-center">
+                      <button pButton label="Clear" class="p-button-outlined mb-2" icon="pi pi-filter-slash" (click)="clear(dt)"></button>
+                      <span class="block mt-2 md:mt-0 p-input-icon-left">
+                          <i class="pi pi-search"></i>
+                          <input pInputText  #filter type="text" (input)="onGlobalFilter(dt, $event)" placeholder="Recherche..."  class="w-full sm:w-auto"/>
+                      </span>
+
+                    </div>
+                </ng-template>
+                <ng-template pTemplate="header">
+                    <tr>
+                        <th style="width: 3rem" *ngIf="hasTheRightPrivilege">
+                            <p-tableHeaderCheckbox></p-tableHeaderCheckbox>
+                        </th>
+                        <th>
+                        <div class="flex justify-content-between align-items-center">
+                            Nom
+                            <p-columnFilter type="text" pSortableColumn="login" field="login" display="menu" placeholder="Recherche par nom"><p-sortIcon field="nom"></p-sortIcon></p-columnFilter>
+                        </div>
+                        </th>
+                        <th>
+                        <div class="flex justify-content-between align-items-center">
+                            Description
+                            <p-columnFilter type="text" pSortableColumn="description" field="description" display="menu" placeholder="Recherche par description"><p-sortIcon field="description"></p-sortIcon></p-columnFilter>
+                        </div>
+                        </th>
+                        <th *ngIf="hasTheRightPrivilege"></th>
+                    </tr>
+            </ng-template>
+            <ng-template pTemplate="body" let-tache>
+                <tr>
+                  <td *ngIf="hasTheRightPrivilege">
+                      <p-tableCheckbox [value]="tache"></p-tableCheckbox>
+                  </td>
+                  <td style="width:14%; min-width:10rem;">
+                      <span class="p-column-title">Nom</span>
+                      {{tache.nom}}
+                  </td>
+
+                  <td style="width:28%; min-width:8rem;">
+                      <span class="p-column-title">Description</span>
+                      {{tache.description}}
+                  </td>
+                  <td *ngIf="hasTheRightPrivilege">
+                    <div class="flex">
+                        <button pButton pRipple icon="pi pi-pencil" class="p-button-rounded mr-2" (click)="showModifDialog(tache)" [elemPrivilege]="['parametrage.tache.update']" accessControl></button>
+                        <button pButton pRipple icon="pi pi-trash" class="p-button-rounded p-button-danger" (click)="delete(tache)" [elemPrivilege]="['parametrage.tache.delete']" accessControl></button>
+                    </div>
+                  </td>
+                </tr>
+            </ng-template>
+            </p-table>
+        </div>
+        <p-confirmDialog [style]="{width: '50vw'}"></p-confirmDialog>
+    </div>
+</div>
+
+
+<p-dialog [(visible)]="visible" [style]="{width: '30vw'}">
+    <div class="card">
+        <span class="text-900 text-xl font-bold mb-4 block">Creation d'une nouvelle tâche</span>
+        <div class="grid">
+           <form [formGroup]="tacheForm" (submit)="addTache()">
+                <div class="col-12 lg:col-10">
+                    <div class="grid formgrid p-fluid">
+                        <div class="field mb-4 col-12">
+                            <label class="text-900 font-semibold label-required" >Nom</label>
+                            <div class="mb-3 p-fluid">
+                                <span class="p-input-icon-left">
+                                    <input type="text" pInputText formControlName="nom" required autofocus [ngClass]="{'ng-invalid ng-dirty' : submitted && !tacheForm.get('nom')?.value}">
+                                    <small style="color: red;" *ngIf="submitted && !tacheForm.get('nom')?.value">Champ Obligatoire</small>
+                                </span>
+                            </div>
+                        </div>
+
+                        <div class="field mb-4 col-12">
+                            <label class="text-900 font-semibold">Description</label>
+                            <div class="mb-3 p-fluid">
+                                <textarea pInputTextarea placeholder="" formControlName="description" type="text" pInputTextarea [rows]="6" [cols]="40" style="resize: none"></textarea>
+                            </div>
+                        </div>
+
+                        <div class="col-12">
+                            <button pButton label="Ajouter la tâche" class="p-button-success w-auto mt-3"></button>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+</p-dialog>
+
+<p-dialog [(visible)]="visibleModification" [style]="{width: '30vw'}">
+    <div class="card">
+        <span class="text-900 text-xl font-bold mb-4 block">Modification de la tâche "{{tacheForm.get('nom')?.value}}"</span>
+        <div class="grid">
+           <form [formGroup]="modifForm" (submit)="modifTache()">
+                <div class="col-12 lg:col-10">
+                    <div class="grid formgrid p-fluid">
+                        <div class="field mb-4 col-12">
+                            <label class="font-medium text-900 label-required" >Nom</label>
+                            <input formControlName="nom" type="text" pInputText [ngClass]="{'ng-invalid ng-dirty' : submitted && !modifForm.get('nom')?.value}">
+                            <small style="color: red;" *ngIf="submitted && !modifForm.get('nom')?.value">Champ Obligatoire</small>
+                        </div>
+
+                        <div class="field mb-4 col-12">
+                            <label class="font-medium text-900">Description</label>
+                            <textarea id="description" formControlName="description" type="text" pInputTextarea [rows]="5" style="resize: none"></textarea>
+                        </div>
+
+                        <!-- <div class="field mb-4 col-12">
+                            <label class="font-medium text-900">Date</label>
+                            <p-calendar class="max-w-full" [style]="{width: '20vw'}" formControlName="date" [minDate]="minDate" [inline]="true" [showWeek]="true"></p-calendar>
+                        </div> -->
+
+                        <div class="col-12">
+                            <button pButton type="submit" label="Appliquer les modifications" class="w-auto mt-3"></button>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+</p-dialog>

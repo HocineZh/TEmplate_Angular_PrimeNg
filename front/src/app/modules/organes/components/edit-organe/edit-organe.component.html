@@ -1,0 +1,66 @@
+<div class="card">
+    <span class="text-900 text-xl font-bold mb-4 block">Modfier un organe</span>
+    <p-toast></p-toast>
+    <div class="grid">
+      <div class="col-12 lg:col-12">
+        <form class="grid formgrid p-fluid" [formGroup]="organeForm">
+
+          <div class="field mb-4 col-12 ">
+            <label for="titre" class="font-medium text-900">Titre</label>
+            <div class="p-inputgroup">
+              <input type="text" pInputText placeholder="titre" formControlName="titre"  [ngClass]="{'ng-invalid ng-dirty' : this.isAddFailed && f['titre'].errors}"/>
+            </div>
+            <small style="color: red;" id="titre-help" *ngIf="submitted && f['titre'].errors && f['titre'].errors?.['required']" class="p-error block">Champ Obligatoire </small>
+          </div>
+
+          <div class="field mb-4 col-12 ">
+            <label for="description" class="font-medium text-900">Description</label>
+			      <textarea rows="5" cols="30" pInputTextarea placeholder="Description" formControlName="description"[ngClass]="{'ng-invalid ng-dirty' : this.isAddFailed && f['description'].errors}"></textarea>
+            <small style="color: red;" id="description-help" *ngIf="submitted && f['description'].errors && f['description'].errors?.['required']" class="p-error block">Champ Obligatoire </small>
+          </div>
+
+          <div class="field mb-4 col-12 md:col-6">
+            <label for="type" class="font-medium text-900">Type Organe</label>
+            <p-dropdown [options]="types" formControlName="typeOrgane" [ngClass]="{'ng-invalid ng-dirty' : this.isAddFailed && f['typeOrgane'].errors}" optionLabel="designation" [filter]="true" filterBy="designation" [showClear]="true" display="chip" placeholder="Selectionner le type d'organe">
+
+              <ng-template let-type pTemplate="item">
+                <div class="structure-item">
+                  <div>{{type.designation}}</div>
+                </div>
+              </ng-template>
+            </p-dropdown>
+            <small style="color: red;" id="roles-help" *ngIf="submitted && f['typeOrgane'].errors && f['typeOrgane'].errors?.['required']" class="p-error block">Champ Obligatoire</small>
+          </div>
+
+		  <div class="field mb-4 col-12 md:col-6">
+            <label for="societe" class="font-medium text-900">Société</label>
+            <p-dropdown [options]="societes" formControlName="societe" [ngClass]="{'ng-invalid ng-dirty' : this.isAddFailed && f['societe'].errors}" optionLabel="code" [filter]="true" filterBy="code" [showClear]="true" display="chip" placeholder="Selectionner la société">
+
+              <ng-template let-societe pTemplate="item">
+                <div class="structure-item">
+                  <div>{{societe.code}}</div>
+                </div>
+              </ng-template>
+            </p-dropdown>
+            <small style="color: red;" id="roles-help" *ngIf="submitted && f['societe'].errors && f['societe'].errors?.['required']" class="p-error block">Champ Obligatoire</small>
+          </div>
+
+          <div class="col-12">
+              <button pButton pRipple label="Modifier" class="w-auto mt-3 p-button-success" (click)="updateOrgane()"></button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+
+  <div class="card" >
+    <span class="text-900 text-xl font-bold mb-4 block">Ajouter Des membres</span>
+    <p-toast></p-toast>
+    <div class="grid">
+      <div class="col-12 lg:col-12">
+        <app-add-membre [organe]="idOrgane" *ngIf="isMandate" type="edit"></app-add-membre>
+        <app-add-membre-without-mandat [organe]="idOrgane" *ngIf="!isMandate" type="edit"></app-add-membre-without-mandat>
+      </div>
+    </div>
+  </div>

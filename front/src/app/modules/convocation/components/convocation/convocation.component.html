@@ -1,0 +1,74 @@
+
+<p-toast></p-toast>
+
+  <div class="grid p-fluid formgrid py-3 convocation"  [ngClass]="{'disable-div' : disableModif }">
+      <div class="col-12 field mb-5" [ngClass]="{'disable-div' : disableNavigation }">
+          <label for="reponsePresence" class="text-900 font-semibold">Réponse présence :</label>
+          <p-selectButton inputId="reponsePresence" [options]="reponsePresenceOptions" [ngClass]="reponseMembrePresence"  [(ngModel)]="reponseMembrePresence" optionValue="reponseMembrePresence" optionLabel="name" ></p-selectButton>
+          <button pButton label="Enregistrer"  *ngIf="idSeanceConvocation && reponseMembrePresence==='PRESENT'" class="p-button-success" icon="pi pi-check" (click)="saveValidationMembrePresence()" ></button>
+        </div>
+      <div *ngIf="reponseMembrePresence === 'DEMANDE_REMPLACEMENT' && !selectedEvenement.ismandate" class="col-12 field mb-5">
+          <label for="infoR" class="text-900 font-semibold">Infos remplacant :</label>
+          <input id="infoR" type="text" pInputText placeholder="Nom et prénom" [(ngModel)]="infoRemplacantMembre" [ngClass]="{'ng-invalid ng-dirty' : submitted && !infoRemplacantMembre}" required/>
+          <small style="color: red;" id="roles-help" *ngIf="submitted && !infoRemplacantMembre" class="p-error block">Champ Obligatoire </small>
+      </div>
+
+      <div *ngIf="reponseMembrePresence === 'DEMANDE_REMPLACEMENT' && !selectedEvenement.ismandate" class="col-12 field  mb-5">
+          <label for="motifR" class="text-900 font-semibold">Fonction remplacant :</label>
+          <input id="motifR" type="text" pInputText placeholder="Fonction" width="50%" [(ngModel)]="fonctionRemplacantMembre" [ngClass]="{'ng-invalid ng-dirty' : submitted && !fonctionRemplacantMembre}" required/>
+          <small style="color: red;" id="roles-help" *ngIf="submitted && !fonctionRemplacantMembre" class="p-error block">Champ Obligatoire </small>
+      </div>
+      <div *ngIf="reponseMembrePresence === 'DEMANDE_REMPLACEMENT' && selectedEvenement.ismandate" class="col-12 field mb-5">
+        <label for="infoR" class="text-900 font-semibold">Membre:</label>
+        <p-dropdown [options]="membresRemplacent" [(ngModel)]="membreRemplacent" optionLabel="nomComplet" [filter]="true" filterBy="nom" [showClear]="true" optionValue="idMembre"
+                    display="chip" placeholder="Selectionner le membre remplacent" [ngClass]="{'ng-invalid ng-dirty' : submitted && !membreRemplacent}"  (onChange)="changeMembre($event)"> </p-dropdown>
+        <small style="color: red;" id="roles-help" *ngIf="submitted && !membreRemplacent" class="p-error block">Champ Obligatoire </small>
+      </div>
+
+      <div *ngIf="isVisibleDownload" class="col-2 field mb-5">
+        <p-button label="Télecharger le mandat" icon="pi pi-download" (click) ="downloadMandat()"></p-button>
+      </div>
+
+      <div *ngIf="reponseMembrePresence === 'DEMANDE_REMPLACEMENT'" class="col-12 field mb-5">
+          <label for="documentMandatR" class="text-900 font-semibold">Mandat remplaçant :</label>
+          <div class="card" *ngIf="idFile">
+            <div class="formgroup-inline">
+              <div class="field col-4 flex flex-wrap">
+                <i class="{{this.fileService.getIconFile(nameMandatFile).icon}}" style="font-size: 1.5rem ; color : {{this.fileService.getIconFile(nameMandatFile).color}}"></i>
+                <span class="file-text">{{nameMandatFile}}</span>
+              </div>
+              <div class="field col-3">
+                <span class="file-text"> {{sizeFile}} Ko</span>
+              </div>
+              <div class="field col-2">
+                <button pButton pRipple type="button" icon="pi pi-download" class="p-button-raised p-button-primary" (click)="downloadFile(idFile,nameMandatFile)"></button>
+              </div>
+
+            </div>
+          </div>
+          <p-fileUpload #fileUpload *ngIf="!idFile" id="documentMandatR" [fileLimit]="1" name="demo[]" label="Importer" cancelLabel="Annuler" chooseLabel="Importer" (onSelect)="onUploadMandatSelected($event)"
+          [multiple]="false" accept="application/pdf" [maxFileSize]="10000000" [showCancelButton]="true" uploadStyleClass="upload-button">
+        </p-fileUpload>
+        <small style="color: red;" id="roles-help" *ngIf="submitted && !uploadedFileMandat" class="p-error block">Champ Obligatoire </small>
+      </div>
+      <div *ngIf="reponseMembrePresence === 'remplacant'" class="col-12 field  mb-5">
+          <span class="text-900 font-semibold">Cliquer ici pour télécharger le modèle mandat </span>
+          <span><button pButton pRipple type="button" icon="pi pi-download" class="p-button-rounded p-button-secondary p-button-text"></button>  </span>
+      </div>
+  </div>
+  <div class="col-12" >
+      <p-toolbar>
+          <div class="p-toolbar-group-left"></div>
+          <div class="p-toolbar-group-right">
+            <button pButton label="Enregistrer"  *ngIf="!disableModif && !disableNavigation" class="p-button-success" icon="pi pi-check" (click)="saveValidationMembrePresence()" ></button>
+            <button pButton label="Modifier" *ngIf="disableModif" icon="pi pi-check" (click)="startModif()" ></button>
+            <button pButton label="Supprimer" *ngIf="!disableModif && disableNavigation" class="p-button-danger" icon="pi pi-check" (click)="supprimerRemplacement()" ></button>
+          </div>
+      </p-toolbar>
+  </div>
+
+  <div *ngIf="isVisibleDownload" style="display: none;">
+    <div #divToPrint>
+        <app-mandat-model [mandatRemplacent]="mandatRemplacent"></app-mandat-model>
+    </div>
+  </div>
